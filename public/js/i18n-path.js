@@ -1,47 +1,65 @@
 // public/js/i18n-path.js
+
 const SUPPORTED_LANGUAGES = ["es", "en", "fr", "it", "de", "pt"];
 const DEFAULT_LANGUAGE = "en";
 const STORAGE_KEY = "preferredLanguage";
 
+let initialized = false;
+const loaded = new Set();
+
 function normalizeLanguage(lang) {
   if (!lang) return DEFAULT_LANGUAGE;
-  const lower = String(lang).toLowerCase();
-  const base = lower.split("-")[0];
+
+  const base = String(lang).toLowerCase().split("-")[0];
   return SUPPORTED_LANGUAGES.includes(base) ? base : DEFAULT_LANGUAGE;
 }
 
 function detectLanguage() {
-  // 0. URL path: /es/, /en/, etc.
   const pathSegments = window.location.pathname.split("/").filter(Boolean);
-  const rawPathLang = pathSegments[0] ? String(pathSegments[0]).toLowerCase() : "";
+  const pathLang = pathSegments[0];
 
-  if (SUPPORTED_LANGUAGES.includes(rawPathLang)) {
-    return rawPathLang;
+  if (SUPPORTED_LANGUAGES.includes(pathLang)) {
+    return pathLang;
   }
 
-  // 1. URL param (used by verification emails)
   const params = new URLSearchParams(window.location.search);
   const urlLang = params.get("lang");
-  if (urlLang) return normalizeLanguage(urlLang);
 
-  // 2. saved preference
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) return normalizeLanguage(saved);
-
-  // 3. browser languages
-  const navLangs = Array.isArray(navigator.languages) ? navigator.languages : [];
-  for (const l of navLangs) {
-    const normalized = normalizeLanguage(l);
-    if (SUPPORTED_LANGUAGES.includes(normalized)) return normalized;
+  if (urlLang) {
+    return normalizeLanguage(urlLang);
   }
 
-  return normalizeLanguage(navigator.language);
+  const saved = localStorage.getItem(STORAGE_KEY);
+
+  if (saved) {
+    return normalizeLanguage(saved);
+  }
+
+  const browserLanguages = Array.isArray(navigator.languages)
+    ? navigator.languages
+    : [navigator.language];
+
+  for (const lang of browserLanguages) {
+    const normalized = normalizeLanguage(lang);
+
+    if (SUPPORTED_LANGUAGES.includes(normalized)) {
+      return normalized;
+    }
+  }
+
+  return DEFAULT_LANGUAGE;
 }
 
 async function loadLocale(language) {
-  const res = await fetch(`/js/locales/${language}.json`, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Failed to load locale: ${language}`);
-  return res.json();
+  const response = await fetch(`/js/locales/${language}.json`, {
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to load locale: ${language}`);
+  }
+
+  return response.json();
 }
 
 function applyTranslations() {
@@ -61,7 +79,9 @@ function applyTranslations() {
 
     for (const pair of pairs) {
       const [attr, key] = pair.split(":").map((s) => s.trim());
+
       if (!attr || !key) continue;
+
       el.setAttribute(attr, i18next.t(key));
     }
   });
@@ -69,48 +89,30 @@ function applyTranslations() {
   document.documentElement.lang = i18next.language || DEFAULT_LANGUAGE;
 }
 
-function dispatchI18nReady() {
-  window.dispatchEvent(
-    new CustomEvent("riimbo:i18n-ready", {
-      detail: {
-        language: i18next.language || DEFAULT_LANGUAGE
-      }
-    })
-  );
-}
+function getCurrentPage() {
+  const pathname = window.location.pathname;
 
-// Cache de recursos ya cargados
-const loaded = new Set();
-let initialized = false;
-
-function buildLocalizedCurrentUrl(language) {
-  const lng = normalizeLanguage(language);
-  const pathSegments = window.location.pathname.split("/").filter(Boolean);
-  const rawPathLang = pathSegments[0] ? String(pathSegments[0]).toLowerCase() : "";
-  const hasLangInPath = SUPPORTED_LANGUAGES.includes(rawPathLang);
-
-  if (hasLangInPath) {
-    pathSegments[0] = lng;
-  } else {
-    pathSegments.unshift(lng);
+  if (pathname.includes("portfolio")) {
+    return "portfolio";
   }
 
-  const hasTrailingSlash = window.location.pathname.endsWith("/");
-  let nextPath = `/${pathSegments.join("/")}`;
-
-  if (hasTrailingSlash || pathSegments.length === 1) {
-    nextPath += "/";
-  }
-
-  nextPath = nextPath.replace(/\/{2,}/g, "/");
-
-  return `${nextPath}${window.location.search}${window.location.hash}`;
+  return "cv";
 }
 
-export async function setLanguage(language) {
+function buildLocalizedUrl(language, page = getCurrentPage()) {
   const lng = normalizeLanguage(language);
 
-  // Init i18next una sola vez
+  if (page === "portfolio") {
+    return `/portfolio.html?lang=${lng}`;
+  }
+
+  return `/?lang=${lng}`;
+}
+
+export async function setLanguage(language, options = {}) {
+  const { redirect = true } = options;
+  const lng = normalizeLanguage(language);
+
   if (!initialized) {
     const resources = await loadLocale(lng);
     loaded.add(lng);
@@ -119,19 +121,14 @@ export async function setLanguage(language) {
       lng,
       fallbackLng: DEFAULT_LANGUAGE,
       resources: {
-        [lng]: { translation: resources }
+        [lng]: {
+          translation: resources
+        }
       }
-    });
-
-    // Reaplicar traducciones cuando cambie idioma
-    i18next.on("languageChanged", () => {
-      applyTranslations();
-      dispatchI18nReady();
     });
 
     initialized = true;
   } else {
-    // Cargar recursos si no están
     if (!loaded.has(lng)) {
       const resources = await loadLocale(lng);
       i18next.addResourceBundle(lng, "translation", resources, true, true);
@@ -143,32 +140,44 @@ export async function setLanguage(language) {
 
   localStorage.setItem(STORAGE_KEY, lng);
 
-  const nextUrl = buildLocalizedCurrentUrl(lng);
-  const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  if (redirect) {
+    const nextUrl = buildLocalizedUrl(lng);
+    const currentUrl = window.location.pathname;
 
-  if (nextUrl !== currentUrl) {
-    window.location.assign(nextUrl);
-    return;
+    if (nextUrl !== currentUrl) {
+      window.location.href = nextUrl;
+      return;
+    }
   }
 
   applyTranslations();
-  dispatchI18nReady();
+
+  window.dispatchEvent(
+    new CustomEvent("site:i18n-ready", {
+      detail: {
+        language: lng
+      }
+    })
+  );
 }
 
 export function getLanguage() {
-  return (initialized && i18next.language) ? i18next.language : detectLanguage();
+  return initialized && i18next.language
+    ? i18next.language
+    : detectLanguage();
 }
 
 export async function initI18n() {
   const lng = detectLanguage();
-  await setLanguage(lng);
+
+  await setLanguage(lng, {
+    redirect: false
+  });
 }
 
-// Exponer para componentes que no importan
+export function getLocalizedPageUrl(page) {
+  return buildLocalizedUrl(getLanguage(), page);
+}
+
 window.setLanguage = setLanguage;
 window.getLanguage = getLanguage;
-
-// Auto-init
-initI18n().catch((err) => {
-  console.error("[i18n] init failed:", err);
-});

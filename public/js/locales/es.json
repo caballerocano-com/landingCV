@@ -1,4 +1,8 @@
 {
+  "meta": {
+    "title": "Antonio Caballero — Desarrollador Full Stack & Android",
+    "description": "Desarrollador Full Stack & Android con 14 años de experiencia construyendo productos digitales completos."
+  },
   "nav": {
     "cv": "CV",
     "portfolio": "Portfolio",
@@ -75,6 +79,7 @@
     "location": "Sevilla, España"
   },
   "portfolio": {
+    "meta_title": "Antonio Caballero — Portfolio",
     "label": "Portfolio",
     "featured_label": "Proyecto destacado",
     "riimbo_badge": "Producto personal · Ago 2025 – Mar 2026",

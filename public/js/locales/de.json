@@ -1,5 +1,13 @@
 {
-  "nav": { "cv": "Lebenslauf", "portfolio": "Portfolio", "langLabel": "Sprache" },
+  "meta": {
+    "title": "Antonio Caballero — Fullstack- & Android-Entwickler",
+    "description": "Fullstack- & Android-Entwickler mit 14 Jahren Erfahrung in der Entwicklung vollständiger digitaler Produkte."
+  },
+  "nav": {
+    "cv": "Lebenslauf",
+    "portfolio": "Portfolio",
+    "langLabel": "Sprache"
+  },
   "hero": {
     "eyebrow": "Fullstack & Android Entwickler — Sevilla",
     "sub": "14 Jahre Entwicklung digitaler Gesamtlösungen — vom Backend bis zu nativen Android-Apps.",
@@ -9,48 +17,90 @@
   "about": {
     "label": "Über mich",
     "text": "Digitale Produkte entwickeln seit 2010 — vom Konzept bis zur Veröffentlichung. Ich habe mit kleinen Unternehmen und Großkonzernen zusammengearbeitet und dabei den gesamten Produktzyklus übernommen: Architektur, UI/UX, Datenbankdesign, Backend und Frontend. Ich arbeite gut alleine und in Teams, und habe Entwicklungsteams von bis zu 5 Personen geleitet.",
-    "stat1_num": "14", "stat1_label": "Jahre Erfahrung",
-    "stat2_num": "4+", "stat2_label": "Sprachen",
-    "stat3_num": "Full", "stat3_label": "Produktzyklus",
-    "stat4_num": "Remote", "stat4_label": "Weltweit"
+    "stat1_num": "14",
+    "stat1_label": "Jahre Erfahrung",
+    "stat2_num": "4+",
+    "stat2_label": "Sprachen",
+    "stat3_num": "Full",
+    "stat3_label": "Produktzyklus",
+    "stat4_num": "Remote",
+    "stat4_label": "Weltweit"
   },
   "experience": {
     "label": "Erfahrung",
-    "job1_title": "Freelance — Fullstack & Android Entwickler", "job1_period": "Feb 2025 – Heute",
+    "job1_title": "Freelance — Fullstack & Android Entwickler",
+    "job1_period": "Feb 2025 – Heute",
     "job1_desc": "Web-, Mobile- und native Android-Entwicklung. Node.js und PHP Backends. Interface-Design, Produktarchitektur und Kundenbetreuung.",
-    "job2_title": "Agio Global — Analyst Programmierer", "job2_period": "2022 – Mai 2024",
+    "job2_title": "Agio Global — Analyst Programmierer",
+    "job2_period": "2022 – Mai 2024",
     "job2_desc": "React, PHP, MySQL, Magento, TypeScript, Three.js. Maßgeschneiderte Frontend- und Backend-Funktionen. Tägliche Kommunikation auf Englisch.",
-    "job3_title": "Job Impulse — Analyst Programmierer", "job3_period": "2019 – 2022",
+    "job3_title": "Job Impulse — Analyst Programmierer",
+    "job3_period": "2019 – 2022",
     "job3_desc": "React, React Native, Node.js, PHP, Symfony, Docker. Full-Stack-Entwicklung, Unit-Tests mit JEST, Projektmanagement.",
-    "job4_title": "Atexis — Analyst Programmierer", "job4_period": "2017 – 2019",
+    "job4_title": "Atexis — Analyst Programmierer",
+    "job4_period": "2017 – 2019",
     "job4_desc": "Aeronautik-Simulatoren in JavaScript und SVG für Airbus. E-Learning-Plattformen. Internationales Umfeld.",
-    "job5_title": "Freelance — Entwickler / Designer", "job5_period": "2010 – 2016",
+    "job5_title": "Freelance — Entwickler / Designer",
+    "job5_period": "2010 – 2016",
     "job5_desc": "Webentwicklung, Mobile Apps, SaaS-Plattformen und E-Learning. PHP, SQL, JavaScript. Grafikdesign und visuelle Identität.",
-    "job6_title": "Pinna Viardo Architects — Entwickler / Designer", "job6_period": "Genua, Italien · 2009 – 2010",
+    "job6_title": "Pinna Viardo Architects — Entwickler / Designer",
+    "job6_period": "Genua, Italien · 2009 – 2010",
     "job6_desc": "Webentwicklung und Design für ein Architekturbüro in Genua. PHP, XML, ActionScript, JavaScript, CSS, HTML."
   },
-  "stack": { "label": "Technologien" },
-  "languages": { "label": "Sprachen", "es": "Spanisch", "en": "Englisch", "it": "Italienisch", "fr": "Französisch", "native": "Muttersprache", "advanced": "Fortgeschritten", "basic": "Grundkenntnisse" },
-  "education": { "label": "Ausbildung", "degree": "Bachelor of Fine Arts", "school": "Universidad de Granada", "period": "2005 – 2009" },
+  "stack": {
+    "label": "Technologien"
+  },
+  "languages": {
+    "label": "Sprachen",
+    "es": "Spanisch",
+    "en": "Englisch",
+    "it": "Italienisch",
+    "fr": "Französisch",
+    "native": "Muttersprache",
+    "advanced": "Fortgeschritten",
+    "basic": "Grundkenntnisse"
+  },
+  "education": {
+    "label": "Ausbildung",
+    "degree": "Bachelor of Fine Arts",
+    "school": "Universidad de Granada",
+    "period": "2005 – 2009"
+  },
   "contact": {
-    "heading1": "Lass uns", "heading2": "zusammenarbeiten.",
-    "phone_label": "Telefon", "email_label": "E-Mail", "freelance_label": "Freelance", "freelance_value": "Verfügbar zur Anstellung",
-    "location_label": "Standort", "web_label": "Web",
+    "heading1": "Lass uns",
+    "heading2": "zusammenarbeiten.",
+    "phone_label": "Telefon",
+    "email_label": "E-Mail",
+    "freelance_label": "Freelance",
+    "freelance_value": "Verfügbar zur Anstellung",
+    "location_label": "Standort",
+    "web_label": "Web",
     "availability": "Verfügbar für Freelance und vollständige Remote-Arbeit.",
     "location": "Sevilla, Spanien"
   },
   "portfolio": {
-    "label": "Portfolio", "featured_label": "Hauptprojekt",
+    "meta_title": "Antonio Caballero — Portfolio",
+    "label": "Portfolio",
+    "featured_label": "Hauptprojekt",
     "riimbo_badge": "Persönliches Produkt · Aug 2025 – Mär 2026",
     "riimbo_desc": "Hardware- und Software-Produkt, vollständig alleine entwickelt. Node.js Backend, drei native Android-Apps in Kotlin/Jetpack Compose, Home Assistant Integration via Custom Reverse Tunnel. Fotos, Musik, Kino und Smart Home — keine monatlichen Gebühren, keine Cloud.",
-    "riimbo_ks_label": "Kickstarter-Kampagne", "riimbo_ks_date": "September 2026",
+    "riimbo_ks_label": "Kickstarter-Kampagne",
+    "riimbo_ks_date": "September 2026",
     "projects_label": "Projekte",
-    "p02_title": "Riimbo for Artists", "p02_desc": "Landing-Page und Backoffice für eine unabhängige Musikplattform.",
-    "p03_title": "Casa Alamillo", "p03_desc": "Website für eine Landunterkunft. Mehrsprachig, Buchungskalender, Galerie und virtuelle Tour.",
-    "p04_title": "La Casa de Todos", "p04_desc": "Website für eine gemeinnützige Organisation in Sevilla. Vier Sprachen einschließlich Arabisch.",
-    "p05_title": "Norvex — Corporate Identity", "p05_desc": "Vollständige Corporate Identity für ein Umzugsunternehmen: Logo, Brandmanual, Typografie, Mockups.",
-    "p06_title": "Riimbo Music", "p06_desc": "Native Android Musik-App. Angepasste UI, ExoPlayer 3 Queue, Bluetooth-Unterstützung, TV-Kompatibilität.",
-    "p07_title": "Riimbo Photos", "p07_desc": "Native Android Foto- und Video-Backup-App. Jede Aufnahme geht automatisch zum Riimbo-Gerät."
+    "p02_title": "Riimbo for Artists",
+    "p02_desc": "Landing-Page und Backoffice für eine unabhängige Musikplattform.",
+    "p03_title": "Casa Alamillo",
+    "p03_desc": "Website für eine Landunterkunft. Mehrsprachig, Buchungskalender, Galerie und virtuelle Tour.",
+    "p04_title": "La Casa de Todos",
+    "p04_desc": "Website für eine gemeinnützige Organisation in Sevilla. Vier Sprachen einschließlich Arabisch.",
+    "p05_title": "Norvex — Corporate Identity",
+    "p05_desc": "Vollständige Corporate Identity für ein Umzugsunternehmen: Logo, Brandmanual, Typografie, Mockups.",
+    "p06_title": "Riimbo Music",
+    "p06_desc": "Native Android Musik-App. Angepasste UI, ExoPlayer 3 Queue, Bluetooth-Unterstützung, TV-Kompatibilität.",
+    "p07_title": "Riimbo Photos",
+    "p07_desc": "Native Android Foto- und Video-Backup-App. Jede Aufnahme geht automatisch zum Riimbo-Gerät."
   },
-  "footer": { "copy": "© 2026" }
+  "footer": {
+    "copy": "© 2026"
+  }
 }

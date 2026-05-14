@@ -1,4 +1,8 @@
 {
+  "meta": {
+    "title": "Antonio Caballero — Fullstack & Android Developer",
+    "description": "Fullstack & Android Developer with 14 years of experience building complete digital products."
+  },
   "nav": {
     "cv": "CV",
     "portfolio": "Portfolio",
@@ -75,6 +79,7 @@
     "location": "Seville, Spain"
   },
   "portfolio": {
+    "meta_title": "Antonio Caballero — Portfolio",
     "label": "Portfolio",
     "featured_label": "Featured project",
     "riimbo_badge": "Personal product · Aug 2025 – Mar 2026",

@@ -1,11 +1,11 @@
 /* ── HERO CV ──────────────────────────────────────────────────────── */
 .hero {
-  min-height: 100vh;
+  min-height: auto;
   display: grid;
   grid-template-columns: 1fr auto;
-  align-items: end;
+  align-items: center;
   gap: 40px;
-  padding: 96px var(--pad) 80px;
+  padding: 140px var(--pad) 120px;
   border-bottom: 0.5px solid var(--border);
 }
 

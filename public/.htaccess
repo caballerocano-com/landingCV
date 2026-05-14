@@ -1,0 +1,23 @@
+Options -Indexes -MultiViews
+RewriteEngine On
+
+# Archivos y carpetas reales
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Home
+RewriteRule ^$ index.html [L]
+
+# CV por idioma
+RewriteRule ^(es|en|fr|it|de|pt)/?$ index.html [L]
+
+# Portfolio por idioma
+RewriteRule ^(es|en|fr|it|de|pt)/portfolio/?$ portfolio.html [L]
+
+# Rutas simples
+RewriteRule ^cv/?$ index.html [L]
+RewriteRule ^portfolio/?$ portfolio.html [L]
+
+# Fallback
+RewriteRule ^.*$ index.html [L]
