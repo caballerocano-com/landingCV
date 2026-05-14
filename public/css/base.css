@@ -1,0 +1,188 @@
+/* ── NAV ─────────────────────────────────────────────────────────── */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px var(--pad);
+  background: rgba(245,243,238,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 0.5px solid var(--border);
+}
+
+.nav__logo {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+
+.nav__right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Toggle CV / Portfolio */
+.nav__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 0.5px solid var(--border);
+  overflow: hidden;
+}
+
+.nav__toggle a {
+  padding: 7px 16px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  transition: background var(--transition), color var(--transition);
+}
+
+.nav__toggle a.active {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.nav__toggle a:not(.active):hover {
+  background: var(--bg-2);
+  color: var(--text);
+}
+
+/* Language selector */
+.nav__lang {
+  position: relative;
+}
+
+.nav__lang-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 0.5px solid var(--border);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  transition: color var(--transition), border-color var(--transition);
+  background: none;
+  cursor: pointer;
+}
+
+.nav__lang-btn:hover { color: var(--text); border-color: var(--text-dim); }
+
+.nav__lang-btn img { width: 16px; height: 12px; object-fit: cover; }
+
+.nav__lang-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--bg);
+  border: 0.5px solid var(--border);
+  min-width: 120px;
+  z-index: 200;
+}
+
+.nav__lang-menu.open { display: block; }
+
+.nav__lang-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: left;
+  transition: background var(--transition);
+}
+
+.nav__lang-menu button:hover { background: var(--bg-2); color: var(--text); }
+.nav__lang-menu button img { width: 16px; height: 12px; object-fit: cover; }
+
+/* ── SECTION BASE ─────────────────────────────────────────────────── */
+.section {
+  border-bottom: 0.5px solid var(--border);
+}
+
+.section__inner {
+  padding: var(--section-v) var(--pad);
+}
+
+.section--dark {
+  background: var(--bg-dark);
+  border-bottom: 0.5px solid var(--border-dk);
+}
+
+.section--alt {
+  background: var(--bg-2);
+}
+
+.section__label {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 48px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.section__label::after {
+  content: '';
+  display: block;
+  height: 0.5px;
+  width: 40px;
+  background: var(--border);
+}
+
+.section--dark .section__label {
+  color: #888880;
+}
+
+.section--dark .section__label::after {
+  background: #444440;
+}
+
+/* ── FOOTER ───────────────────────────────────────────────────────── */
+.footer {
+  padding: 18px var(--pad);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 0.5px solid var(--border);
+}
+
+.footer span {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+}
+
+/* ── REVEAL ANIMATION ─────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .nav { padding: 14px var(--pad-sm); }
+  .nav__logo { font-size: 18px; }
+  .section__inner { padding: 48px var(--pad-sm); }
+  .footer { padding: 16px var(--pad-sm); }
+}

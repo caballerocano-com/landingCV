@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n-attr="content:meta.title">Antonio Caballero — Fullstack & Android Developer</title>
+  <meta name="description" data-i18n-attr="content:meta.description" content="Fullstack & Android Developer with 14 years of experience building complete digital products.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- i18next CDN -->
+  <script src="https://unpkg.com/i18next@23.10.0/i18next.min.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/vars.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/cv.css">
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────────────────────────────── -->
+<nav class="nav">
+  <span class="nav__logo">Antonio Caballero</span>
+  <div class="nav__right">
+
+    <!-- Toggle CV / Portfolio -->
+    <div class="nav__toggle">
+      <a href="/cv" class="active" data-i18n="nav.cv">CV</a>
+      <a href="/portfolio" data-i18n="nav.portfolio">Portfolio</a>
+    </div>
+
+    <!-- Language selector -->
+    <div class="nav__lang">
+      <button class="nav__lang-btn" id="langBtn" aria-label="Change language">
+        <img src="/assets/icons/language.svg" alt="" width="16" height="16">
+        <span id="langLabel" data-i18n="nav.langLabel">Language</span>
+      </button>
+      <div class="nav__lang-menu" id="langMenu">
+        <button data-lang="en"><img src="/assets/icons/flags/en.svg" alt="EN"> English</button>
+        <button data-lang="es"><img src="/assets/icons/flags/es.svg" alt="ES"> Español</button>
+        <button data-lang="fr"><img src="/assets/icons/flags/fr.svg" alt="FR"> Français</button>
+        <button data-lang="it"><img src="/assets/icons/flags/it.svg" alt="IT"> Italiano</button>
+        <button data-lang="de"><img src="/assets/icons/flags/de.svg" alt="DE"> Deutsch</button>
+        <button data-lang="pt"><img src="/assets/icons/flags/pt.svg" alt="PT"> Português</button>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+<!-- ── HERO ──────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div>
+    <div class="hero__eyebrow" data-i18n="hero.eyebrow">Fullstack & Android Developer — Seville</div>
+    <div class="hero__name">Antonio</div>
+    <div class="hero__name--dim">Caballero</div>
+  </div>
+  <div class="hero__right">
+    <p class="hero__sub" data-i18n="hero.sub">14 years building full digital solutions.</p>
+    <div class="hero__ctas">
+      <a href="/portfolio" class="hero__cta" data-i18n="hero.cta">View portfolio ↓</a>
+      <a href="tel:+34672528912" class="hero__cta hero__cta--solid" data-i18n="hero.call">Llamar ahora</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── ABOUT ──────────────────────────────────────────────────────────── -->
+<section class="section">
+  <div class="section__inner">
+    <div class="about__grid">
+
+      <div class="about__label-col reveal">
+        <div class="section__label" style="flex-direction:column;align-items:flex-start;writing-mode:vertical-rl;transform:rotate(180deg);margin-bottom:0;">
+          <span data-i18n="about.label">About</span>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <img
+          class="about__photo"
+          src="/assets/img/ceo-and-product.jpg"
+          alt="Antonio Caballero"
+          onerror="this.style.background='var(--bg-2)';this.style.minHeight='300px';this.removeAttribute('src')"
+        >
+      </div>
+
+      <div class="reveal">
+        <p class="about__text" data-i18n="about.text">Building digital products since 2010 — from concept to deployment.</p>
+        <div class="about__stats">
+          <div class="stat">
+            <div class="stat__number" data-i18n="about.stat1_num">14</div>
+            <div class="stat__label" data-i18n="about.stat1_label">Years exp.</div>
+          </div>
+          <div class="stat">
+            <div class="stat__number" data-i18n="about.stat2_num">4+</div>
+            <div class="stat__label" data-i18n="about.stat2_label">Languages</div>
+          </div>
+          <div class="stat">
+            <div class="stat__number" data-i18n="about.stat3_num">Full</div>
+            <div class="stat__label" data-i18n="about.stat3_label">Product cycle</div>
+          </div>
+          <div class="stat">
+            <div class="stat__number" data-i18n="about.stat4_num">Remote</div>
+            <div class="stat__label" data-i18n="about.stat4_label">Worldwide</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── EXPERIENCE ──────────────────────────────────────────────────────── -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__label reveal"><span data-i18n="experience.label">Experience</span></div>
+    <div class="exp__list">
+
+      <div class="exp__item reveal">
+        <div>
+          <div class="exp__title" data-i18n="experience.job1_title">Freelance — Fullstack & Android Developer</div>
+          <div class="exp__desc" data-i18n="experience.job1_desc">Web, mobile and native Android development.</div>
+        </div>
+        <div class="exp__period" data-i18n="experience.job1_period">Feb 2025 – Present</div>
+      </div>
+
+      <div class="exp__item reveal">
+        <div>
+          <div class="exp__title" data-i18n="experience.job2_title">Agio Global — Analyst Programmer</div>
+          <div class="exp__desc" data-i18n="experience.job2_desc">React, PHP, MySQL, Magento, TypeScript, Three.js.</div>
+        </div>
+        <div class="exp__period" data-i18n="experience.job2_period">2022 – May 2024</div>
+      </div>
+
+      <div class="exp__item reveal">
+        <div>
+          <div class="exp__title" data-i18n="experience.job3_title">Job Impulse — Analyst Programmer</div>
+          <div class="exp__desc" data-i18n="experience.job3_desc">React, React Native, Node.js, PHP, Symfony, Docker.</div>
+        </div>
+        <div class="exp__period" data-i18n="experience.job3_period">2019 – 2022</div>
+      </div>
+
+      <div class="exp__item reveal">
+        <div>
+          <div class="exp__title" data-i18n="experience.job4_title">Atexis — Analyst Programmer</div>
+          <div class="exp__desc" data-i18n="experience.job4_desc">JavaScript and SVG aeronautics simulators for Airbus.</div>
+        </div>
+        <div class="exp__period" data-i18n="experience.job4_period">2017 – 2019</div>
+      </div>
+
+      <div class="exp__item reveal">
+        <div>
+          <div class="exp__title" data-i18n="experience.job5_title">Freelance — Developer / Designer</div>
+          <div class="exp__desc" data-i18n="experience.job5_desc">Web development, mobile apps, SaaS platforms.</div>
+        </div>
+        <div class="exp__period" data-i18n="experience.job5_period">2010 – 2016</div>
+      </div>
+
+      <div class="exp__item reveal">
+        <div>
+          <div class="exp__title" data-i18n="experience.job6_title">Pinna Viardo Architects — Developer / Designer</div>
+          <div class="exp__desc" data-i18n="experience.job6_desc">Web development and design for an architecture studio in Genova.</div>
+        </div>
+        <div class="exp__period" data-i18n="experience.job6_period">Genova, Italy · 2009 – 2010</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── STACK ──────────────────────────────────────────────────────────── -->
+<section class="section section--alt">
+  <div class="section__inner">
+    <div class="section__label reveal"><span data-i18n="stack.label">Stack</span></div>
+    <div class="stack__grid reveal">
+      <div class="stack__block">
+        <div class="stack__area">Mobile</div>
+        <div class="stack__items">
+          <span class="stack__item">Kotlin</span>
+          <span class="stack__item">Jetpack Compose</span>
+          <span class="stack__item">MVVM</span>
+          <span class="stack__item">REST APIs</span>
+        </div>
+      </div>
+      <div class="stack__block">
+        <div class="stack__area">Backend</div>
+        <div class="stack__items">
+          <span class="stack__item">Node.js</span>
+          <span class="stack__item">PHP · Fastify</span>
+          <span class="stack__item">MySQL · MariaDB</span>
+          <span class="stack__item">JWT</span>
+        </div>
+      </div>
+      <div class="stack__block">
+        <div class="stack__area">Frontend</div>
+        <div class="stack__items">
+          <span class="stack__item">JavaScript</span>
+          <span class="stack__item">TypeScript</span>
+          <span class="stack__item">React</span>
+          <span class="stack__item">Three.js</span>
+        </div>
+      </div>
+      <div class="stack__block">
+        <div class="stack__area">DevOps</div>
+        <div class="stack__items">
+          <span class="stack__item">Linux · Nginx</span>
+          <span class="stack__item">Docker</span>
+          <span class="stack__item">systemd</span>
+          <span class="stack__item">Git</span>
+        </div>
+      </div>
+      <div class="stack__block">
+        <div class="stack__area">Creative</div>
+        <div class="stack__items">
+          <span class="stack__item">Blender 3D</span>
+          <span class="stack__item">Adobe Suite</span>
+          <span class="stack__item">UI/UX</span>
+          <span class="stack__item">Photography</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── LANGUAGES ──────────────────────────────────────────────────────── -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__label reveal"><span data-i18n="languages.label">Languages</span></div>
+    <div class="langs__grid reveal">
+      <div class="lang__block">
+        <div class="lang__name" data-i18n="languages.es">Spanish</div>
+        <div class="lang__level" data-i18n="languages.native">Native</div>
+      </div>
+      <div class="lang__block">
+        <div class="lang__name" data-i18n="languages.en">English</div>
+        <div class="lang__level" data-i18n="languages.advanced">Advanced</div>
+      </div>
+      <div class="lang__block">
+        <div class="lang__name" data-i18n="languages.it">Italian</div>
+        <div class="lang__level" data-i18n="languages.advanced">Advanced</div>
+      </div>
+      <div class="lang__block">
+        <div class="lang__name" data-i18n="languages.fr">French</div>
+        <div class="lang__level" data-i18n="languages.basic">Basic</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── EDUCATION ──────────────────────────────────────────────────────── -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__label reveal"><span data-i18n="education.label">Education</span></div>
+    <div class="edu__item reveal">
+      <div>
+        <div class="edu__degree" data-i18n="education.degree">Bachelor of Fine Arts</div>
+        <div class="edu__school" data-i18n="education.school">Universidad de Granada</div>
+      </div>
+      <div class="edu__period" data-i18n="education.period">2005 – 2009</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ──────────────────────────────────────────────────────────── -->
+<section class="section">
+  <div class="section__inner">
+    <div class="contact__grid">
+      <div class="reveal">
+        <h2 class="contact__heading">
+          <span data-i18n="contact.heading1">Let's work</span><br>
+          <em data-i18n="contact.heading2">together.</em>
+        </h2>
+        <div class="contact__items">
+          <div class="contact__item">
+            <span class="contact__label" data-i18n="contact.phone_label">Phone</span>
+            <a href="tel:+34672528912" class="contact__value">+34 672 528 912</a>
+          </div>
+          <div class="contact__item">
+            <span class="contact__label" data-i18n="contact.email_label">Email</span>
+            <a href="mailto:antonio@caballerocano.com" class="contact__value">antonio@caballerocano.com</a>
+          </div>
+          <div class="contact__item">
+            <span class="contact__label" data-i18n="contact.freelance_label">Freelance</span>
+            <span class="contact__value" data-i18n="contact.freelance_value">Disponible para contratación</span>
+          </div>
+          <div class="contact__item">
+            <span class="contact__label" data-i18n="contact.web_label">Web</span>
+            <a href="https://caballerocano.com" class="contact__value">caballerocano.com</a>
+          </div>
+        </div>
+      </div>
+      <div class="contact__right reveal">
+        <p class="contact__availability" data-i18n="contact.availability">Available for freelance and full-time remote.</p>
+        <p class="contact__location" data-i18n="contact.location">Seville, Spain</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <span>caballerocano.com</span>
+  <span data-i18n="footer.copy">© 2026</span>
+</footer>
+
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>

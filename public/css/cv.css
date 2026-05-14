@@ -1,0 +1,355 @@
+/* ── HERO CV ──────────────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 40px;
+  padding: 96px var(--pad) 80px;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.hero__eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 28px;
+}
+
+.hero__name {
+  font-family: var(--serif);
+  font-size: clamp(62px, 8.5vw, 110px);
+  font-weight: 300;
+  line-height: 0.9;
+  color: var(--text);
+}
+
+.hero__name--dim {
+  font-family: var(--serif);
+  font-size: clamp(62px, 8.5vw, 110px);
+  font-weight: 300;
+  line-height: 0.9;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.hero__right {
+  text-align: right;
+  padding-bottom: 8px;
+}
+
+.hero__sub {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.8;
+  max-width: 260px;
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.hero__cta {
+  display: block;
+  padding: 10px 16px;
+  border: 0.5px solid var(--text);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--text);
+  transition: background var(--transition), color var(--transition);
+  flex: 1;
+  min-width: 0;
+}
+
+.hero__cta:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.hero__ctas {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.hero__cta--solid {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+
+.hero__cta--solid:hover {
+  background: var(--text-mid);
+  border-color: var(--text-mid);
+  color: var(--bg);
+}
+
+/* ── ABOUT ────────────────────────────────────────────────────────── */
+.about__grid {
+  display: grid;
+  grid-template-columns: 160px 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.about__label-col {
+  padding-top: 2px;
+}
+
+.about__photo {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.about__text {
+  font-size: 16px;
+  line-height: 1.9;
+  color: var(--text-mid);
+  margin-bottom: 36px;
+}
+
+.about__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 0.5px solid var(--border);
+}
+
+.stat {
+  padding: 16px 0;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.stat:nth-child(odd)  { border-right: 0.5px solid var(--border); padding-right: 16px; }
+.stat:nth-child(even) { padding-left: 16px; }
+
+.stat__number {
+  font-family: var(--sans);
+  font-size: 40px;
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat__label {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+
+/* ── EXPERIENCE ───────────────────────────────────────────────────── */
+.exp__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.exp__item {
+  padding: 28px 0;
+  border-bottom: 0.5px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: start;
+}
+
+.exp__item:first-child { border-top: 0.5px solid var(--border); }
+
+.exp__title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.exp__desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.65;
+  max-width: 560px;
+}
+
+.exp__period {
+  font-size: 13px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  padding-top: 2px;
+}
+
+/* ── STACK ────────────────────────────────────────────────────────── */
+.stack__grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 0.5px solid var(--border);
+}
+
+.stack__block {
+  background: var(--bg-2);
+  padding: 24px 20px;
+}
+
+.stack__area {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.stack__items {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.stack__item {
+  font-size: 14px;
+  color: var(--text-mid);
+}
+
+/* ── LANGUAGES ────────────────────────────────────────────────────── */
+.langs__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 0.5px solid var(--border);
+}
+
+.lang__block {
+  background: var(--bg);
+  padding: 24px 20px;
+}
+
+.lang__name {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.lang__level {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+}
+
+/* ── EDUCATION ────────────────────────────────────────────────────── */
+.edu__item {
+  padding: 28px 0;
+  border-bottom: 0.5px solid var(--border);
+  border-top: 0.5px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.edu__degree {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.edu__school {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.edu__period {
+  font-size: 13px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+/* ── CONTACT ──────────────────────────────────────────────────────── */
+.contact__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: end;
+}
+
+.contact__heading {
+  font-family: var(--serif);
+  font-size: clamp(40px, 5.5vw, 62px);
+  font-weight: 300;
+  line-height: 1.05;
+  color: var(--text);
+  margin-bottom: 40px;
+}
+
+.contact__heading em { font-style: italic; }
+
+.contact__items { border-top: 0.5px solid var(--border); }
+
+.contact__item {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding: 15px 0;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.contact__label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  width: 64px;
+  flex-shrink: 0;
+}
+
+.contact__value {
+  font-size: 15px;
+  color: var(--text-mid);
+  transition: color var(--transition);
+}
+
+.contact__value:hover { color: var(--text); }
+
+.contact__right { text-align: right; }
+
+.contact__availability {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+
+.contact__location {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* ── RESPONSIVE CV ────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 80px var(--pad-sm) 64px;
+    min-height: auto;
+    padding-top: 100px;
+  }
+  .hero__right { text-align: left; }
+  .about__grid { grid-template-columns: 1fr; gap: 32px; }
+  .about__label-col { display: none; }
+  .stack__grid { grid-template-columns: repeat(2, 1fr); }
+  .langs__grid { grid-template-columns: repeat(2, 1fr); }
+  .contact__grid { grid-template-columns: 1fr; gap: 40px; }
+  .contact__right { text-align: left; }
+  .exp__item { grid-template-columns: 1fr; gap: 4px; }
+}

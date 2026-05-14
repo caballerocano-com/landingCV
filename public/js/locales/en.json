@@ -1,0 +1,101 @@
+{
+  "nav": {
+    "cv": "CV",
+    "portfolio": "Portfolio",
+    "langLabel": "Language"
+  },
+  "hero": {
+    "eyebrow": "Fullstack & Android Developer — Seville",
+    "sub": "14 years building full digital solutions — from backend to native Android to brand identity.",
+    "cta": "View portfolio",
+    "call": "Call now"
+  },
+  "about": {
+    "label": "About",
+    "text": "Building digital products since 2010 — from concept to deployment. I've worked with small businesses and large corporations alike, taking ownership of the full product cycle: architecture, UI/UX, database design, backend, and frontend. I work well solo and in large teams, and I've led development teams of up to 5. When a project needs it, I can also handle branding, visual identity, and full interface design.",
+    "stat1_num": "14",
+    "stat1_label": "Years exp.",
+    "stat2_num": "4+",
+    "stat2_label": "Languages",
+    "stat3_num": "Full",
+    "stat3_label": "Product cycle",
+    "stat4_num": "Remote",
+    "stat4_label": "Worldwide"
+  },
+  "experience": {
+    "label": "Experience",
+    "job1_title": "Freelance — Fullstack & Android Developer",
+    "job1_period": "Feb 2025 – Present",
+    "job1_desc": "Web, mobile and native Android development. Node.js and PHP backends. Interface design, product architecture and client management.",
+    "job2_title": "Agio Global — Analyst Programmer",
+    "job2_period": "2022 – May 2024",
+    "job2_desc": "React, PHP, MySQL, Magento, TypeScript, Three.js. Custom frontend and backend features. Daily communication in English.",
+    "job3_title": "Job Impulse — Analyst Programmer",
+    "job3_period": "2019 – 2022",
+    "job3_desc": "React, React Native, Node.js, PHP, Symfony, Docker. Full-stack development, unit testing with JEST, project management.",
+    "job4_title": "Atexis — Analyst Programmer",
+    "job4_period": "2017 – 2019",
+    "job4_desc": "JavaScript and SVG aeronautics simulators for Airbus. E-learning platforms. International environment, daily English.",
+    "job5_title": "Freelance — Developer / Designer",
+    "job5_period": "2010 – 2016",
+    "job5_desc": "Web development, mobile apps, SaaS platforms and e-learning. PHP, SQL, JavaScript. Graphic design and visual identity.",
+    "job6_title": "Pinna Viardo Architects — Developer / Designer",
+    "job6_period": "Genova, Italy · 2009 – 2010",
+    "job6_desc": "Web development and design for an architecture studio in Genova. PHP, XML, ActionScript, JavaScript, CSS, HTML. International environment, daily English and Italian."
+  },
+  "stack": {
+    "label": "Stack"
+  },
+  "languages": {
+    "label": "Languages",
+    "es": "Spanish",
+    "en": "English",
+    "it": "Italian",
+    "fr": "French",
+    "native": "Native",
+    "advanced": "Advanced",
+    "basic": "Basic"
+  },
+  "education": {
+    "label": "Education",
+    "degree": "Bachelor of Fine Arts",
+    "school": "Universidad de Granada",
+    "period": "2005 – 2009"
+  },
+  "contact": {
+    "heading1": "Let's work",
+    "heading2": "together.",
+    "phone_label": "Phone",
+    "email_label": "Email",
+    "freelance_label": "Freelance",
+    "freelance_value": "Available for hire",
+    "location_label": "Location",
+    "web_label": "Web",
+    "availability": "Available for freelance and full-time remote.",
+    "location": "Seville, Spain"
+  },
+  "portfolio": {
+    "label": "Portfolio",
+    "featured_label": "Featured project",
+    "riimbo_badge": "Personal product · Aug 2025 – Mar 2026",
+    "riimbo_desc": "Hardware and software product designed and built entirely solo. Node.js backend, three native Android apps in Kotlin and Jetpack Compose, Home Assistant integration via custom reverse tunnel. Photos, music, cinema and smart home — no monthly fees, no cloud, no privacy trade-offs. Hardware casing modelled in Blender. Corporate identity, photography and video produced entirely in-house.",
+    "riimbo_ks_label": "Kickstarter campaign",
+    "riimbo_ks_date": "September 2026",
+    "projects_label": "Projects",
+    "p02_title": "Riimbo for Artists",
+    "p02_desc": "Landing and backoffice for an independent music platform. Publish albums, manage tracks, set pricing — ad-free and commission-free.",
+    "p03_title": "Casa Alamillo",
+    "p03_desc": "Rural accommodation site for a 14-hectare estate in the Sierra de Aracena. Multilingual, booking calendar, gallery and virtual tour.",
+    "p04_title": "La Casa de Todos",
+    "p04_desc": "Website and custom publishing platform for a non-profit in Seville. Multilingual in four languages including Arabic. Annual report management built in.",
+    "p05_title": "Norvex — Brand Identity",
+    "p05_desc": "Complete corporate identity for a moving company: logo, brand manual, typography, colour system and mockups on vehicles, signage and uniforms.",
+    "p06_title": "Riimbo Music",
+    "p06_desc": "Native Android music player built from scratch. Custom UI, ExoPlayer 3 queue system, Bluetooth and ducking support, lock screen controls, TV compatibility.",
+    "p07_title": "Riimbo Photos",
+    "p07_desc": "Native Android photo and video backup app. Every capture goes automatically to the Riimbo device. Custom gallery interface."
+  },
+  "footer": {
+    "copy": "© 2026"
+  }
+}

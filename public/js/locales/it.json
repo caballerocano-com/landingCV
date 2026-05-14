@@ -1,0 +1,56 @@
+{
+  "nav": { "cv": "CV", "portfolio": "Portfolio", "langLabel": "Lingua" },
+  "hero": {
+    "eyebrow": "Sviluppatore Full Stack & Android — Siviglia",
+    "sub": "14 anni a costruire soluzioni digitali complete — dal backend alle app Android native.",
+    "cta": "Vedi portfolio",
+    "call": "Chiama ora"
+  },
+  "about": {
+    "label": "Chi sono",
+    "text": "Sviluppo prodotti digitali dal 2010 — dal concept al deployment. Ho lavorato con piccole imprese e grandi aziende, gestendo l'intero ciclo del prodotto: architettura, UI/UX, database, backend e frontend. Lavoro bene da solo e in team, e ho guidato team di sviluppo fino a 5 persone.",
+    "stat1_num": "14", "stat1_label": "Anni esp.",
+    "stat2_num": "4+", "stat2_label": "Lingue",
+    "stat3_num": "Full", "stat3_label": "Ciclo prodotto",
+    "stat4_num": "Remote", "stat4_label": "In tutto il mondo"
+  },
+  "experience": {
+    "label": "Esperienza",
+    "job1_title": "Freelance — Sviluppatore Fullstack & Android", "job1_period": "Feb 2025 – Presente",
+    "job1_desc": "Sviluppo web, mobile e Android nativo. Backend Node.js e PHP. Design di interfacce, architettura di prodotto e gestione clienti.",
+    "job2_title": "Agio Global — Analista Programmatore", "job2_period": "2022 – Maggio 2024",
+    "job2_desc": "React, PHP, MySQL, Magento, TypeScript, Three.js. Funzionalità personalizzate. Comunicazione quotidiana in inglese.",
+    "job3_title": "Job Impulse — Analista Programmatore", "job3_period": "2019 – 2022",
+    "job3_desc": "React, React Native, Node.js, PHP, Symfony, Docker. Sviluppo full-stack, unit testing con JEST, gestione progetti.",
+    "job4_title": "Atexis — Analista Programmatore", "job4_period": "2017 – 2019",
+    "job4_desc": "Simulatori aeronautici in JavaScript e SVG per Airbus. Piattaforme e-learning. Ambiente internazionale.",
+    "job5_title": "Freelance — Sviluppatore / Designer", "job5_period": "2010 – 2016",
+    "job5_desc": "Sviluppo web, app mobile, piattaforme SaaS e e-learning. PHP, SQL, JavaScript. Graphic design e identità visiva.",
+    "job6_title": "Pinna Viardo Architects — Sviluppatore / Designer", "job6_period": "Genova, Italia · 2009 – 2010",
+    "job6_desc": "Sviluppo web e design per uno studio di architettura a Genova. PHP, XML, ActionScript, JavaScript, CSS, HTML."
+  },
+  "stack": { "label": "Tecnologie" },
+  "languages": { "label": "Lingue", "es": "Spagnolo", "en": "Inglese", "it": "Italiano", "fr": "Francese", "native": "Madrelingua", "advanced": "Avanzato", "basic": "Base" },
+  "education": { "label": "Formazione", "degree": "Laurea in Belle Arti", "school": "Universidad de Granada", "period": "2005 – 2009" },
+  "contact": {
+    "heading1": "Lavoriamo", "heading2": "insieme.",
+    "phone_label": "Telefono", "email_label": "Email", "freelance_label": "Freelance", "freelance_value": "Disponibile per assunzione",
+    "location_label": "Posizione", "web_label": "Web",
+    "availability": "Disponibile per freelance e lavoro remoto a tempo pieno.",
+    "location": "Siviglia, Spagna"
+  },
+  "portfolio": {
+    "label": "Portfolio", "featured_label": "Progetto in evidenza",
+    "riimbo_badge": "Prodotto personale · Ago 2025 – Mar 2026",
+    "riimbo_desc": "Prodotto hardware e software progettato e costruito interamente da solo. Backend Node.js, tre app Android native in Kotlin/Jetpack Compose, integrazione Home Assistant via tunnel inverso. Foto, musica, cinema e domotica — senza abbonamenti, senza cloud.",
+    "riimbo_ks_label": "Campagna Kickstarter", "riimbo_ks_date": "Settembre 2026",
+    "projects_label": "Progetti",
+    "p02_title": "Riimbo for Artists", "p02_desc": "Landing e backoffice per una piattaforma musicale indipendente. Pubblica album, gestisci tracce, imposta i prezzi.",
+    "p03_title": "Casa Alamillo", "p03_desc": "Sito di alloggio rurale. Multilingue, calendario prenotazioni, galleria e visita virtuale.",
+    "p04_title": "La Casa de Todos", "p04_desc": "Sito e piattaforma di pubblicazione per un'entità sociale a Siviglia. Quattro lingue incluso l'arabo.",
+    "p05_title": "Norvex — Identità Corporativa", "p05_desc": "Identità corporativa completa per un'azienda di traslochi: logo, manuale del brand, tipografia, mockup.",
+    "p06_title": "Riimbo Music", "p06_desc": "App Android nativa per la riproduzione musicale. UI personalizzata, coda ExoPlayer 3, Bluetooth, compatibilità TV.",
+    "p07_title": "Riimbo Photos", "p07_desc": "App Android nativa per backup foto e video. Ogni scatto va automaticamente al dispositivo Riimbo."
+  },
+  "footer": { "copy": "© 2026" }
+}

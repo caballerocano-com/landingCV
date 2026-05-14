@@ -1,0 +1,16 @@
+{
+  "name": "caballerocano",
+  "version": "1.0.0",
+  "description": "Portfolio personal de Antonio Caballero",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "node --watch server/index.js",
+    "start": "node server/index.js",
+    "local": "PORT=3000 node server/index.js"
+  },
+  "dependencies": {
+    "@fastify/static": "^6.12.0",
+    "fastify": "^4.26.2"
+  }
+}

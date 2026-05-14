@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antonio Caballero — Portfolio</title>
+  <meta name="description" content="Portfolio of Antonio Caballero — Fullstack & Android Developer.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/i18next@23.10.0/i18next.min.js"></script>
+
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/vars.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/portfolio.css">
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────────────────────────────── -->
+<nav class="nav">
+  <span class="nav__logo">Antonio Caballero</span>
+  <div class="nav__right">
+    <div class="nav__toggle">
+      <a href="/cv" data-i18n="nav.cv">CV</a>
+      <a href="/portfolio" class="active" data-i18n="nav.portfolio">Portfolio</a>
+    </div>
+    <div class="nav__lang">
+      <button class="nav__lang-btn" id="langBtn" aria-label="Change language">
+        <img src="/assets/icons/language.svg" alt="" width="16" height="16">
+        <span data-i18n="nav.langLabel">Language</span>
+      </button>
+      <div class="nav__lang-menu" id="langMenu">
+        <button data-lang="en"><img src="/assets/icons/flags/en.svg" alt="EN"> English</button>
+        <button data-lang="es"><img src="/assets/icons/flags/es.svg" alt="ES"> Español</button>
+        <button data-lang="fr"><img src="/assets/icons/flags/fr.svg" alt="FR"> Français</button>
+        <button data-lang="it"><img src="/assets/icons/flags/it.svg" alt="IT"> Italiano</button>
+        <button data-lang="de"><img src="/assets/icons/flags/de.svg" alt="DE"> Deutsch</button>
+        <button data-lang="pt"><img src="/assets/icons/flags/pt.svg" alt="PT"> Português</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── RIIMBO FEATURED ──────────────────────────────────────────────── -->
+<section class="section section--dark" style="padding-top: 80px;">
+  <div class="section__inner">
+    <div class="section__label reveal"><span data-i18n="portfolio.featured_label">Featured project</span></div>
+    <div class="riimbo__grid">
+      <div class="reveal">
+        <div class="riimbo__badge" data-i18n="portfolio.riimbo_badge">Personal product · Aug 2025 – Mar 2026</div>
+        <h1 class="riimbo__title">Riimbo</h1>
+        <p class="riimbo__desc" data-i18n="portfolio.riimbo_desc">Hardware and software product built entirely solo.</p>
+        <div class="riimbo__tags">
+          <span class="riimbo__tag">Node.js</span>
+          <span class="riimbo__tag">Kotlin</span>
+          <span class="riimbo__tag">Native Android ×3</span>
+          <span class="riimbo__tag">Reverse Tunnel</span>
+          <span class="riimbo__tag">Local Voice Assistant</span>
+          <span class="riimbo__tag">Nginx</span>
+          <span class="riimbo__tag">Full Brand Identity</span>
+          <span class="riimbo__tag">3D Hardware Design</span>
+          <span class="riimbo__tag">Photography & Video</span>
+        </div>
+        <a href="https://riimbo.com" target="_blank" rel="noopener" class="riimbo__link">riimbo.com ↗</a>
+        <div class="riimbo__ks">
+          <span class="riimbo__ks-label" data-i18n="portfolio.riimbo_ks_label">Kickstarter campaign</span>
+          <span class="riimbo__ks-date" data-i18n="portfolio.riimbo_ks_date">September 2026</span>
+        </div>
+      </div>
+      <div class="riimbo__visual reveal">
+        <img
+          class="riimbo__main-img"
+          src="/assets/img/hero.jpg"
+          alt="Riimbo device"
+          onerror="this.style.background='#1e1e1c';this.style.minHeight='260px';this.removeAttribute('src')"
+        >
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROJECTS ──────────────────────────────────────────────────────── -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__label reveal"><span data-i18n="portfolio.projects_label">Projects</span></div>
+    <div class="projects__grid">
+
+      <a class="project-card reveal" href="https://riimbo.com" target="_blank" rel="noopener">
+        <div class="project-card__arrow">↗</div>
+        <img class="project-card__thumb" src="/assets/img/riimbo-artists.jpg" alt="Riimbo for Artists"
+          onerror="this.style.background='var(--bg-2)';this.removeAttribute('src')">
+        <div class="project-card__num">02</div>
+        <div class="project-card__title" data-i18n="portfolio.p02_title">Riimbo for Artists</div>
+        <p class="project-card__desc" data-i18n="portfolio.p02_desc">Landing and backoffice for an independent music platform.</p>
+        <div class="project-card__tags">
+          <span class="project-card__tag">UI/UX</span>
+          <span class="project-card__tag">Landing</span>
+          <span class="project-card__tag">Dashboard</span>
+        </div>
+      </a>
+
+      <a class="project-card reveal" href="https://casasalamillo.es" target="_blank" rel="noopener">
+        <div class="project-card__arrow">↗</div>
+        <img class="project-card__thumb" src="/assets/img/casalamillo.jpg" alt="Casa Alamillo"
+          onerror="this.style.background='var(--bg-2)';this.removeAttribute('src')">
+        <div class="project-card__num">03</div>
+        <div class="project-card__title" data-i18n="portfolio.p03_title">Casa Alamillo</div>
+        <p class="project-card__desc" data-i18n="portfolio.p03_desc">Rural accommodation site. Multilingual, booking calendar, gallery and virtual tour.</p>
+        <div class="project-card__tags">
+          <span class="project-card__tag">PHP</span>
+          <span class="project-card__tag">Multilingual</span>
+        </div>
+        <div class="project-card__url">casasalamillo.es</div>
+      </a>
+
+      <a class="project-card reveal" href="https://www.lacasadetodos.es" target="_blank" rel="noopener">
+        <div class="project-card__arrow">↗</div>
+        <img class="project-card__thumb" src="/assets/img/casadetodos.jpg" alt="La Casa de Todos"
+          onerror="this.style.background='var(--bg-2)';this.removeAttribute('src')">
+        <div class="project-card__num">04</div>
+        <div class="project-card__title" data-i18n="portfolio.p04_title">La Casa de Todos</div>
+        <p class="project-card__desc" data-i18n="portfolio.p04_desc">Non-profit website. 4 languages including Arabic. Annual report platform.</p>
+        <div class="project-card__tags">
+          <span class="project-card__tag">4 idiomas</span>
+          <span class="project-card__tag">Custom CMS</span>
+        </div>
+        <div class="project-card__url">lacasadetodos.es</div>
+      </a>
+
+      <div class="project-card reveal" style="cursor:default;">
+        <img class="project-card__thumb" src="/assets/img/norvex.jpg" alt="Norvex brand identity"
+          onerror="this.style.background='var(--bg-2)';this.removeAttribute('src')">
+        <div class="project-card__num">05</div>
+        <div class="project-card__title" data-i18n="portfolio.p05_title">Norvex — Brand Identity</div>
+        <p class="project-card__desc" data-i18n="portfolio.p05_desc">Logo, brand manual, typography, colour system and application mockups.</p>
+        <div class="project-card__tags">
+          <span class="project-card__tag">Logo Design</span>
+          <span class="project-card__tag">Brand Manual</span>
+          <span class="project-card__tag">Adobe Suite</span>
+        </div>
+      </div>
+
+      <div class="project-card reveal" style="cursor:default;">
+        <img class="project-card__thumb" src="/assets/img/riimbo-music.gif" alt="Riimbo Music"
+          onerror="this.style.background='var(--bg-2)';this.removeAttribute('src')">
+        <div class="project-card__num">06</div>
+        <div class="project-card__title" data-i18n="portfolio.p06_title">Riimbo Music</div>
+        <p class="project-card__desc" data-i18n="portfolio.p06_desc">Native Android music player. Custom UI, ExoPlayer 3, Bluetooth, TV compatible.</p>
+        <div class="project-card__tags">
+          <span class="project-card__tag">Kotlin</span>
+          <span class="project-card__tag">Jetpack Compose</span>
+          <span class="project-card__tag">ExoPlayer 3</span>
+        </div>
+      </div>
+
+      <div class="project-card reveal" style="cursor:default;">
+        <img class="project-card__thumb" src="/assets/img/riimbo-photos.gif" alt="Riimbo Photos"
+          onerror="this.style.background='var(--bg-2)';this.removeAttribute('src')">
+        <div class="project-card__num">07</div>
+        <div class="project-card__title" data-i18n="portfolio.p07_title">Riimbo Photos</div>
+        <p class="project-card__desc" data-i18n="portfolio.p07_desc">Native Android photo and video backup app. Custom gallery interface.</p>
+        <div class="project-card__tags">
+          <span class="project-card__tag">Kotlin</span>
+          <span class="project-card__tag">Jetpack Compose</span>
+          <span class="project-card__tag">Android</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ──────────────────────────────────────────────────────────── -->
+<section class="section">
+  <div class="section__inner">
+    <div class="contact__grid">
+      <div class="reveal">
+        <h2 class="contact__heading">
+          <span data-i18n="contact.heading1">Let's work</span><br>
+          <em data-i18n="contact.heading2">together.</em>
+        </h2>
+        <div class="contact__items">
+          <div class="contact__item">
+            <span class="contact__label" data-i18n="contact.phone_label">Phone</span>
+            <a href="tel:+34672528912" class="contact__value">+34 672 528 912</a>
+          </div>
+          <div class="contact__item">
+            <span class="contact__label" data-i18n="contact.email_label">Email</span>
+            <a href="mailto:antonio@caballerocano.com" class="contact__value">antonio@caballerocano.com</a>
+          </div>
+          <div class="contact__item">
+            <span class="contact__label" data-i18n="contact.freelance_label">Freelance</span>
+            <span class="contact__value" data-i18n="contact.freelance_value">Disponible para contratación</span>
+          </div>
+        </div>
+      </div>
+      <div class="contact__right reveal">
+        <p class="contact__availability" data-i18n="contact.availability">Available for freelance and full-time remote.</p>
+        <p class="contact__location" data-i18n="contact.location">Seville, Spain</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>caballerocano.com</span>
+  <span data-i18n="footer.copy">© 2026</span>
+</footer>
+
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>

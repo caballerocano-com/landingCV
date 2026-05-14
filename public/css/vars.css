@@ -1,0 +1,35 @@
+:root {
+  /* Colors */
+  --bg:         #f5f3ee;
+  --bg-2:       #ece9e2;
+  --bg-dark:    #111110;
+  --bg-dark-2:  #1e1e1c;
+  --text:       #111110;
+  --text-mid:   #333330;
+  --text-muted: #555552;
+  --text-dim:   #888880;
+  --border:     #c8c5be;
+  --border-dk:  #333330;
+  --border-mid-dk: #555550;
+  --white:      #ffffff;
+  --riimbo-tag-border: #888882;
+
+  /* Typography */
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans:  'DM Sans', system-ui, sans-serif;
+
+  /* Spacing */
+  --pad: 56px;
+  --pad-sm: 24px;
+  --section-v: 72px;
+
+  /* Transitions */
+  --transition: 0.2s ease;
+}
+
+@media (max-width: 900px) {
+  :root {
+    --pad: var(--pad-sm);
+    --section-v: 48px;
+  }
+}
