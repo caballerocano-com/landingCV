@@ -98,7 +98,8 @@
     "p06_title": "Riimbo Music",
     "p06_desc": "Native Android Musik-App. Angepasste UI, ExoPlayer 3 Queue, Bluetooth-Unterstützung, TV-Kompatibilität.",
     "p07_title": "Riimbo Photos",
-    "p07_desc": "Native Android Foto- und Video-Backup-App. Jede Aufnahme geht automatisch zum Riimbo-Gerät."
+    "p07_desc": "Native Android Foto- und Video-Backup-App. Jede Aufnahme geht automatisch zum Riimbo-Gerät.",
+    "code_label": "Code"
   },
   "footer": {
     "copy": "© 2026"

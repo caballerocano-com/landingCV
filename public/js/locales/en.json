@@ -98,7 +98,8 @@
     "p06_title": "Riimbo Music",
     "p06_desc": "Native Android music player built from scratch. Custom UI, ExoPlayer 3 queue system, Bluetooth and ducking support, lock screen controls, TV compatibility.",
     "p07_title": "Riimbo Photos",
-    "p07_desc": "Native Android photo and video backup app. Every capture goes automatically to the Riimbo device. Custom gallery interface."
+    "p07_desc": "Native Android photo and video backup app. Every capture goes automatically to the Riimbo device. Custom gallery interface.",
+    "code_label": "Code"
   },
   "footer": {
     "copy": "© 2026"
