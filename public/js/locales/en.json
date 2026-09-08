@@ -1,107 +1,253 @@
 {
   "meta": {
-    "title": "Antonio Caballero — Fullstack & Android Developer",
-    "description": "Fullstack & Android Developer with 14 years of experience building complete digital products."
+    "site_name": "Caballero Cano",
+    "home_title": "Home Renovation & Construction in Seville | Caballero Cano",
+    "home_desc": "Multi-trade professional in Seville. Electrical work, construction, drywall, plumbing, pools, security, carpentry and welding.",
+    "electricidad_title": "Electrician in Seville — Complete Installations | Caballero Cano",
+    "construccion_title": "Construction & Renovations in Seville | Caballero Cano",
+    "pladur_title": "Drywall Specialist in Seville | Caballero Cano",
+    "alicatados_title": "Tiler in Seville | Caballero Cano",
+    "fontaneria_title": "Plumber in Seville | Caballero Cano",
+    "piscinas_title": "Swimming Pool Construction in Seville | Caballero Cano",
+    "seguridad_title": "Security & Home Automation in Seville | Caballero Cano",
+    "carpinteria_title": "Custom Carpentry in Seville | Caballero Cano",
+    "soldadura_title": "Welding & Metalwork in Seville | Caballero Cano",
+    "manitas_title": "Professional Handyman in Seville | Caballero Cano"
   },
   "nav": {
-    "cv": "CV",
-    "portfolio": "Portfolio",
-    "langLabel": "Language"
+    "home": "Home",
+    "electricidad": "Electrical",
+    "construccion": "Construction",
+    "pladur": "Drywall",
+    "alicatados": "Tiling",
+    "fontaneria": "Plumbing",
+    "piscinas": "Pools",
+    "seguridad": "Security",
+    "carpinteria": "Carpentry",
+    "soldadura": "Welding",
+    "manitas": "Handyman",
+    "call": "Call",
+    "call_full": "Call now",
+    "lang_label": "Language"
   },
-  "hero": {
-    "eyebrow": "Fullstack & Android Developer — Seville",
-    "sub": "14 years building full digital solutions — from backend to native Android to brand identity.",
-    "cta": "View portfolio",
-    "call": "Call now"
+  "home": {
+    "hero_label": "Seville and province",
+    "hero_h1": "Custom renovations and construction",
+    "hero_sub": "Multi-trade professional · Clean work · Direct dealing",
+    "cta_call": "Call now",
+    "cta_services": "View services",
+    "services_label": "Services",
+    "about_label": "About me",
+    "about_name": "Antonio Caballero",
+    "about_title": "Construction Foreman · Full Renovations · Multi-Trade Professional",
+    "about_bio": "Over 5 years carrying out full and partial renovations across Seville and its province. I work with precision, respect deadlines, and treat every detail as if it were my own home.",
+    "stat1_num": "+5",
+    "stat1_label": "Years of experience",
+    "stat2_num": "10+",
+    "stat2_label": "Trades mastered",
+    "stat3_num": "Svq",
+    "stat3_label": "Seville and province",
+    "why_label": "Why choose me",
+    "why_1": "Clean, fast and efficient work",
+    "why_2": "No monthly fees on alarm systems",
+    "why_3": "Free, no-obligation quote",
+    "why_4": "Direct dealing with the client, no middlemen",
+    "contact_label": "Contact",
+    "contact_h2_1": "Have a project?",
+    "contact_h2_2": "Let's talk.",
+    "contact_phone_note": "Call or WhatsApp · No obligation",
+    "contact_phone_label": "Phone",
+    "contact_email_label": "Email",
+    "contact_zone_label": "Area",
+    "contact_zone_val": "Seville and province",
+    "contact_budget_label": "Quote",
+    "contact_budget_val": "Free and no obligation"
   },
-  "about": {
-    "label": "About",
-    "text": "Building digital products since 2010 — from concept to deployment. I've worked with small businesses and large corporations alike, taking ownership of the full product cycle: architecture, UI/UX, database design, backend, and frontend. I work well solo and in large teams, and I've led development teams of up to 5. When a project needs it, I can also handle branding, visual identity, and full interface design.",
-    "stat1_num": "14",
-    "stat1_label": "Years exp.",
-    "stat2_num": "4+",
-    "stat2_label": "Languages",
-    "stat3_num": "Full",
-    "stat3_label": "Product cycle",
-    "stat4_num": "Remote",
-    "stat4_label": "Worldwide"
+  "services": {
+    "electricidad": {
+      "name": "Electrical",
+      "desc": "Full installations and home automation"
+    },
+    "construccion": {
+      "name": "Construction",
+      "desc": "Full renovations and masonry"
+    },
+    "pladur": {
+      "name": "Drywall",
+      "desc": "Partitions, ceilings and insulation"
+    },
+    "alicatados": {
+      "name": "Tiling",
+      "desc": "Bathrooms, kitchens and facades"
+    },
+    "fontaneria": {
+      "name": "Plumbing",
+      "desc": "Pipework, leaks and shower screens"
+    },
+    "piscinas": {
+      "name": "Pools",
+      "desc": "3D design and construction"
+    },
+    "seguridad": {
+      "name": "Security",
+      "desc": "Alarms, cameras and home automation"
+    },
+    "carpinteria": {
+      "name": "Carpentry",
+      "desc": "Custom furniture in 3D"
+    },
+    "soldadura": {
+      "name": "Welding",
+      "desc": "TIG and stick, PRL certified"
+    },
+    "manitas": {
+      "name": "Handyman",
+      "desc": "Fast repairs for homes"
+    }
   },
-  "experience": {
-    "label": "Experience",
-    "job1_title": "Freelance — Fullstack & Android Developer",
-    "job1_period": "Feb 2025 – Present",
-    "job1_desc": "Web, mobile and native Android development. Node.js and PHP backends. Interface design, product architecture and client management.",
-    "job2_title": "Agio Global — Analyst Programmer",
-    "job2_period": "2022 – May 2024",
-    "job2_desc": "React, PHP, MySQL, Magento, TypeScript, Three.js. Custom frontend and backend features. Daily communication in English.",
-    "job3_title": "Job Impulse — Analyst Programmer",
-    "job3_period": "2019 – 2022",
-    "job3_desc": "React, React Native, Node.js, PHP, Symfony, Docker. Full-stack development, unit testing with JEST, project management.",
-    "job4_title": "Atexis — Analyst Programmer",
-    "job4_period": "2017 – 2019",
-    "job4_desc": "JavaScript and SVG aeronautics simulators for Airbus. E-learning platforms. International environment, daily English.",
-    "job5_title": "Freelance — Developer / Designer",
-    "job5_period": "2010 – 2016",
-    "job5_desc": "Web development, mobile apps, SaaS platforms and e-learning. PHP, SQL, JavaScript. Graphic design and visual identity.",
-    "job6_title": "Pinna Viardo Architects — Developer / Designer",
-    "job6_period": "Genova, Italy · 2009 – 2010",
-    "job6_desc": "Web development and design for an architecture studio in Genova. PHP, XML, ActionScript, JavaScript, CSS, HTML. International environment, daily English and Italian."
+  "electricidad": {
+    "h1": "Electrician in Seville",
+    "tagline": "Complete electrical installations for homes and businesses",
+    "s1": "Complete electrical installations (new build and renovation)",
+    "s2": "Cable runs and trunking",
+    "s3": "Distribution boards and circuit protection",
+    "s4": "Sockets, switches and fittings",
+    "s5": "Indoor and outdoor lighting",
+    "s6": "Faults and urgent repairs",
+    "s7": "Home automation (blinds, lighting, climate control)",
+    "s8": "Integration with home automation systems",
+    "cta_strip": "Need an electrician in Seville?",
+    "why_1": "Full installation from scratch or partial renovation",
+    "why_2": "Home automation integrated from day one",
+    "why_3": "Urgent repairs with a fast response"
   },
-  "stack": {
-    "label": "Stack"
+  "construccion": {
+    "h1": "Construction & Renovations in Seville",
+    "tagline": "Full and partial renovations with quality finishes",
+    "s1": "Building partitions, walls and structures",
+    "s2": "Full and partial home renovations",
+    "s3": "Plastering, rendering and finishing",
+    "s4": "Fireplace installation (insert and built-in)",
+    "s5": "General repairs and maintenance",
+    "cta_strip": "Need a renovation in Seville?",
+    "why_1": "Detailed quote before starting",
+    "why_2": "Full renovations managed start to finish",
+    "why_3": "Careful finishes and site clean-up included"
   },
-  "languages": {
-    "label": "Languages",
-    "es": "Spanish",
-    "en": "English",
-    "it": "Italian",
-    "fr": "French",
-    "native": "Native",
-    "advanced": "Advanced",
-    "basic": "Basic"
+  "pladur": {
+    "h1": "Drywall Specialist (Pladur)",
+    "tagline": "Custom partitions, false ceilings and decorative solutions",
+    "s1": "Installation of partitions and interior divisions",
+    "s2": "Continuous and demountable false ceilings",
+    "s3": "Thermal and acoustic insulation",
+    "s4": "Custom structure design (niches, shelving, decorative shapes)",
+    "s5": "Finishing: taping, filling and professional sanding",
+    "cta_strip": "Need a drywall specialist in Seville?",
+    "why_1": "Custom design before execution",
+    "why_2": "Insulation that reduces noise and temperature",
+    "why_3": "Smooth finishes ready for painting"
   },
-  "education": {
-    "label": "Education",
-    "degree": "Bachelor of Fine Arts",
-    "school": "Universidad de Granada",
-    "period": "2005 – 2009"
+  "alicatados": {
+    "h1": "Professional Tiler in Seville",
+    "tagline": "Ceramic tiling with precision finishes",
+    "s1": "Tiling of bathrooms, kitchens and pools",
+    "s2": "Floor and wall coverings (indoor/outdoor)",
+    "s3": "Laying stoneware, porcelain and large-format tiles",
+    "s4": "Facades and terraces",
+    "s5": "Levelling, precise cuts and quality finishes",
+    "cta_strip": "Need a tiler in Seville?",
+    "why_1": "Precise cuts with professional tools",
+    "why_2": "Perfect levelling on floors and walls",
+    "why_3": "Large-format and porcelain tiles, no problem"
   },
-  "contact": {
-    "heading1": "Let's work",
-    "heading2": "together.",
-    "phone_label": "Phone",
-    "email_label": "Email",
-    "freelance_label": "Freelance",
-    "freelance_value": "Available for hire",
-    "location_label": "Location",
-    "web_label": "Web",
-    "availability": "Available for freelance and full-time remote.",
-    "location": "Seville, Spain"
+  "fontaneria": {
+    "h1": "Plumber in Seville",
+    "tagline": "Plumbing installations and repairs for homes and premises",
+    "s1": "Electric water heater installation",
+    "s2": "Fitting showers, bathtubs and shower screens",
+    "s3": "Installation and repair of pipework and fittings",
+    "s4": "Drains, blockages and maintenance",
+    "s5": "Leak detection and repair",
+    "cta_strip": "Need a plumber in Seville?",
+    "why_1": "Leak detection without unnecessary works",
+    "why_2": "Full installations or one-off repairs",
+    "why_3": "Fast response for emergencies"
   },
-  "portfolio": {
-    "meta_title": "Antonio Caballero — Portfolio",
-    "label": "Portfolio",
-    "featured_label": "Featured project",
-    "riimbo_badge": "Personal product · Aug 2025 – Mar 2026",
-    "riimbo_desc": "Hardware and software product designed and built entirely solo. Node.js backend, three native Android apps in Kotlin and Jetpack Compose, Home Assistant integration via custom reverse tunnel. Photos, music, cinema and smart home — no monthly fees, no cloud, no privacy trade-offs. Hardware casing modelled in Blender. Corporate identity, photography and video produced entirely in-house.",
-    "riimbo_ks_label": "Kickstarter campaign",
-    "riimbo_ks_date": "September 2026",
-    "projects_label": "Projects",
-    "p02_title": "Riimbo for Artists",
-    "p02_desc": "Landing and backoffice for an independent music platform. Publish albums, manage tracks, set pricing — ad-free and commission-free.",
-    "p03_title": "Casa Alamillo",
-    "p03_desc": "Rural accommodation site for a 14-hectare estate in the Sierra de Aracena. Multilingual, booking calendar, gallery and virtual tour.",
-    "p04_title": "La Casa de Todos",
-    "p04_desc": "Website and custom publishing platform for a non-profit in Seville. Multilingual in four languages including Arabic. Annual report management built in.",
-    "p05_title": "Norvex — Brand Identity",
-    "p05_desc": "Complete corporate identity for a moving company: logo, brand manual, typography, colour system and mockups on vehicles, signage and uniforms.",
-    "p06_title": "Riimbo Music",
-    "p06_desc": "Native Android music player built from scratch. Custom UI, ExoPlayer 3 queue system, Bluetooth and ducking support, lock screen controls, TV compatibility.",
-    "p07_title": "Riimbo Photos",
-    "p07_desc": "Native Android photo and video backup app. Every capture goes automatically to the Riimbo device. Custom gallery interface.",
-    "code_label": "Code"
+  "piscinas": {
+    "h1": "Swimming Pool Construction in Seville",
+    "tagline": "Custom pool design and construction",
+    "s1": "3D project design",
+    "s2": "Excavation and pool basin preparation",
+    "s3": "Concrete basin using formwork",
+    "s4": "Waterproofing with asphalt membrane",
+    "s5": "Installation of filtration and treatment equipment",
+    "s6": "Built-in and recessed showers, screens and fittings",
+    "cta_strip": "Want to build a pool in Seville?",
+    "why_1": "Visualize your pool in 3D before starting",
+    "why_2": "Full construction from start to finish",
+    "why_3": "Includes filtration, fittings and accessories"
+  },
+  "seguridad": {
+    "h1": "Security & Home Automation in Seville",
+    "tagline": "Alarms, cameras and automation for your home and business",
+    "s1": "Alarm installation with no monthly fees",
+    "s2": "Security camera installation (indoor/outdoor, night vision, PTZ)",
+    "s3": "Control systems via mobile and voice",
+    "s4": "Home automation: lighting, blinds, climate control",
+    "s5": "Smart solutions integration for home and business",
+    "cta_strip": "Want to protect your home or business in Seville?",
+    "why_1": "No monthly fees — pay once and you're done",
+    "why_2": "Full control from your phone, anywhere",
+    "why_3": "Compatible with leading market systems"
+  },
+  "carpinteria": {
+    "h1": "Custom Carpentry in Seville",
+    "tagline": "Wooden furniture and fixtures designed and built for you",
+    "s1": "3D custom furniture design",
+    "s2": "Manufacturing and assembly, in workshop or on-site",
+    "s3": "Custom wardrobes, kitchens and bathroom furniture",
+    "s4": "Polyurethane spray-gun finishing",
+    "cta_strip": "Need custom carpentry in Seville?",
+    "why_1": "3D design to visualize before manufacturing",
+    "why_2": "In-house manufacturing — no middlemen",
+    "why_3": "Professional finishes with a spray gun"
+  },
+  "soldadura": {
+    "h1": "Welding & Metalwork in Seville",
+    "tagline": "Certified TIG and stick welder, with valid PRL certification",
+    "s1": "TIG welding (aluminum, stainless steel, structures)",
+    "s2": "Stick (shielded metal arc) welding",
+    "s3": "Repair and fabrication of metal elements",
+    "s4": "Metal carpentry (railings, gates, structures)",
+    "s5": "Valid welding PRL certification",
+    "cta_strip": "Need a welder in Seville?",
+    "why_1": "TIG and stick certified with active PRL",
+    "why_2": "Aluminum, stainless steel and carbon steel",
+    "why_3": "Custom fabrication or repair of existing pieces"
+  },
+  "manitas": {
+    "h1": "Professional Handyman in Seville",
+    "tagline": "Small repairs and jobs for homes and communities",
+    "s1": "Basic electrical work: sockets, lighting, faults",
+    "s2": "Welding and minor metalwork",
+    "s3": "Roof and covering waterproofing",
+    "s4": "Repairs for homes and communities",
+    "s5": "Assembly of furniture and household items",
+    "cta_strip": "Need a handyman in Seville?",
+    "why_1": "One professional for all types of repairs",
+    "why_2": "No minimums or excessive call-out costs",
+    "why_3": "Fast response for communities and individuals"
+  },
+  "common": {
+    "cta_call": "Call now",
+    "cta_whatsapp": "WhatsApp",
+    "back_home": "← Back to home",
+    "whatsapp_aria": "Contact via WhatsApp",
+    "whatsapp_msg_template": "Hi, I'm interested in a quote for {{service}}. Could you contact me? Thanks.",
+    "whatsapp_msg_generic": "Hi, I'd like more information about your renovation and construction services. Could you contact me? Thanks.",
+    "services_label_template": "Our {{service}} Services"
   },
   "footer": {
-    "copy": "© 2026"
+    "copy": "© 2026 Caballero Cano"
   }
 }

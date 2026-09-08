@@ -1,107 +1,253 @@
 {
   "meta": {
-    "title": "Antonio Caballero — Desarrollador Full Stack & Android",
-    "description": "Desarrollador Full Stack & Android con 14 años de experiencia construyendo productos digitales completos."
+    "site_name": "Caballero Cano",
+    "home_title": "Reformas y construcción en Sevilla | Caballero Cano",
+    "home_desc": "Profesional multioficio en Sevilla. Electricidad, construcción, pladur, fontanería, piscinas, seguridad, carpintería y soldadura.",
+    "electricidad_title": "Electricista en Sevilla — Instalaciones completas | Caballero Cano",
+    "construccion_title": "Construcción y Reformas en Sevilla | Caballero Cano",
+    "pladur_title": "Especialista en Pladur en Sevilla | Caballero Cano",
+    "alicatados_title": "Alicatador en Sevilla | Caballero Cano",
+    "fontaneria_title": "Fontanero en Sevilla | Caballero Cano",
+    "piscinas_title": "Construcción de Piscinas en Sevilla | Caballero Cano",
+    "seguridad_title": "Seguridad y Domótica en Sevilla | Caballero Cano",
+    "carpinteria_title": "Carpintería a Medida en Sevilla | Caballero Cano",
+    "soldadura_title": "Soldadura y Metal en Sevilla | Caballero Cano",
+    "manitas_title": "Manitas Profesional en Sevilla | Caballero Cano"
   },
   "nav": {
-    "cv": "CV",
-    "portfolio": "Portfolio",
-    "langLabel": "Idioma"
+    "home": "Inicio",
+    "electricidad": "Electricidad",
+    "construccion": "Construcción",
+    "pladur": "Pladur",
+    "alicatados": "Alicatados",
+    "fontaneria": "Fontanería",
+    "piscinas": "Piscinas",
+    "seguridad": "Seguridad",
+    "carpinteria": "Carpintería",
+    "soldadura": "Soldadura",
+    "manitas": "Manitas",
+    "call": "Llamar",
+    "call_full": "Llamar ahora",
+    "lang_label": "Idioma"
   },
-  "hero": {
-    "eyebrow": "Desarrollador Full Stack & Android — Sevilla",
-    "sub": "14 años construyendo soluciones digitales completas — desde el backend hasta apps Android nativas e imagen corporativa.",
-    "cta": "Ver portfolio",
-    "call": "Llamar ahora"
+  "home": {
+    "hero_label": "Sevilla y provincia",
+    "hero_h1": "Reformas y construcción a medida",
+    "hero_sub": "Profesional multioficio · Trabajo limpio · Trato directo",
+    "cta_call": "Llamar ahora",
+    "cta_services": "Ver servicios",
+    "services_label": "Servicios",
+    "about_label": "Sobre mí",
+    "about_name": "Antonio Caballero",
+    "about_title": "Oficial de Construcción · Reformas Integrales · Profesional Multioficio",
+    "about_bio": "Más de 5 años realizando reformas integrales y parciales en Sevilla y provincia. Trabajo con precisión, respeto los plazos y cuido cada detalle como si fuera mi propia casa.",
+    "stat1_num": "+5",
+    "stat1_label": "Años de experiencia",
+    "stat2_num": "10+",
+    "stat2_label": "Oficios dominados",
+    "stat3_num": "Svq",
+    "stat3_label": "Sevilla y provincia",
+    "why_label": "Por qué elegirme",
+    "why_1": "Trabajo limpio, rápido y eficiente",
+    "why_2": "Sin cuotas mensuales en sistemas de alarma",
+    "why_3": "Presupuesto gratuito y sin compromiso",
+    "why_4": "Trato directo con el cliente, sin intermediarios",
+    "contact_label": "Contacto",
+    "contact_h2_1": "¿Tienes un proyecto?",
+    "contact_h2_2": "Hablamos.",
+    "contact_phone_note": "Llamada o WhatsApp · Sin compromiso",
+    "contact_phone_label": "Teléfono",
+    "contact_email_label": "Email",
+    "contact_zone_label": "Zona",
+    "contact_zone_val": "Sevilla y provincia",
+    "contact_budget_label": "Presupuesto",
+    "contact_budget_val": "Gratuito y sin compromiso"
   },
-  "about": {
-    "label": "Sobre mí",
-    "text": "Desarrollando productos digitales desde 2010 — desde el concepto hasta el despliegue. He trabajado con pequeñas empresas y grandes corporaciones, asumiendo la responsabilidad del ciclo completo del producto: arquitectura, UI/UX, diseño de bases de datos, backend y frontend. Trabajo bien en solitario y en grandes equipos, y he liderado equipos de desarrollo de hasta 5 personas. Cuando un proyecto lo requiere, también puedo ocuparme de la identidad visual, branding y diseño de interfaces completo.",
-    "stat1_num": "14",
-    "stat1_label": "Años exp.",
-    "stat2_num": "4+",
-    "stat2_label": "Idiomas",
-    "stat3_num": "Full",
-    "stat3_label": "Ciclo de producto",
-    "stat4_num": "Remote",
-    "stat4_label": "En todo el mundo"
+  "services": {
+    "electricidad": {
+      "name": "Electricidad",
+      "desc": "Instalaciones completas y domótica"
+    },
+    "construccion": {
+      "name": "Construcción",
+      "desc": "Reformas integrales y albañilería"
+    },
+    "pladur": {
+      "name": "Pladur",
+      "desc": "Tabiques, techos y aislamientos"
+    },
+    "alicatados": {
+      "name": "Alicatados",
+      "desc": "Baños, cocinas y fachadas"
+    },
+    "fontaneria": {
+      "name": "Fontanería",
+      "desc": "Tuberías, fugas y mamparas"
+    },
+    "piscinas": {
+      "name": "Piscinas",
+      "desc": "Diseño 3D y construcción"
+    },
+    "seguridad": {
+      "name": "Seguridad",
+      "desc": "Alarmas, cámaras y domótica"
+    },
+    "carpinteria": {
+      "name": "Carpintería",
+      "desc": "Muebles a medida en 3D"
+    },
+    "soldadura": {
+      "name": "Soldadura",
+      "desc": "TIG y electrodo, certificado PRL"
+    },
+    "manitas": {
+      "name": "Manitas",
+      "desc": "Reparaciones rápidas en viviendas"
+    }
   },
-  "experience": {
-    "label": "Experiencia",
-    "job1_title": "Autónomo — Desarrollador Fullstack & Android",
-    "job1_period": "Feb 2025 – Actualidad",
-    "job1_desc": "Desarrollo web, móvil y Android nativo. Backends en Node.js y PHP. Diseño de interfaces, arquitectura de producto y gestión de clientes.",
-    "job2_title": "Agio Global — Analista Programador",
-    "job2_period": "2022 – Mayo 2024",
-    "job2_desc": "React, PHP, MySQL, Magento, TypeScript, Three.js. Funcionalidades a medida en frontend y backend. Comunicación diaria en inglés.",
-    "job3_title": "Job Impulse — Analista Programador",
-    "job3_period": "2019 – 2022",
-    "job3_desc": "React, React Native, Node.js, PHP, Symfony, Docker. Desarrollo full-stack, testing unitario con JEST, gestión de proyectos.",
-    "job4_title": "Atexis — Analista Programador",
-    "job4_period": "2017 – 2019",
-    "job4_desc": "Simuladores de aeronáutica en JavaScript y SVG para Airbus. Plataformas e-learning. Entorno internacional, inglés diario.",
-    "job5_title": "Autónomo — Programador / Diseñador",
-    "job5_period": "2010 – 2016",
-    "job5_desc": "Desarrollo web, apps móviles, plataformas SaaS y e-learning. PHP, SQL, JavaScript. Diseño gráfico e identidad visual.",
-    "job6_title": "Pinna Viardo Architects — Programador / Diseñador",
-    "job6_period": "Génova, Italia · 2009 – 2010",
-    "job6_desc": "Desarrollo web y diseño para estudio de arquitectura en Génova. PHP, XML, ActionScript, JavaScript, CSS, HTML. Entorno internacional, inglés e italiano diarios."
+  "electricidad": {
+    "h1": "Electricista en Sevilla",
+    "tagline": "Instalaciones eléctricas completas para viviendas y empresas",
+    "s1": "Instalaciones eléctricas completas (obra nueva y reforma)",
+    "s2": "Tendido de cable y canaletas",
+    "s3": "Cuadros eléctricos y protecciones",
+    "s4": "Enchufes, interruptores y mecanismos",
+    "s5": "Iluminación interior y exterior",
+    "s6": "Averías y reparaciones urgentes",
+    "s7": "Automatización de viviendas (persianas, luces, climatización)",
+    "s8": "Integración con sistemas de domótica",
+    "cta_strip": "¿Necesitas un electricista en Sevilla?",
+    "why_1": "Instalación completa desde cero o reforma parcial",
+    "why_2": "Domótica integrada desde el primer día",
+    "why_3": "Reparaciones urgentes con respuesta rápida"
   },
-  "stack": {
-    "label": "Tecnologías"
+  "construccion": {
+    "h1": "Construcción y Reformas en Sevilla",
+    "tagline": "Reformas integrales y parciales con acabados de calidad",
+    "s1": "Construcción de tabiques, muros y estructuras",
+    "s2": "Reformas integrales y parciales de viviendas",
+    "s3": "Enlucidos, enfoscados y acabados",
+    "s4": "Instalación de chimeneas (insert y de obra)",
+    "s5": "Reparaciones y mantenimiento general",
+    "cta_strip": "¿Necesitas una reforma en Sevilla?",
+    "why_1": "Presupuesto detallado antes de empezar",
+    "why_2": "Reformas integrales gestionadas de principio a fin",
+    "why_3": "Acabados cuidados y limpieza de obra incluida"
   },
-  "languages": {
-    "label": "Idiomas",
-    "es": "Español",
-    "en": "Inglés",
-    "it": "Italiano",
-    "fr": "Francés",
-    "native": "Nativo",
-    "advanced": "Avanzado",
-    "basic": "Básico"
+  "pladur": {
+    "h1": "Especialista en Cartón Yeso (Pladur)",
+    "tagline": "Tabiques, falsos techos y soluciones decorativas a medida",
+    "s1": "Instalación de tabiques y divisiones interiores",
+    "s2": "Falsos techos continuos y desmontables",
+    "s3": "Aislamientos térmicos y acústicos",
+    "s4": "Diseño de estructuras a medida (nichos, estanterías, formas decorativas)",
+    "s5": "Acabados: encintado, masillado y lijado profesional",
+    "cta_strip": "¿Necesitas un especialista en pladur en Sevilla?",
+    "why_1": "Diseño personalizado antes de ejecutar",
+    "why_2": "Aislamientos que reducen ruido y temperatura",
+    "why_3": "Acabados lisos listos para pintar"
   },
-  "education": {
-    "label": "Formación",
-    "degree": "Licenciado en Bellas Artes",
-    "school": "Universidad de Granada",
-    "period": "2005 – 2009"
+  "alicatados": {
+    "h1": "Alicatador Profesional en Sevilla",
+    "tagline": "Revestimientos cerámicos con acabados de precisión",
+    "s1": "Alicatado de baños, cocinas y piscinas",
+    "s2": "Revestimientos en suelos y paredes (interior/exterior)",
+    "s3": "Colocación de gres, porcelánico y gran formato",
+    "s4": "Fachadas y terrazas",
+    "s5": "Nivelación, cortes precisos y acabados de calidad",
+    "cta_strip": "¿Necesitas un alicatador en Sevilla?",
+    "why_1": "Cortes precisos con herramienta profesional",
+    "why_2": "Nivelación perfecta en suelos y paredes",
+    "why_3": "Gran formato y porcelánico sin problema"
   },
-  "contact": {
-    "heading1": "Trabajemos",
-    "heading2": "juntos.",
-    "phone_label": "Teléfono",
-    "email_label": "Email",
-    "freelance_label": "Freelance",
-    "freelance_value": "Disponible para contratación",
-    "location_label": "Ubicación",
-    "web_label": "Web",
-    "availability": "Disponible para freelance y trabajo remoto a tiempo completo.",
-    "location": "Sevilla, España"
+  "fontaneria": {
+    "h1": "Fontanero en Sevilla",
+    "tagline": "Instalaciones y reparaciones de fontanería en viviendas y locales",
+    "s1": "Instalación de termos eléctricos",
+    "s2": "Montaje de duchas, bañeras y mamparas",
+    "s3": "Instalación y reparación de tuberías y grifería",
+    "s4": "Desagües, atascos y mantenimiento",
+    "s5": "Detección y reparación de fugas",
+    "cta_strip": "¿Necesitas un fontanero en Sevilla?",
+    "why_1": "Detección de fugas sin obra innecesaria",
+    "why_2": "Instalaciones completas o reparaciones puntuales",
+    "why_3": "Respuesta rápida para urgencias"
   },
-  "portfolio": {
-    "meta_title": "Antonio Caballero — Portfolio",
-    "label": "Portfolio",
-    "featured_label": "Proyecto destacado",
-    "riimbo_badge": "Producto personal · Ago 2025 – Mar 2026",
-    "riimbo_desc": "Producto hardware y software diseñado y construido íntegramente en solitario. Backend en Node.js, tres apps Android nativas en Kotlin y Jetpack Compose, integración con Home Assistant mediante túnel inverso personalizado. Fotos, música, cine y domótica — sin cuotas mensuales, sin nube, sin comprometer la privacidad. Carcasa hardware modelada en Blender. Identidad corporativa, fotografía y vídeo producidos íntegramente por mí.",
-    "riimbo_ks_label": "Campaña Kickstarter",
-    "riimbo_ks_date": "Septiembre 2026",
-    "projects_label": "Proyectos",
-    "p02_title": "Riimbo para Artistas",
-    "p02_desc": "Landing y backoffice para una plataforma de música independiente. Publica álbumes, gestiona pistas, establece precios — sin publicidad y sin comisiones.",
-    "p03_title": "Casa Alamillo",
-    "p03_desc": "Web de alojamiento rural para una finca de 14 hectáreas en la Sierra de Aracena. Multiidioma, calendario de reservas, galería y visita virtual.",
-    "p04_title": "La Casa de Todos",
-    "p04_desc": "Web y plataforma de publicación para una entidad social sin ánimo de lucro en Sevilla. Cuatro idiomas incluyendo árabe. Gestión de memoria anual integrada.",
-    "p05_title": "Norvex — Imagen Corporativa",
-    "p05_desc": "Identidad corporativa completa para empresa de mudanzas: logotipo, manual de marca, tipografía, sistema de color y mockups en vehículos, señalética y uniformes.",
-    "p06_title": "Riimbo Music",
-    "p06_desc": "App Android nativa de reproducción de música construida desde cero. UI personalizada, cola con ExoPlayer 3, soporte Bluetooth y ducking, controles en pantalla de bloqueo, compatible con televisiones.",
-    "p07_title": "Riimbo Photos",
-    "p07_desc": "App Android nativa de copia de seguridad de fotos y vídeos. Cada captura va automáticamente al dispositivo Riimbo. Galería personalizada.",
-    "code_label": "Código"
+  "piscinas": {
+    "h1": "Construcción de Piscinas en Sevilla",
+    "tagline": "Diseño y construcción de piscinas a medida",
+    "s1": "Diseño del proyecto en 3D",
+    "s2": "Excavación y preparación del vaso",
+    "s3": "Vaso de hormigón mediante encofrado",
+    "s4": "Aislamiento con tela asfáltica",
+    "s5": "Instalación de depuradoras y equipos de filtrado",
+    "s6": "Duchas de obra y empotradas, mamparas y grifería",
+    "cta_strip": "¿Quieres construir una piscina en Sevilla?",
+    "why_1": "Visualiza tu piscina en 3D antes de empezar",
+    "why_2": "Construcción completa de principio a fin",
+    "why_3": "Incluye depuradora, grifería y accesorios"
+  },
+  "seguridad": {
+    "h1": "Seguridad y Domótica en Sevilla",
+    "tagline": "Alarmas, cámaras y automatización para tu hogar y negocio",
+    "s1": "Instalación de alarmas sin cuotas mensuales",
+    "s2": "Montaje de cámaras de seguridad (interior/exterior, visión nocturna, PTZ)",
+    "s3": "Sistemas de control desde móvil y por voz",
+    "s4": "Automatización de viviendas: luces, persianas, climatización",
+    "s5": "Integración de soluciones inteligentes para hogar y negocio",
+    "cta_strip": "¿Quieres proteger tu hogar o negocio en Sevilla?",
+    "why_1": "Sin cuotas mensuales — pagas una vez y listo",
+    "why_2": "Control total desde el móvil en cualquier lugar",
+    "why_3": "Compatible con los principales sistemas del mercado"
+  },
+  "carpinteria": {
+    "h1": "Carpintería a Medida en Sevilla",
+    "tagline": "Muebles y elementos de madera diseñados y fabricados para ti",
+    "s1": "Diseño de muebles a medida en 3D",
+    "s2": "Fabricación y montaje en taller o en destino",
+    "s3": "Armarios, cocinas y muebles de baño a medida",
+    "s4": "Acabados con pintura al poliuretano (pistola de compresor)",
+    "cta_strip": "¿Necesitas carpintería a medida en Sevilla?",
+    "why_1": "Diseño 3D para visualizar antes de fabricar",
+    "why_2": "Fabricación propia — sin intermediarios",
+    "why_3": "Acabados profesionales con pistola de pintura"
+  },
+  "soldadura": {
+    "h1": "Soldadura y Trabajos Metálicos en Sevilla",
+    "tagline": "Soldador certificado TIG y electrodo, con PRL en vigor",
+    "s1": "Soldadura TIG (aluminio, acero inoxidable, estructuras)",
+    "s2": "Soldadura con electrodo revestido",
+    "s3": "Reparaciones y fabricación de elementos metálicos",
+    "s4": "Carpintería metálica (rejas, puertas, estructuras)",
+    "s5": "Certificación PRL de soldadura en vigor",
+    "cta_strip": "¿Necesitas un soldador en Sevilla?",
+    "why_1": "Certificado TIG y electrodo con PRL activo",
+    "why_2": "Aluminio, acero inoxidable y acero al carbono",
+    "why_3": "Fabricación a medida o reparación de existentes"
+  },
+  "manitas": {
+    "h1": "Manitas Profesional en Sevilla",
+    "tagline": "Pequeñas reparaciones y trabajos para viviendas y comunidades",
+    "s1": "Electricidad básica: enchufes, iluminación, averías",
+    "s2": "Soldadura y trabajos metálicos menores",
+    "s3": "Impermeabilización de tejados y cubiertas",
+    "s4": "Reparaciones en viviendas y comunidades",
+    "s5": "Montaje de muebles y elementos del hogar",
+    "cta_strip": "¿Necesitas un manitas en Sevilla?",
+    "why_1": "Un profesional para todo tipo de reparaciones",
+    "why_2": "Sin mínimos ni desplazamientos desorbitados",
+    "why_3": "Respuesta rápida para comunidades y particulares"
+  },
+  "common": {
+    "cta_call": "Llamar ahora",
+    "cta_whatsapp": "WhatsApp",
+    "back_home": "← Volver al inicio",
+    "whatsapp_aria": "Contactar por WhatsApp",
+    "whatsapp_msg_template": "Hola, estoy interesado/a en un presupuesto de {{service}}. ¿Podrías contactarme? Gracias.",
+    "whatsapp_msg_generic": "Hola, me gustaría más información sobre vuestros servicios de reformas y construcción. ¿Podrías contactarme? Gracias.",
+    "services_label_template": "Nuestros servicios de {{service}}"
   },
   "footer": {
-    "copy": "© 2026"
+    "copy": "© 2026 Caballero Cano"
   }
 }

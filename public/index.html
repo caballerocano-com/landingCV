@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n="meta.title">Antonio Caballero — Fullstack & Android Developer</title>
-  <meta name="description" data-i18n-attr="content:meta.description" content="Fullstack & Android Developer with 14 years of experience building complete digital products.">
+  <title data-i18n="meta.home_title">Reformas y construcción en Sevilla | Caballero Cano</title>
+  <meta name="description" data-i18n-attr="content:meta.home_desc" content="Profesional multioficio en Sevilla. Electricidad, construcción, pladur, fontanería, piscinas, seguridad, carpintería y soldadura.">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css">
 
   <!-- i18next CDN -->
   <script src="https://unpkg.com/i18next@23.10.0/i18next.min.js"></script>
@@ -18,293 +21,281 @@
   <link rel="stylesheet" href="/css/reset.css">
   <link rel="stylesheet" href="/css/vars.css">
   <link rel="stylesheet" href="/css/base.css">
-  <link rel="stylesheet" href="/css/cv.css">
+  <link rel="stylesheet" href="/css/home.css">
 </head>
 <body>
 
 <!-- ── NAV ──────────────────────────────────────────────────────────── -->
 <nav class="nav">
-  <span class="nav__logo">Antonio Caballero</span>
+  <a href="/es" class="nav__logo" data-nav-section="home">Caballero Cano</a>
+
+  <div class="nav__desktop-links">
+    <a href="/es" data-nav-section="home" data-i18n="nav.home">Inicio</a>
+    <a href="/electricidad/es" data-nav-section="electricidad" data-i18n="nav.electricidad">Electricidad</a>
+    <a href="/construccion/es" data-nav-section="construccion" data-i18n="nav.construccion">Construcción</a>
+    <a href="/pladur/es" data-nav-section="pladur" data-i18n="nav.pladur">Pladur</a>
+    <a href="/alicatados/es" data-nav-section="alicatados" data-i18n="nav.alicatados">Alicatados</a>
+    <a href="/fontaneria/es" data-nav-section="fontaneria" data-i18n="nav.fontaneria">Fontanería</a>
+    <a href="/piscinas/es" data-nav-section="piscinas" data-i18n="nav.piscinas">Piscinas</a>
+    <a href="/seguridad/es" data-nav-section="seguridad" data-i18n="nav.seguridad">Seguridad</a>
+    <a href="/carpinteria/es" data-nav-section="carpinteria" data-i18n="nav.carpinteria">Carpintería</a>
+    <a href="/soldadura/es" data-nav-section="soldadura" data-i18n="nav.soldadura">Soldadura</a>
+    <a href="/manitas/es" data-nav-section="manitas" data-i18n="nav.manitas">Manitas</a>
+  </div>
+
   <div class="nav__right">
-
-    <!-- Toggle CV / Portfolio -->
-    <div class="nav__toggle">
-      <a href="#" class="active" data-nav-page="cv" data-i18n="nav.cv">CV</a>
-      <a href="#" data-nav-page="portfolio" data-i18n="nav.portfolio">Portfolio</a>
-    </div>
-
-    <!-- Language selector -->
-    <div class="nav__lang">
+    <div class="nav__lang-desktop nav__lang">
       <button class="nav__lang-btn" id="langBtn" aria-label="Change language">
         <img src="/assets/icons/language.svg" alt="" width="16" height="16">
-        <span id="langLabel" data-i18n="nav.langLabel">Language</span>
+        <span data-i18n="nav.lang_label">Idioma</span>
       </button>
       <div class="nav__lang-menu" id="langMenu">
-        <button data-lang="en"><img src="/assets/icons/flags/en.svg" alt="EN"> English</button>
         <button data-lang="es"><img src="/assets/icons/flags/es.svg" alt="ES"> Español</button>
+        <button data-lang="en"><img src="/assets/icons/flags/en.svg" alt="EN"> English</button>
         <button data-lang="fr"><img src="/assets/icons/flags/fr.svg" alt="FR"> Français</button>
-        <button data-lang="it"><img src="/assets/icons/flags/it.svg" alt="IT"> Italiano</button>
         <button data-lang="de"><img src="/assets/icons/flags/de.svg" alt="DE"> Deutsch</button>
-        <button data-lang="pt"><img src="/assets/icons/flags/pt.svg" alt="PT"> Português</button>
       </div>
     </div>
 
+    <a
+      href="https://wa.me/34623800979"
+      class="nav__whatsapp-btn"
+      target="_blank"
+      rel="noopener"
+      data-whatsapp-link
+      data-i18n-attr="aria-label:common.whatsapp_aria"
+      aria-label="Contactar por WhatsApp"
+    >
+      <i class="ti ti-brand-whatsapp"></i>
+    </a>
+
+    <a href="tel:+34623800979" class="nav__call-btn nav__call-btn--mobile" data-i18n="nav.call">Llamar</a>
+    <a href="tel:+34623800979" class="nav__call-btn nav__call-btn--desktop" data-i18n="nav.call_full">Llamar ahora</a>
+
+    <button class="nav__burger" id="burgerBtn" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
-<!-- ── HERO ──────────────────────────────────────────────────────────── -->
-<section class="hero">
-  <div>
-    <div class="hero__eyebrow" data-i18n="hero.eyebrow">Fullstack & Android Developer — Seville</div>
-    <div class="hero__name">Antonio</div>
-    <div class="hero__name--dim">Caballero</div>
-  </div>
-  <div class="hero__right">
-    <p class="hero__sub" data-i18n="hero.sub">14 years building full digital solutions.</p>
-    <div class="hero__ctas">
-      <a href="#" class="hero__cta" data-nav-page="portfolio" data-i18n="hero.cta">View portfolio ↓</a>
-      <a href="tel:+34672528912" class="hero__cta hero__cta--solid" data-i18n="hero.call">Llamar ahora</a>
+<!-- ── MOBILE OVERLAY MENU ─────────────────────────────────────────── -->
+<div class="nav__overlay" id="navOverlay">
+  <ul class="nav__overlay-links">
+    <li><a href="/es" data-nav-section="home" data-i18n="nav.home">Inicio</a></li>
+    <li><a href="/electricidad/es" data-nav-section="electricidad" data-i18n="nav.electricidad">Electricidad</a></li>
+    <li><a href="/construccion/es" data-nav-section="construccion" data-i18n="nav.construccion">Construcción</a></li>
+    <li><a href="/pladur/es" data-nav-section="pladur" data-i18n="nav.pladur">Pladur</a></li>
+    <li><a href="/alicatados/es" data-nav-section="alicatados" data-i18n="nav.alicatados">Alicatados</a></li>
+    <li><a href="/fontaneria/es" data-nav-section="fontaneria" data-i18n="nav.fontaneria">Fontanería</a></li>
+    <li><a href="/piscinas/es" data-nav-section="piscinas" data-i18n="nav.piscinas">Piscinas</a></li>
+    <li><a href="/seguridad/es" data-nav-section="seguridad" data-i18n="nav.seguridad">Seguridad</a></li>
+    <li><a href="/carpinteria/es" data-nav-section="carpinteria" data-i18n="nav.carpinteria">Carpintería</a></li>
+    <li><a href="/soldadura/es" data-nav-section="soldadura" data-i18n="nav.soldadura">Soldadura</a></li>
+    <li><a href="/manitas/es" data-nav-section="manitas" data-i18n="nav.manitas">Manitas</a></li>
+  </ul>
+  <div class="nav__overlay-lang">
+    <div class="nav__overlay-lang-label" data-i18n="nav.lang_label">Idioma</div>
+    <div class="nav__overlay-lang-list">
+      <button data-lang="es"><img src="/assets/icons/flags/es.svg" alt="ES"> ES</button>
+      <button data-lang="en"><img src="/assets/icons/flags/en.svg" alt="EN"> EN</button>
+      <button data-lang="fr"><img src="/assets/icons/flags/fr.svg" alt="FR"> FR</button>
+      <button data-lang="de"><img src="/assets/icons/flags/de.svg" alt="DE"> DE</button>
     </div>
   </div>
-</section>
+</div>
 
-<!-- ── ABOUT ──────────────────────────────────────────────────────────── -->
-<section class="section">
-  <div class="section__inner">
-    <div class="about__grid">
+<main>
 
-      <div class="about__label-col reveal">
-        <div class="section__label" style="flex-direction:column;align-items:flex-start;writing-mode:vertical-rl;transform:rotate(180deg);margin-bottom:0;">
-          <span data-i18n="about.label">About</span>
-        </div>
+  <!-- ── HERO ──────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero__text">
+      <div class="hero__label" data-i18n="home.hero_label">Sevilla y provincia</div>
+      <h1 class="hero__h1" data-i18n="home.hero_h1">Reformas y construcción a medida</h1>
+      <p class="hero__sub" data-i18n="home.hero_sub">Profesional multioficio · Trabajo limpio · Trato directo</p>
+      <div class="hero__ctas">
+        <a href="tel:+34623800979" class="hero__cta hero__cta--solid" data-i18n="home.cta_call">Llamar ahora</a>
+        <a href="https://wa.me/34623800979" class="hero__cta hero__cta--ghost" target="_blank" rel="noopener" data-whatsapp-link>
+          <i class="ti ti-brand-whatsapp"></i>
+          <span data-i18n="common.cta_whatsapp">WhatsApp</span>
+        </a>
       </div>
-
-      <div class="reveal">
-        <img
-          class="about__photo"
-          src="/assets/img/ceo-and-product.jpg"
-          alt="Antonio Caballero"
-          onerror="this.style.background='var(--bg-2)';this.style.minHeight='300px';this.removeAttribute('src')"
-        >
-      </div>
-
-      <div class="reveal">
-        <p class="about__text" data-i18n="about.text">Building digital products since 2010 — from concept to deployment.</p>
-        <div class="about__stats">
-          <div class="stat">
-            <div class="stat__number" data-i18n="about.stat1_num">14</div>
-            <div class="stat__label" data-i18n="about.stat1_label">Years exp.</div>
-          </div>
-          <div class="stat">
-            <div class="stat__number" data-i18n="about.stat2_num">4+</div>
-            <div class="stat__label" data-i18n="about.stat2_label">Languages</div>
-          </div>
-          <div class="stat">
-            <div class="stat__number" data-i18n="about.stat3_num">Full</div>
-            <div class="stat__label" data-i18n="about.stat3_label">Product cycle</div>
-          </div>
-          <div class="stat">
-            <div class="stat__number" data-i18n="about.stat4_num">Remote</div>
-            <div class="stat__label" data-i18n="about.stat4_label">Worldwide</div>
-          </div>
-        </div>
-      </div>
-
+      <a href="#servicios" class="hero__services-link" data-i18n="home.cta_services">Ver servicios</a>
     </div>
-  </div>
-</section>
-
-<!-- ── EXPERIENCE ──────────────────────────────────────────────────────── -->
-<section class="section">
-  <div class="section__inner">
-    <div class="section__label reveal"><span data-i18n="experience.label">Experience</span></div>
-    <div class="exp__list">
-
-      <div class="exp__item reveal">
-        <div>
-          <div class="exp__title" data-i18n="experience.job1_title">Freelance — Fullstack & Android Developer</div>
-          <div class="exp__desc" data-i18n="experience.job1_desc">Web, mobile and native Android development.</div>
-        </div>
-        <div class="exp__period" data-i18n="experience.job1_period">Feb 2025 – Present</div>
-      </div>
-
-      <div class="exp__item reveal">
-        <div>
-          <div class="exp__title" data-i18n="experience.job2_title">Agio Global — Analyst Programmer</div>
-          <div class="exp__desc" data-i18n="experience.job2_desc">React, PHP, MySQL, Magento, TypeScript, Three.js.</div>
-        </div>
-        <div class="exp__period" data-i18n="experience.job2_period">2022 – May 2024</div>
-      </div>
-
-      <div class="exp__item reveal">
-        <div>
-          <div class="exp__title" data-i18n="experience.job3_title">Job Impulse — Analyst Programmer</div>
-          <div class="exp__desc" data-i18n="experience.job3_desc">React, React Native, Node.js, PHP, Symfony, Docker.</div>
-        </div>
-        <div class="exp__period" data-i18n="experience.job3_period">2019 – 2022</div>
-      </div>
-
-      <div class="exp__item reveal">
-        <div>
-          <div class="exp__title" data-i18n="experience.job4_title">Atexis — Analyst Programmer</div>
-          <div class="exp__desc" data-i18n="experience.job4_desc">JavaScript and SVG aeronautics simulators for Airbus.</div>
-        </div>
-        <div class="exp__period" data-i18n="experience.job4_period">2017 – 2019</div>
-      </div>
-
-      <div class="exp__item reveal">
-        <div>
-          <div class="exp__title" data-i18n="experience.job5_title">Freelance — Developer / Designer</div>
-          <div class="exp__desc" data-i18n="experience.job5_desc">Web development, mobile apps, SaaS platforms.</div>
-        </div>
-        <div class="exp__period" data-i18n="experience.job5_period">2010 – 2016</div>
-      </div>
-
-      <div class="exp__item reveal">
-        <div>
-          <div class="exp__title" data-i18n="experience.job6_title">Pinna Viardo Architects — Developer / Designer</div>
-          <div class="exp__desc" data-i18n="experience.job6_desc">Web development and design for an architecture studio in Genova.</div>
-        </div>
-        <div class="exp__period" data-i18n="experience.job6_period">Genova, Italy · 2009 – 2010</div>
-      </div>
-
+    <div class="hero__mosaic">
+      <!-- PHOTO: replace placeholder.jpg with real photo -->
+      <img class="hero__mosaic-item hero__mosaic-item--a" src="/assets/img/placeholder.jpg" alt="Reforma integral de vivienda en Sevilla" loading="lazy">
+      <!-- PHOTO: replace placeholder.jpg with real photo -->
+      <img class="hero__mosaic-item hero__mosaic-item--b" src="/assets/img/placeholder.jpg" alt="Instalación eléctrica y domótica" loading="lazy">
+      <!-- PHOTO: replace placeholder.jpg with real photo -->
+      <img class="hero__mosaic-item hero__mosaic-item--c" src="/assets/img/placeholder.jpg" alt="Construcción de piscina a medida" loading="lazy">
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ── STACK ──────────────────────────────────────────────────────────── -->
-<section class="section section--alt">
-  <div class="section__inner">
-    <div class="section__label reveal"><span data-i18n="stack.label">Stack</span></div>
-    <div class="stack__grid reveal">
-      <div class="stack__block">
-        <div class="stack__area">Mobile</div>
-        <div class="stack__items">
-          <span class="stack__item">Kotlin</span>
-          <span class="stack__item">Jetpack Compose</span>
-          <span class="stack__item">MVVM</span>
-          <span class="stack__item">REST APIs</span>
-        </div>
+  <!-- ── SERVICES GRID ─────────────────────────────────────────────── -->
+  <section class="section" id="servicios">
+    <div class="section__inner">
+      <div class="section__label reveal"><span data-i18n="home.services_label">Servicios</span></div>
+      <div class="services__grid">
+
+        <a href="/manitas/es" class="service-card service-card--featured reveal" data-nav-section="manitas">
+          <i class="ti ti-tool service-card__icon"></i>
+          <div>
+            <div class="service-card__name" data-i18n="services.manitas.name">Manitas</div>
+            <div class="service-card__desc" data-i18n="services.manitas.desc">Reparaciones rápidas en viviendas</div>
+          </div>
+        </a>
+
+        <a href="/electricidad/es" class="service-card reveal" data-nav-section="electricidad">
+          <i class="ti ti-bolt service-card__icon"></i>
+          <div class="service-card__name" data-i18n="services.electricidad.name">Electricidad</div>
+          <div class="service-card__desc" data-i18n="services.electricidad.desc">Instalaciones completas y domótica</div>
+        </a>
+
+        <a href="/construccion/es" class="service-card reveal" data-nav-section="construccion">
+          <i class="ti ti-building service-card__icon"></i>
+          <div class="service-card__name" data-i18n="services.construccion.name">Construcción</div>
+          <div class="service-card__desc" data-i18n="services.construccion.desc">Reformas integrales y albañilería</div>
+        </a>
+
+        <a href="/pladur/es" class="service-card reveal" data-nav-section="pladur">
+          <i class="ti ti-layout-board service-card__icon"></i>
+          <div class="service-card__name" data-i18n="services.pladur.name">Pladur</div>
+          <div class="service-card__desc" data-i18n="services.pladur.desc">Tabiques, techos y aislamientos</div>
+        </a>
+
+        <a href="/alicatados/es" class="service-card reveal" data-nav-section="alicatados">
+          <i class="ti ti-grid-dots service-card__icon"></i>
+          <div class="service-card__name" data-i18n="services.alicatados.name">Alicatados</div>
+          <div class="service-card__desc" data-i18n="services.alicatados.desc">Baños, cocinas y fachadas</div>
+        </a>
+
+        <a href="/fontaneria/es" class="service-card reveal" data-nav-section="fontaneria">
+          <i class="ti ti-droplet service-card__icon"></i>
+          <div class="service-card__name" data-i18n="services.fontaneria.name">Fontanería</div>
+          <div class="service-card__desc" data-i18n="services.fontaneria.desc">Tuberías, fugas y mamparas</div>
+        </a>
+
+        <a href="/piscinas/es" class="service-card reveal" data-nav-section="piscinas">
+          <i class="ti ti-pool service-card__icon"></i>
+          <div class="service-card__name" data-i18n="services.piscinas.name">Piscinas</div>
+          <div class="service-card__desc" data-i18n="services.piscinas.desc">Diseño 3D y construcción</div>
+        </a>
+
+        <a href="/seguridad/es" class="service-card reveal" data-nav-section="seguridad">
+          <i class="ti ti-shield-lock service-card__icon"></i>
+          <div class="service-card__name" data-i18n="services.seguridad.name">Seguridad</div>
+          <div class="service-card__desc" data-i18n="services.seguridad.desc">Alarmas, cámaras y domótica</div>
+        </a>
+
+        <a href="/carpinteria/es" class="service-card reveal" data-nav-section="carpinteria">
+          <i class="ti ti-hammer service-card__icon"></i>
+          <div class="service-card__name" data-i18n="services.carpinteria.name">Carpintería</div>
+          <div class="service-card__desc" data-i18n="services.carpinteria.desc">Muebles a medida en 3D</div>
+        </a>
+
+        <a href="/soldadura/es" class="service-card reveal" data-nav-section="soldadura">
+          <i class="ti ti-flame service-card__icon"></i>
+          <div class="service-card__name" data-i18n="services.soldadura.name">Soldadura</div>
+          <div class="service-card__desc" data-i18n="services.soldadura.desc">TIG y electrodo, certificado PRL</div>
+        </a>
+
       </div>
-      <div class="stack__block">
-        <div class="stack__area">Backend</div>
-        <div class="stack__items">
-          <span class="stack__item">Node.js</span>
-          <span class="stack__item">PHP · Fastify</span>
-          <span class="stack__item">MySQL · MariaDB</span>
-          <span class="stack__item">JWT</span>
-        </div>
-      </div>
-      <div class="stack__block">
-        <div class="stack__area">Frontend</div>
-        <div class="stack__items">
-          <span class="stack__item">JavaScript</span>
-          <span class="stack__item">TypeScript</span>
-          <span class="stack__item">React</span>
-          <span class="stack__item">Three.js</span>
-        </div>
-      </div>
-      <div class="stack__block">
-        <div class="stack__area">DevOps</div>
-        <div class="stack__items">
-          <span class="stack__item">Linux · Nginx</span>
-          <span class="stack__item">Docker</span>
-          <span class="stack__item">systemd</span>
-          <span class="stack__item">Git</span>
-        </div>
-      </div>
-      <div class="stack__block">
-        <div class="stack__area">Creative</div>
-        <div class="stack__items">
-          <span class="stack__item">Blender 3D</span>
-          <span class="stack__item">Adobe Suite</span>
-          <span class="stack__item">UI/UX</span>
-          <span class="stack__item">Photography</span>
+    </div>
+  </section>
+
+  <!-- ── ABOUT ─────────────────────────────────────────────────────── -->
+  <section class="section section--alt">
+    <div class="section__inner">
+      <div class="section__label reveal"><span data-i18n="home.about_label">Sobre mí</span></div>
+      <div class="about__grid">
+        <!-- PHOTO: replace placeholder.jpg with real photo -->
+        <img class="about__photo reveal" src="/assets/img/placeholder.jpg" alt="Retrato de Antonio Caballero" loading="lazy">
+        <div class="reveal">
+          <div class="about__name" data-i18n="home.about_name">Antonio Caballero</div>
+          <div class="about__title" data-i18n="home.about_title">Oficial de Construcción · Reformas Integrales · Profesional Multioficio</div>
+          <p class="about__bio" data-i18n="home.about_bio">Más de 5 años realizando reformas integrales y parciales en Sevilla y provincia. Trabajo con precisión, respeto los plazos y cuido cada detalle como si fuera mi propia casa.</p>
+          <div class="about__stats">
+            <div class="stat">
+              <div class="stat__number" data-i18n="home.stat1_num">+5</div>
+              <div class="stat__label" data-i18n="home.stat1_label">Años de experiencia</div>
+            </div>
+            <div class="stat">
+              <div class="stat__number" data-i18n="home.stat2_num">10+</div>
+              <div class="stat__label" data-i18n="home.stat2_label">Oficios dominados</div>
+            </div>
+            <div class="stat">
+              <div class="stat__number" data-i18n="home.stat3_num">Svq</div>
+              <div class="stat__label" data-i18n="home.stat3_label">Sevilla y provincia</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ── LANGUAGES ──────────────────────────────────────────────────────── -->
-<section class="section">
-  <div class="section__inner">
-    <div class="section__label reveal"><span data-i18n="languages.label">Languages</span></div>
-    <div class="langs__grid reveal">
-      <div class="lang__block">
-        <div class="lang__name" data-i18n="languages.es">Spanish</div>
-        <div class="lang__level" data-i18n="languages.native">Native</div>
-      </div>
-      <div class="lang__block">
-        <div class="lang__name" data-i18n="languages.en">English</div>
-        <div class="lang__level" data-i18n="languages.advanced">Advanced</div>
-      </div>
-      <div class="lang__block">
-        <div class="lang__name" data-i18n="languages.it">Italian</div>
-        <div class="lang__level" data-i18n="languages.advanced">Advanced</div>
-      </div>
-      <div class="lang__block">
-        <div class="lang__name" data-i18n="languages.fr">French</div>
-        <div class="lang__level" data-i18n="languages.basic">Basic</div>
+  <!-- ── WHY HIRE ME ───────────────────────────────────────────────── -->
+  <section class="section">
+    <div class="section__inner">
+      <div class="section__label reveal"><span data-i18n="home.why_label">Por qué elegirme</span></div>
+      <div class="why__list">
+        <div class="why__item reveal"><i class="ti ti-check"></i><span data-i18n="home.why_1">Trabajo limpio, rápido y eficiente</span></div>
+        <div class="why__item reveal"><i class="ti ti-check"></i><span data-i18n="home.why_2">Sin cuotas mensuales en sistemas de alarma</span></div>
+        <div class="why__item reveal"><i class="ti ti-check"></i><span data-i18n="home.why_3">Presupuesto gratuito y sin compromiso</span></div>
+        <div class="why__item reveal"><i class="ti ti-check"></i><span data-i18n="home.why_4">Trato directo con el cliente, sin intermediarios</span></div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ── EDUCATION ──────────────────────────────────────────────────────── -->
-<section class="section">
-  <div class="section__inner">
-    <div class="section__label reveal"><span data-i18n="education.label">Education</span></div>
-    <div class="edu__item reveal">
-      <div>
-        <div class="edu__degree" data-i18n="education.degree">Bachelor of Fine Arts</div>
-        <div class="edu__school" data-i18n="education.school">Universidad de Granada</div>
-      </div>
-      <div class="edu__period" data-i18n="education.period">2005 – 2009</div>
-    </div>
-  </div>
-</section>
-
-<!-- ── CONTACT ──────────────────────────────────────────────────────────── -->
-<section class="section">
-  <div class="section__inner">
-    <div class="contact__grid">
-      <div class="reveal">
-        <h2 class="contact__heading">
-          <span data-i18n="contact.heading1">Let's work</span><br>
-          <em data-i18n="contact.heading2">together.</em>
-        </h2>
-        <div class="contact__items">
-          <div class="contact__item">
-            <span class="contact__label" data-i18n="contact.phone_label">Phone</span>
-            <a href="tel:+34672528912" class="contact__value">+34 672 528 912</a>
+  <!-- ── CONTACT ───────────────────────────────────────────────────── -->
+  <section class="section section--dark">
+    <div class="section__inner">
+      <div class="section__label reveal"><span data-i18n="home.contact_label">Contacto</span></div>
+      <div class="contact__grid">
+        <div class="reveal">
+          <h2 class="contact__heading">
+            <span data-i18n="home.contact_h2_1">¿Tienes un proyecto?</span><br>
+            <em data-i18n="home.contact_h2_2">Hablamos.</em>
+          </h2>
+        </div>
+        <div class="reveal">
+          <div class="contact__ctas">
+            <a href="tel:+34623800979" class="contact__call" data-i18n="home.cta_call">Llamar ahora</a>
+            <a href="https://wa.me/34623800979" class="contact__whatsapp" target="_blank" rel="noopener" data-whatsapp-link>
+              <i class="ti ti-brand-whatsapp"></i>
+              <span data-i18n="common.cta_whatsapp">WhatsApp</span>
+            </a>
           </div>
-          <div class="contact__item">
-            <span class="contact__label" data-i18n="contact.email_label">Email</span>
-            <a href="mailto:antonio@caballerocano.com" class="contact__value">antonio@caballerocano.com</a>
-          </div>
-          <div class="contact__item">
-            <span class="contact__label" data-i18n="contact.freelance_label">Freelance</span>
-            <span class="contact__value" data-i18n="contact.freelance_value">Disponible para contratación</span>
-          </div>
-          <div class="contact__item">
-            <span class="contact__label" data-i18n="contact.web_label">Web</span>
-            <a href="https://caballerocano.com" class="contact__value">caballerocano.com</a>
+          <p class="contact__phone-note" data-i18n="home.contact_phone_note">Llamada o WhatsApp · Sin compromiso</p>
+          <div class="contact__items">
+            <div class="contact__item">
+              <span class="contact__label" data-i18n="home.contact_phone_label">Teléfono</span>
+              <a href="tel:+34623800979" class="contact__value">+34 623 800 979</a>
+            </div>
+            <div class="contact__item">
+              <span class="contact__label" data-i18n="home.contact_email_label">Email</span>
+              <a href="mailto:antonio@caballerocano.com" class="contact__value">antonio@caballerocano.com</a>
+            </div>
+            <div class="contact__item">
+              <span class="contact__label" data-i18n="home.contact_zone_label">Zona</span>
+              <span class="contact__value" data-i18n="home.contact_zone_val">Sevilla y provincia</span>
+            </div>
+            <div class="contact__item">
+              <span class="contact__label" data-i18n="home.contact_budget_label">Presupuesto</span>
+              <span class="contact__value" data-i18n="home.contact_budget_val">Gratuito y sin compromiso</span>
+            </div>
           </div>
         </div>
       </div>
-      <div class="contact__right reveal">
-        <p class="contact__availability" data-i18n="contact.availability">Available for freelance and full-time remote.</p>
-        <p class="contact__location" data-i18n="contact.location">Seville, Spain</p>
-      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ── FOOTER ──────────────────────────────────────────────────────────── -->
+</main>
+
+<!-- ── FOOTER ────────────────────────────────────────────────────────── -->
 <footer class="footer">
   <span>caballerocano.com</span>
-  <span data-i18n="footer.copy">© 2026</span>
+  <a href="tel:+34623800979" class="footer__phone">+34 623 800 979</a>
+  <span data-i18n="footer.copy">© 2026 Caballero Cano</span>
 </footer>
 
 <script type="module" src="/js/app.js"></script>

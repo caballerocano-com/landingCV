@@ -1,35 +1,43 @@
 :root {
   /* Colors */
-  --bg:         #f5f3ee;
-  --bg-2:       #ece9e2;
-  --bg-dark:    #111110;
-  --bg-dark-2:  #1e1e1c;
-  --text:       #111110;
-  --text-mid:   #333330;
-  --text-muted: #555552;
-  --text-dim:   #888880;
-  --border:     #c8c5be;
-  --border-dk:  #333330;
-  --border-mid-dk: #555550;
-  --white:      #ffffff;
-  --riimbo-tag-border: #888882;
+  --bg:          #ffffff;
+  --bg-alt:      #f4f6f8;
+  --bg-dark:     #0b2a4d;
+  --bg-dark-2:   #081d38;
+  --text:        #0f1f2e;
+  --text-mid:    #2c3e50;
+  --text-muted:  #57677a;
+  --text-dim:    #758699;
+  --border:      #dfe3e8;
+  --border-dk:   #1c3b5e;
+  --accent:      #f15a24;
+  --accent-dark: #cf4415;
+  --accent-bg:   #fff1ea;
+  --white:       #ffffff;
+  --whatsapp:      #25d366;
+  --whatsapp-dark: #1ebe5a;
+
+  /* Text/borders on dark (navy) backgrounds */
+  --on-dark-muted:  #b9c6d4;
+  --on-dark-dim:    #7f92a6;
+  --on-dark-border: #254a72;
 
   /* Typography */
-  --serif: 'Cormorant Garamond', Georgia, serif;
-  --sans:  'DM Sans', system-ui, sans-serif;
+  --heading: 'Poppins', system-ui, sans-serif;
+  --sans:    'DM Sans', system-ui, sans-serif;
 
   /* Spacing */
-  --pad: 56px;
-  --pad-sm: 24px;
-  --section-v: 72px;
+  --pad:        48px;
+  --pad-sm:     16px;
+  --section-v:  64px;
 
   /* Transitions */
   --transition: 0.2s ease;
 }
 
-@media (max-width: 900px) {
-  :root {
-    --pad: var(--pad-sm);
-    --section-v: 48px;
-  }
+@media (min-width: 601px) {
+  :root { --pad: 56px; }
+}
+@media (min-width: 901px) {
+  :root { --pad: 80px; --section-v: 80px; }
 }

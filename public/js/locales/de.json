@@ -1,107 +1,253 @@
 {
   "meta": {
-    "title": "Antonio Caballero — Fullstack- & Android-Entwickler",
-    "description": "Fullstack- & Android-Entwickler mit 14 Jahren Erfahrung in der Entwicklung vollständiger digitaler Produkte."
+    "site_name": "Caballero Cano",
+    "home_title": "Renovierung und Bau in Sevilla | Caballero Cano",
+    "home_desc": "Multi-Handwerker in Sevilla. Elektrik, Bau, Trockenbau, Sanitär, Pools, Sicherheit, Schreinerei und Schweißen.",
+    "electricidad_title": "Elektriker in Sevilla — Komplettinstallationen | Caballero Cano",
+    "construccion_title": "Bau und Renovierung in Sevilla | Caballero Cano",
+    "pladur_title": "Trockenbau-Spezialist in Sevilla | Caballero Cano",
+    "alicatados_title": "Fliesenleger in Sevilla | Caballero Cano",
+    "fontaneria_title": "Klempner in Sevilla | Caballero Cano",
+    "piscinas_title": "Pool-Bau in Sevilla | Caballero Cano",
+    "seguridad_title": "Sicherheit und Hausautomation in Sevilla | Caballero Cano",
+    "carpinteria_title": "Maßgefertigte Schreinerei in Sevilla | Caballero Cano",
+    "soldadura_title": "Schweißen und Metallbau in Sevilla | Caballero Cano",
+    "manitas_title": "Professioneller Handwerker in Sevilla | Caballero Cano"
   },
   "nav": {
-    "cv": "Lebenslauf",
-    "portfolio": "Portfolio",
-    "langLabel": "Sprache"
+    "home": "Start",
+    "electricidad": "Elektrik",
+    "construccion": "Bau",
+    "pladur": "Trockenbau",
+    "alicatados": "Fliesen",
+    "fontaneria": "Sanitär",
+    "piscinas": "Pools",
+    "seguridad": "Sicherheit",
+    "carpinteria": "Schreinerei",
+    "soldadura": "Schweißen",
+    "manitas": "Handwerker",
+    "call": "Anrufen",
+    "call_full": "Jetzt anrufen",
+    "lang_label": "Sprache"
   },
-  "hero": {
-    "eyebrow": "Fullstack & Android Entwickler — Sevilla",
-    "sub": "14 Jahre Entwicklung digitaler Gesamtlösungen — vom Backend bis zu nativen Android-Apps.",
-    "cta": "Portfolio ansehen",
-    "call": "Jetzt anrufen"
-  },
-  "about": {
-    "label": "Über mich",
-    "text": "Digitale Produkte entwickeln seit 2010 — vom Konzept bis zur Veröffentlichung. Ich habe mit kleinen Unternehmen und Großkonzernen zusammengearbeitet und dabei den gesamten Produktzyklus übernommen: Architektur, UI/UX, Datenbankdesign, Backend und Frontend. Ich arbeite gut alleine und in Teams, und habe Entwicklungsteams von bis zu 5 Personen geleitet.",
-    "stat1_num": "14",
+  "home": {
+    "hero_label": "Sevilla und Provinz",
+    "hero_h1": "Renovierung und Bau nach Maß",
+    "hero_sub": "Multi-Handwerker · Saubere Arbeit · Direkter Kontakt",
+    "cta_call": "Jetzt anrufen",
+    "cta_services": "Leistungen ansehen",
+    "services_label": "Leistungen",
+    "about_label": "Über mich",
+    "about_name": "Antonio Caballero",
+    "about_title": "Baufacharbeiter · Komplettrenovierungen · Multi-Handwerker",
+    "about_bio": "Über 5 Jahre Erfahrung mit vollständigen und teilweisen Renovierungen in Sevilla und Umgebung. Ich arbeite präzise, halte Termine ein und behandle jedes Detail, als wäre es mein eigenes Zuhause.",
+    "stat1_num": "+5",
     "stat1_label": "Jahre Erfahrung",
-    "stat2_num": "4+",
-    "stat2_label": "Sprachen",
-    "stat3_num": "Full",
-    "stat3_label": "Produktzyklus",
-    "stat4_num": "Remote",
-    "stat4_label": "Weltweit"
+    "stat2_num": "10+",
+    "stat2_label": "Beherrschte Gewerke",
+    "stat3_num": "Svq",
+    "stat3_label": "Sevilla und Provinz",
+    "why_label": "Warum mich wählen",
+    "why_1": "Saubere, schnelle und effiziente Arbeit",
+    "why_2": "Keine monatlichen Gebühren bei Alarmanlagen",
+    "why_3": "Kostenloses und unverbindliches Angebot",
+    "why_4": "Direkter Kontakt mit dem Kunden, ohne Zwischenhändler",
+    "contact_label": "Kontakt",
+    "contact_h2_1": "Haben Sie ein Projekt?",
+    "contact_h2_2": "Sprechen wir.",
+    "contact_phone_note": "Anruf oder WhatsApp · Unverbindlich",
+    "contact_phone_label": "Telefon",
+    "contact_email_label": "E-Mail",
+    "contact_zone_label": "Gebiet",
+    "contact_zone_val": "Sevilla und Provinz",
+    "contact_budget_label": "Angebot",
+    "contact_budget_val": "Kostenlos und unverbindlich"
   },
-  "experience": {
-    "label": "Erfahrung",
-    "job1_title": "Freelance — Fullstack & Android Entwickler",
-    "job1_period": "Feb 2025 – Heute",
-    "job1_desc": "Web-, Mobile- und native Android-Entwicklung. Node.js und PHP Backends. Interface-Design, Produktarchitektur und Kundenbetreuung.",
-    "job2_title": "Agio Global — Analyst Programmierer",
-    "job2_period": "2022 – Mai 2024",
-    "job2_desc": "React, PHP, MySQL, Magento, TypeScript, Three.js. Maßgeschneiderte Frontend- und Backend-Funktionen. Tägliche Kommunikation auf Englisch.",
-    "job3_title": "Job Impulse — Analyst Programmierer",
-    "job3_period": "2019 – 2022",
-    "job3_desc": "React, React Native, Node.js, PHP, Symfony, Docker. Full-Stack-Entwicklung, Unit-Tests mit JEST, Projektmanagement.",
-    "job4_title": "Atexis — Analyst Programmierer",
-    "job4_period": "2017 – 2019",
-    "job4_desc": "Aeronautik-Simulatoren in JavaScript und SVG für Airbus. E-Learning-Plattformen. Internationales Umfeld.",
-    "job5_title": "Freelance — Entwickler / Designer",
-    "job5_period": "2010 – 2016",
-    "job5_desc": "Webentwicklung, Mobile Apps, SaaS-Plattformen und E-Learning. PHP, SQL, JavaScript. Grafikdesign und visuelle Identität.",
-    "job6_title": "Pinna Viardo Architects — Entwickler / Designer",
-    "job6_period": "Genua, Italien · 2009 – 2010",
-    "job6_desc": "Webentwicklung und Design für ein Architekturbüro in Genua. PHP, XML, ActionScript, JavaScript, CSS, HTML."
+  "services": {
+    "electricidad": {
+      "name": "Elektrik",
+      "desc": "Komplettinstallationen und Hausautomation"
+    },
+    "construccion": {
+      "name": "Bau",
+      "desc": "Komplettrenovierungen und Maurerarbeiten"
+    },
+    "pladur": {
+      "name": "Trockenbau",
+      "desc": "Trennwände, Decken und Dämmung"
+    },
+    "alicatados": {
+      "name": "Fliesen",
+      "desc": "Bäder, Küchen und Fassaden"
+    },
+    "fontaneria": {
+      "name": "Sanitär",
+      "desc": "Rohrleitungen, Lecks und Duschwände"
+    },
+    "piscinas": {
+      "name": "Pools",
+      "desc": "3D-Planung und Bau"
+    },
+    "seguridad": {
+      "name": "Sicherheit",
+      "desc": "Alarmanlagen, Kameras und Hausautomation"
+    },
+    "carpinteria": {
+      "name": "Schreinerei",
+      "desc": "Maßmöbel in 3D"
+    },
+    "soldadura": {
+      "name": "Schweißen",
+      "desc": "WIG und Elektrode, PRL-zertifiziert"
+    },
+    "manitas": {
+      "name": "Handwerker",
+      "desc": "Schnelle Reparaturen im Zuhause"
+    }
   },
-  "stack": {
-    "label": "Technologien"
+  "electricidad": {
+    "h1": "Elektriker in Sevilla",
+    "tagline": "Komplette Elektroinstallationen für Wohnungen und Unternehmen",
+    "s1": "Komplette Elektroinstallationen (Neubau und Renovierung)",
+    "s2": "Kabelverlegung und Kabelkanäle",
+    "s3": "Sicherungskästen und Schutzschaltungen",
+    "s4": "Steckdosen, Schalter und Installationsmaterial",
+    "s5": "Innen- und Außenbeleuchtung",
+    "s6": "Störungen und dringende Reparaturen",
+    "s7": "Hausautomation (Rollläden, Licht, Klimatisierung)",
+    "s8": "Integration von Smart-Home-Systemen",
+    "cta_strip": "Brauchen Sie einen Elektriker in Sevilla?",
+    "why_1": "Komplettinstallation von Grund auf oder Teilrenovierung",
+    "why_2": "Hausautomation von Anfang an integriert",
+    "why_3": "Dringende Reparaturen mit schneller Reaktion"
   },
-  "languages": {
-    "label": "Sprachen",
-    "es": "Spanisch",
-    "en": "Englisch",
-    "it": "Italienisch",
-    "fr": "Französisch",
-    "native": "Muttersprache",
-    "advanced": "Fortgeschritten",
-    "basic": "Grundkenntnisse"
+  "construccion": {
+    "h1": "Bau und Renovierung in Sevilla",
+    "tagline": "Komplett- und Teilrenovierungen mit hochwertigen Oberflächen",
+    "s1": "Bau von Trennwänden, Mauern und Strukturen",
+    "s2": "Komplette und teilweise Wohnungsrenovierungen",
+    "s3": "Verputzen, Rauputz und Oberflächen",
+    "s4": "Installation von Kaminen (Einsatz und Mauerwerk)",
+    "s5": "Allgemeine Reparaturen und Instandhaltung",
+    "cta_strip": "Brauchen Sie eine Renovierung in Sevilla?",
+    "why_1": "Detailliertes Angebot vor Beginn",
+    "why_2": "Komplettrenovierungen von Anfang bis Ende betreut",
+    "why_3": "Sorgfältige Oberflächen inklusive Baustellenreinigung"
   },
-  "education": {
-    "label": "Ausbildung",
-    "degree": "Bachelor of Fine Arts",
-    "school": "Universidad de Granada",
-    "period": "2005 – 2009"
+  "pladur": {
+    "h1": "Trockenbau-Spezialist (Pladur)",
+    "tagline": "Maßgefertigte Trennwände, abgehängte Decken und dekorative Lösungen",
+    "s1": "Installation von Trennwänden und Innenraumteilungen",
+    "s2": "Durchgehende und demontierbare abgehängte Decken",
+    "s3": "Wärme- und Schalldämmung",
+    "s4": "Design maßgefertigter Strukturen (Nischen, Regale, dekorative Formen)",
+    "s5": "Oberflächen: Verspachteln, Verfugen und professionelles Schleifen",
+    "cta_strip": "Brauchen Sie einen Trockenbau-Spezialisten in Sevilla?",
+    "why_1": "Individuelles Design vor der Ausführung",
+    "why_2": "Dämmung, die Lärm und Temperatur reduziert",
+    "why_3": "Glatte, malfertige Oberflächen"
   },
-  "contact": {
-    "heading1": "Lass uns",
-    "heading2": "zusammenarbeiten.",
-    "phone_label": "Telefon",
-    "email_label": "E-Mail",
-    "freelance_label": "Freelance",
-    "freelance_value": "Verfügbar zur Anstellung",
-    "location_label": "Standort",
-    "web_label": "Web",
-    "availability": "Verfügbar für Freelance und vollständige Remote-Arbeit.",
-    "location": "Sevilla, Spanien"
+  "alicatados": {
+    "h1": "Professioneller Fliesenleger in Sevilla",
+    "tagline": "Keramikverkleidungen mit präzisen Oberflächen",
+    "s1": "Verfliesung von Bädern, Küchen und Pools",
+    "s2": "Boden- und Wandverkleidungen (innen/außen)",
+    "s3": "Verlegung von Steinzeug, Feinsteinzeug und Großformaten",
+    "s4": "Fassaden und Terrassen",
+    "s5": "Nivellierung, präzise Schnitte und hochwertige Oberflächen",
+    "cta_strip": "Brauchen Sie einen Fliesenleger in Sevilla?",
+    "why_1": "Präzise Schnitte mit professionellem Werkzeug",
+    "why_2": "Perfekte Nivellierung an Böden und Wänden",
+    "why_3": "Großformat und Feinsteinzeug kein Problem"
   },
-  "portfolio": {
-    "meta_title": "Antonio Caballero — Portfolio",
-    "label": "Portfolio",
-    "featured_label": "Hauptprojekt",
-    "riimbo_badge": "Persönliches Produkt · Aug 2025 – Mär 2026",
-    "riimbo_desc": "Hardware- und Software-Produkt, vollständig alleine entwickelt. Node.js Backend, drei native Android-Apps in Kotlin/Jetpack Compose, Home Assistant Integration via Custom Reverse Tunnel. Fotos, Musik, Kino und Smart Home — keine monatlichen Gebühren, keine Cloud.",
-    "riimbo_ks_label": "Kickstarter-Kampagne",
-    "riimbo_ks_date": "September 2026",
-    "projects_label": "Projekte",
-    "p02_title": "Riimbo for Artists",
-    "p02_desc": "Landing-Page und Backoffice für eine unabhängige Musikplattform.",
-    "p03_title": "Casa Alamillo",
-    "p03_desc": "Website für eine Landunterkunft. Mehrsprachig, Buchungskalender, Galerie und virtuelle Tour.",
-    "p04_title": "La Casa de Todos",
-    "p04_desc": "Website für eine gemeinnützige Organisation in Sevilla. Vier Sprachen einschließlich Arabisch.",
-    "p05_title": "Norvex — Corporate Identity",
-    "p05_desc": "Vollständige Corporate Identity für ein Umzugsunternehmen: Logo, Brandmanual, Typografie, Mockups.",
-    "p06_title": "Riimbo Music",
-    "p06_desc": "Native Android Musik-App. Angepasste UI, ExoPlayer 3 Queue, Bluetooth-Unterstützung, TV-Kompatibilität.",
-    "p07_title": "Riimbo Photos",
-    "p07_desc": "Native Android Foto- und Video-Backup-App. Jede Aufnahme geht automatisch zum Riimbo-Gerät.",
-    "code_label": "Code"
+  "fontaneria": {
+    "h1": "Klempner in Sevilla",
+    "tagline": "Sanitärinstallationen und -reparaturen für Wohnungen und Gewerbe",
+    "s1": "Installation von Elektro-Warmwasserbereitern",
+    "s2": "Montage von Duschen, Badewannen und Duschwänden",
+    "s3": "Installation und Reparatur von Rohrleitungen und Armaturen",
+    "s4": "Abflüsse, Verstopfungen und Wartung",
+    "s5": "Leckerkennung und -reparatur",
+    "cta_strip": "Brauchen Sie einen Klempner in Sevilla?",
+    "why_1": "Leckerkennung ohne unnötige Bauarbeiten",
+    "why_2": "Komplettinstallationen oder Einzelreparaturen",
+    "why_3": "Schnelle Reaktion bei Notfällen"
+  },
+  "piscinas": {
+    "h1": "Pool-Bau in Sevilla",
+    "tagline": "Maßgefertigte Pool-Planung und -Bau",
+    "s1": "3D-Projektplanung",
+    "s2": "Aushub und Vorbereitung des Beckens",
+    "s3": "Betonbecken mittels Schalung",
+    "s4": "Abdichtung mit Bitumenbahn",
+    "s5": "Installation von Filteranlagen und Aufbereitungsgeräten",
+    "s6": "Gemauerte und eingelassene Duschen, Wände und Armaturen",
+    "cta_strip": "Möchten Sie einen Pool in Sevilla bauen?",
+    "why_1": "Visualisieren Sie Ihren Pool in 3D vor Baubeginn",
+    "why_2": "Komplettbau von Anfang bis Ende",
+    "why_3": "Inklusive Filteranlage, Armaturen und Zubehör"
+  },
+  "seguridad": {
+    "h1": "Sicherheit und Hausautomation in Sevilla",
+    "tagline": "Alarmanlagen, Kameras und Automatisierung für Zuhause und Unternehmen",
+    "s1": "Installation von Alarmanlagen ohne monatliche Gebühren",
+    "s2": "Montage von Überwachungskameras (innen/außen, Nachtsicht, PTZ)",
+    "s3": "Steuerungssysteme per Smartphone und Sprache",
+    "s4": "Hausautomation: Licht, Rollläden, Klimatisierung",
+    "s5": "Integration intelligenter Lösungen für Zuhause und Unternehmen",
+    "cta_strip": "Möchten Sie Ihr Zuhause oder Unternehmen in Sevilla schützen?",
+    "why_1": "Keine monatlichen Gebühren — einmal zahlen, fertig",
+    "why_2": "Volle Kontrolle vom Smartphone aus, überall",
+    "why_3": "Kompatibel mit den führenden Systemen am Markt"
+  },
+  "carpinteria": {
+    "h1": "Maßgefertigte Schreinerei in Sevilla",
+    "tagline": "Holzmöbel und -elemente, für Sie entworfen und gefertigt",
+    "s1": "3D-Design von Maßmöbeln",
+    "s2": "Fertigung und Montage, in der Werkstatt oder vor Ort",
+    "s3": "Maßgefertigte Schränke, Küchen und Badmöbel",
+    "s4": "Oberflächenbehandlung mit Polyurethanlack (Spritzpistole)",
+    "cta_strip": "Brauchen Sie maßgefertigte Schreinerei in Sevilla?",
+    "why_1": "3D-Design zur Visualisierung vor der Fertigung",
+    "why_2": "Eigene Fertigung — ohne Zwischenhändler",
+    "why_3": "Professionelle Oberflächen mit der Spritzpistole"
+  },
+  "soldadura": {
+    "h1": "Schweißen und Metallbau in Sevilla",
+    "tagline": "Zertifizierter WIG- und Elektrodenschweißer mit gültiger PRL-Bescheinigung",
+    "s1": "WIG-Schweißen (Aluminium, Edelstahl, Konstruktionen)",
+    "s2": "Elektrodenschweißen (E-Handschweißen)",
+    "s3": "Reparatur und Fertigung von Metallelementen",
+    "s4": "Metallbau (Gitter, Tore, Konstruktionen)",
+    "s5": "Gültige PRL-Schweißbescheinigung",
+    "cta_strip": "Brauchen Sie einen Schweißer in Sevilla?",
+    "why_1": "WIG- und Elektroden-zertifiziert mit aktiver PRL",
+    "why_2": "Aluminium, Edelstahl und Kohlenstoffstahl",
+    "why_3": "Maßfertigung oder Reparatur vorhandener Teile"
+  },
+  "manitas": {
+    "h1": "Professioneller Handwerker in Sevilla",
+    "tagline": "Kleine Reparaturen und Arbeiten für Wohnungen und Gemeinschaften",
+    "s1": "Grundlegende Elektrik: Steckdosen, Beleuchtung, Störungen",
+    "s2": "Schweißen und kleinere Metallarbeiten",
+    "s3": "Abdichtung von Dächern und Bedachungen",
+    "s4": "Reparaturen in Wohnungen und Wohngemeinschaften",
+    "s5": "Montage von Möbeln und Haushaltsgegenständen",
+    "cta_strip": "Brauchen Sie einen Handwerker in Sevilla?",
+    "why_1": "Ein Fachmann für alle Arten von Reparaturen",
+    "why_2": "Keine Mindestpreise oder überhöhte Anfahrtskosten",
+    "why_3": "Schnelle Reaktion für Gemeinschaften und Privatpersonen"
+  },
+  "common": {
+    "cta_call": "Jetzt anrufen",
+    "cta_whatsapp": "WhatsApp",
+    "back_home": "← Zurück zur Startseite",
+    "whatsapp_aria": "Über WhatsApp kontaktieren",
+    "whatsapp_msg_template": "Hallo, ich interessiere mich für ein Angebot für {{service}}. Könnten Sie mich kontaktieren? Danke.",
+    "whatsapp_msg_generic": "Hallo, ich hätte gerne weitere Informationen zu Ihren Renovierungs- und Bauleistungen. Könnten Sie mich kontaktieren? Danke.",
+    "services_label_template": "Unsere Leistungen — {{service}}"
   },
   "footer": {
-    "copy": "© 2026"
+    "copy": "© 2026 Caballero Cano"
   }
 }

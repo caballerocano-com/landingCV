@@ -1,7 +1,7 @@
 // public/js/i18n-path.js
 
-const SUPPORTED_LANGUAGES = ["es", "en", "fr", "it", "de", "pt"];
-const DEFAULT_LANGUAGE = "en";
+const SUPPORTED_LANGUAGES = ["es", "en", "fr", "de"];
+const DEFAULT_LANGUAGE = "es";
 const STORAGE_KEY = "preferredLanguage";
 
 let initialized = false;
@@ -14,19 +14,16 @@ function normalizeLanguage(lang) {
   return SUPPORTED_LANGUAGES.includes(base) ? base : DEFAULT_LANGUAGE;
 }
 
+function getPathSegments() {
+  return window.location.pathname.split("/").filter(Boolean);
+}
+
 function detectLanguage() {
-  const pathSegments = window.location.pathname.split("/").filter(Boolean);
-  const pathLang = pathSegments[0];
+  const segments = getPathSegments();
+  const pathLang = segments[segments.length - 1];
 
   if (SUPPORTED_LANGUAGES.includes(pathLang)) {
     return pathLang;
-  }
-
-  const params = new URLSearchParams(window.location.search);
-  const urlLang = params.get("lang");
-
-  if (urlLang) {
-    return normalizeLanguage(urlLang);
   }
 
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -89,24 +86,25 @@ function applyTranslations() {
   document.documentElement.lang = i18next.language || DEFAULT_LANGUAGE;
 }
 
-function getCurrentPage() {
-  const pathname = window.location.pathname;
+function getCurrentSection() {
+  const segments = getPathSegments();
+  const first = segments[0];
 
-  if (pathname.includes("portfolio")) {
-    return "portfolio";
+  if (!first || SUPPORTED_LANGUAGES.includes(first)) {
+    return null;
   }
 
-  return "cv";
+  return first;
 }
 
-function buildLocalizedUrl(language, page = getCurrentPage()) {
+function buildLocalizedUrl(language, section = getCurrentSection()) {
   const lng = normalizeLanguage(language);
 
-  if (page === "portfolio") {
-    return `/portfolio.html?lang=${lng}`;
+  if (!section) {
+    return `/${lng}`;
   }
 
-  return `/?lang=${lng}`;
+  return `/${section}/${lng}`;
 }
 
 export async function setLanguage(language, options = {}) {
@@ -175,8 +173,12 @@ export async function initI18n() {
   });
 }
 
-export function getLocalizedPageUrl(page) {
-  return buildLocalizedUrl(getLanguage(), page);
+export function getLocalizedPageUrl(section) {
+  return buildLocalizedUrl(getLanguage(), section);
+}
+
+export function getCurrentPageSection() {
+  return getCurrentSection();
 }
 
 window.setLanguage = setLanguage;

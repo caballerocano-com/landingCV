@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="meta.construccion_title">Caballero Cano</title>
+  <meta name="description" data-i18n-attr="content:construccion.tagline" content="">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css">
+
+  <!-- i18next CDN -->
+  <script src="https://unpkg.com/i18next@23.10.0/i18next.min.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/vars.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/service.css">
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────────────────────────────── -->
+<nav class="nav">
+  <a href="/es" class="nav__logo" data-nav-section="home">Caballero Cano</a>
+
+  <div class="nav__desktop-links">
+    <a href="/es" data-nav-section="home" data-i18n="nav.home">Inicio</a>
+    <a href="/electricidad/es" data-nav-section="electricidad" data-i18n="nav.electricidad">Electricidad</a>
+    <a href="/construccion/es" data-nav-section="construccion" data-i18n="nav.construccion" class="active">Construcción</a>
+    <a href="/pladur/es" data-nav-section="pladur" data-i18n="nav.pladur">Pladur</a>
+    <a href="/alicatados/es" data-nav-section="alicatados" data-i18n="nav.alicatados">Alicatados</a>
+    <a href="/fontaneria/es" data-nav-section="fontaneria" data-i18n="nav.fontaneria">Fontanería</a>
+    <a href="/piscinas/es" data-nav-section="piscinas" data-i18n="nav.piscinas">Piscinas</a>
+    <a href="/seguridad/es" data-nav-section="seguridad" data-i18n="nav.seguridad">Seguridad</a>
+    <a href="/carpinteria/es" data-nav-section="carpinteria" data-i18n="nav.carpinteria">Carpintería</a>
+    <a href="/soldadura/es" data-nav-section="soldadura" data-i18n="nav.soldadura">Soldadura</a>
+    <a href="/manitas/es" data-nav-section="manitas" data-i18n="nav.manitas">Manitas</a>
+  </div>
+
+  <div class="nav__right">
+    <div class="nav__lang-desktop nav__lang">
+      <button class="nav__lang-btn" id="langBtn" aria-label="Change language">
+        <img src="/assets/icons/language.svg" alt="" width="16" height="16">
+        <span data-i18n="nav.lang_label">Idioma</span>
+      </button>
+      <div class="nav__lang-menu" id="langMenu">
+        <button data-lang="es"><img src="/assets/icons/flags/es.svg" alt="ES"> Español</button>
+        <button data-lang="en"><img src="/assets/icons/flags/en.svg" alt="EN"> English</button>
+        <button data-lang="fr"><img src="/assets/icons/flags/fr.svg" alt="FR"> Français</button>
+        <button data-lang="de"><img src="/assets/icons/flags/de.svg" alt="DE"> Deutsch</button>
+      </div>
+    </div>
+
+    <a
+      href="https://wa.me/34623800979"
+      class="nav__whatsapp-btn"
+      target="_blank"
+      rel="noopener"
+      data-whatsapp-link
+      data-i18n-attr="aria-label:common.whatsapp_aria"
+      aria-label="Contactar por WhatsApp"
+    >
+      <i class="ti ti-brand-whatsapp"></i>
+    </a>
+
+    <a href="tel:+34623800979" class="nav__call-btn nav__call-btn--mobile" data-i18n="nav.call">Llamar</a>
+    <a href="tel:+34623800979" class="nav__call-btn nav__call-btn--desktop" data-i18n="nav.call_full">Llamar ahora</a>
+
+    <button class="nav__burger" id="burgerBtn" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ── MOBILE OVERLAY MENU ─────────────────────────────────────────── -->
+<div class="nav__overlay" id="navOverlay">
+  <ul class="nav__overlay-links">
+    <li><a href="/es" data-nav-section="home" data-i18n="nav.home">Inicio</a></li>
+    <li><a href="/electricidad/es" data-nav-section="electricidad" data-i18n="nav.electricidad">Electricidad</a></li>
+    <li><a href="/construccion/es" data-nav-section="construccion" data-i18n="nav.construccion" class="active">Construcción</a></li>
+    <li><a href="/pladur/es" data-nav-section="pladur" data-i18n="nav.pladur">Pladur</a></li>
+    <li><a href="/alicatados/es" data-nav-section="alicatados" data-i18n="nav.alicatados">Alicatados</a></li>
+    <li><a href="/fontaneria/es" data-nav-section="fontaneria" data-i18n="nav.fontaneria">Fontanería</a></li>
+    <li><a href="/piscinas/es" data-nav-section="piscinas" data-i18n="nav.piscinas">Piscinas</a></li>
+    <li><a href="/seguridad/es" data-nav-section="seguridad" data-i18n="nav.seguridad">Seguridad</a></li>
+    <li><a href="/carpinteria/es" data-nav-section="carpinteria" data-i18n="nav.carpinteria">Carpintería</a></li>
+    <li><a href="/soldadura/es" data-nav-section="soldadura" data-i18n="nav.soldadura">Soldadura</a></li>
+    <li><a href="/manitas/es" data-nav-section="manitas" data-i18n="nav.manitas">Manitas</a></li>
+  </ul>
+  <div class="nav__overlay-lang">
+    <div class="nav__overlay-lang-label" data-i18n="nav.lang_label">Idioma</div>
+    <div class="nav__overlay-lang-list">
+      <button data-lang="es"><img src="/assets/icons/flags/es.svg" alt="ES"> ES</button>
+      <button data-lang="en"><img src="/assets/icons/flags/en.svg" alt="EN"> EN</button>
+      <button data-lang="fr"><img src="/assets/icons/flags/fr.svg" alt="FR"> FR</button>
+      <button data-lang="de"><img src="/assets/icons/flags/de.svg" alt="DE"> DE</button>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ── HERO ──────────────────────────────────────────────────────── -->
+  <section class="service-hero">
+    <!-- PHOTO: replace placeholder.jpg with real photo -->
+    <img class="service-hero__photo" src="/assets/img/placeholder.jpg" alt="Obra de reforma y construcción realizada en Sevilla" loading="lazy">
+    <div class="service-hero__text">
+      <h1 class="service-hero__h1" data-i18n="construccion.h1"></h1>
+      <p class="service-hero__tagline" data-i18n="construccion.tagline"></p>
+      <div class="service-hero__ctas">
+        <a href="tel:+34623800979" class="service-hero__cta service-hero__cta--solid" data-i18n="common.cta_call">Llamar ahora</a>
+        <a href="https://wa.me/34623800979" class="service-hero__cta service-hero__cta--ghost" target="_blank" rel="noopener" data-whatsapp-link>
+          <i class="ti ti-brand-whatsapp"></i>
+          <span data-i18n="common.cta_whatsapp">WhatsApp</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WHAT I DO ─────────────────────────────────────────────────── -->
+  <section class="section">
+    <div class="section__inner">
+      <div class="section__label reveal"><span data-service-label></span></div>
+      <ul class="service-list reveal">
+        <li class="service-list__item"><i class="ti ti-check"></i><span data-i18n="construccion.s1"></span></li>
+        <li class="service-list__item"><i class="ti ti-check"></i><span data-i18n="construccion.s2"></span></li>
+        <li class="service-list__item"><i class="ti ti-check"></i><span data-i18n="construccion.s3"></span></li>
+        <li class="service-list__item"><i class="ti ti-check"></i><span data-i18n="construccion.s4"></span></li>
+        <li class="service-list__item"><i class="ti ti-check"></i><span data-i18n="construccion.s5"></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── PHOTO GALLERY ─────────────────────────────────────────────── -->
+  <section class="section section--alt">
+    <div class="section__inner">
+      <div class="gallery__grid">
+        <!-- PHOTO: replace with real photo of work -->
+        <img class="gallery__img reveal" src="/assets/img/placeholder.jpg" alt="Reforma integral de vivienda en Sevilla" loading="lazy">
+        <!-- PHOTO: replace with real photo of work -->
+        <img class="gallery__img reveal" src="/assets/img/placeholder.jpg" alt="Detalle de albañilería y acabados en obra" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WHY HIRE ME ───────────────────────────────────────────────── -->
+  <section class="section">
+    <div class="section__inner">
+      <div class="section__label reveal"><span data-i18n="home.why_label">Por qué elegirme</span></div>
+      <div class="service-why__list">
+        <div class="service-why__item reveal"><i class="ti ti-check"></i><span data-i18n="construccion.why_1"></span></div>
+        <div class="service-why__item reveal"><i class="ti ti-check"></i><span data-i18n="construccion.why_2"></span></div>
+        <div class="service-why__item reveal"><i class="ti ti-check"></i><span data-i18n="construccion.why_3"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA STRIP ─────────────────────────────────────────────────── -->
+  <section class="cta-strip">
+    <div class="cta-strip__inner">
+      <p class="cta-strip__text reveal" data-i18n="construccion.cta_strip"></p>
+      <div class="cta-strip__actions reveal">
+        <a href="tel:+34623800979" class="cta-strip__btn cta-strip__btn--solid" data-i18n="common.cta_call">Llamar ahora</a>
+        <a href="https://wa.me/34623800979" class="cta-strip__btn cta-strip__btn--ghost" target="_blank" rel="noopener" data-whatsapp-link>
+          <i class="ti ti-brand-whatsapp"></i>
+          <span data-i18n="common.cta_whatsapp">WhatsApp</span>
+        </a>
+      </div>
+      <p class="cta-strip__phone reveal">
+        <span data-i18n="home.contact_phone_label">Teléfono</span>:
+        <a href="tel:+34623800979">+34 623 800 979</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ── BACK TO HOME ──────────────────────────────────────────────── -->
+  <div class="back-home">
+    <a href="/es" data-nav-section="home" data-i18n="common.back_home">← Volver al inicio</a>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <span>caballerocano.com</span>
+  <a href="tel:+34623800979" class="footer__phone">+34 623 800 979</a>
+  <span data-i18n="footer.copy">© 2026 Caballero Cano</span>
+</footer>
+
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>

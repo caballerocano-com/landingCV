@@ -6,64 +6,49 @@ import { dirname, join } from 'path';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC = join(__dirname, '../public');
 
-const SUPPORTED_LANGS = ['es', 'en', 'fr', 'it', 'de', 'pt'];
-const DEFAULT_LANG    = 'en';
+const SECTIONS = [
+  'electricidad', 'construccion', 'pladur', 'alicatados', 'fontaneria',
+  'piscinas', 'seguridad', 'carpinteria', 'soldadura', 'manitas',
+];
+const LANGS = ['es', 'en', 'fr', 'de'];
 
 const app = Fastify({ logger: false });
 
-// Serve static files
+// Serve static files (css, js, assets, etc.)
 await app.register(fastifyStatic, {
   root: PUBLIC,
   prefix: '/',
 });
 
 // ── Route logic ────────────────────────────────────────────────────
-// /              → redirect to /<detected-lang>/
-// /<lang>/       → serve index.html (CV)
-// /<lang>/portfolio → serve portfolio.html
-// /cv            → redirect to /<lang>/
-// /portfolio     → redirect to /<lang>/portfolio
+// /                    → index.html
+// /:lang               → index.html  (lang in LANGS)
+// /:section            → {section}.html  (section in SECTIONS)
+// /:section/:lang      → {section}.html
+// Route params are constrained by regex so they never shadow real
+// static assets served above (e.g. /css/vars.css, /js/app.js).
 
-function detectLang(req) {
-  const accept = req.headers['accept-language'] || '';
-  const langs  = accept.split(',').map(l => l.split(';')[0].trim().toLowerCase().slice(0, 2));
-  return langs.find(l => SUPPORTED_LANGS.includes(l)) || DEFAULT_LANG;
-}
-
-// Root → redirect to lang
 app.get('/', (req, reply) => {
-  const lang = detectLang(req);
-  reply.redirect(302, `/${lang}/`);
-});
-
-// /cv → redirect
-app.get('/cv', (req, reply) => {
-  const lang = detectLang(req);
-  reply.redirect(302, `/${lang}/`);
-});
-
-// /portfolio → redirect
-app.get('/portfolio', (req, reply) => {
-  const lang = detectLang(req);
-  reply.redirect(302, `/${lang}/portfolio`);
-});
-
-// /<lang>/ → CV
-app.get('/:lang/', (req, reply) => {
-  const lang = req.params.lang;
-  if (!SUPPORTED_LANGS.includes(lang)) {
-    return reply.redirect(302, `/${DEFAULT_LANG}/`);
-  }
   reply.sendFile('index.html');
 });
 
-// /<lang>/portfolio → Portfolio
-app.get('/:lang/portfolio', (req, reply) => {
-  const lang = req.params.lang;
-  if (!SUPPORTED_LANGS.includes(lang)) {
-    return reply.redirect(302, `/${DEFAULT_LANG}/portfolio`);
+const langOrSectionPattern = `^(${[...LANGS, ...SECTIONS].join('|')})$`;
+
+app.get(`/:seg(${langOrSectionPattern})`, (req, reply) => {
+  const { seg } = req.params;
+
+  if (LANGS.includes(seg)) {
+    return reply.sendFile('index.html');
   }
-  reply.sendFile('portfolio.html');
+
+  return reply.sendFile(`${seg}.html`);
+});
+
+const sectionPattern = `^(${SECTIONS.join('|')})$`;
+const langPattern = `^(${LANGS.join('|')})$`;
+
+app.get(`/:section(${sectionPattern})/:lang(${langPattern})`, (req, reply) => {
+  reply.sendFile(`${req.params.section}.html`);
 });
 
 // Fallback
