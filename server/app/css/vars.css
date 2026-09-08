@@ -37,6 +37,7 @@
   --sidebar-width: 240px;
   --topbar-height: 56px;
 
+  --status-creado:          #8b5cf6;
   --status-presupuestado:   #3b82f6;
   --status-en_curso:        #E8630A;
   --status-pendiente_cobro: #f59e0b;

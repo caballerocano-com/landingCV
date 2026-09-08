@@ -19,6 +19,22 @@ body {
   border-bottom: 1px solid var(--border-dk);
 }
 
+.topbar__home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--white);
+  font-size: 18px;
+  border-radius: 6px;
+  transition: var(--transition);
+}
+
+.topbar__home:hover {
+  background: rgba(255,255,255,0.08);
+}
+
 .topbar__brand {
   font-family: var(--heading);
   font-weight: 600;
@@ -74,15 +90,19 @@ body {
   .topbar__hamburger { display: none; }
 }
 
-.topbar__logout {
+.nav-overlay__logout {
   color: var(--on-dark-muted);
-  font-size: 13px;
-  padding: 8px 10px;
-  border-radius: 6px;
+  font-size: 16px;
+  text-align: left;
+  padding: 14px 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+  padding-top: 24px;
+  border-top: 1px solid var(--on-dark-border);
   transition: var(--transition);
 }
 
-.topbar__logout:hover {
+.nav-overlay__logout:hover {
   background: rgba(255,255,255,0.08);
   color: var(--white);
 }
@@ -296,6 +316,7 @@ main {
   white-space: nowrap;
 }
 
+.badge[data-estado="creado"]           { background: var(--status-creado); }
 .badge[data-estado="presupuestado"]    { background: var(--status-presupuestado); }
 .badge[data-estado="en_curso"]         { background: var(--status-en_curso); }
 .badge[data-estado="pendiente_cobro"]  { background: var(--status-pendiente_cobro); }
@@ -445,6 +466,137 @@ main {
 }
 
 .stat-pill strong { color: var(--text); font-weight: 700; }
+
+a.stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+a.stat-pill:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Concept form (mobile-first stacking) ────────────────────────────── */
+
+.concept-form .form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (min-width: 601px) {
+  .concept-form .form-row { flex-direction: row; }
+}
+
+.catalog-search { position: relative; }
+
+.catalog-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-top: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+}
+
+.catalog-dropdown-item {
+  padding: 10px 12px;
+  font-size: 13.5px;
+  color: var(--text-mid);
+  cursor: pointer;
+}
+
+.catalog-dropdown-item:hover { background: var(--bg-alt); }
+
+.catalog-dropdown-empty {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ── Element catalog cards ────────────────────────────────────────────── */
+
+.element-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 601px) {
+  .element-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.element-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.element-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.element-card__name {
+  font-family: var(--heading);
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--text);
+}
+
+.element-card__meta {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.element-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 16px;
+  transition: var(--transition);
+}
+
+.icon-btn:hover { background: var(--bg-alt); color: var(--accent); }
+.icon-btn.icon-btn--danger:hover { background: #fdecea; color: #c0392b; }
+
+.confirm-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-mid);
+}
+
+.confirm-inline button {
+  font-weight: 600;
+  padding: 2px 6px;
+}
+
+.confirm-inline .confirm-yes { color: #c0392b; }
+.confirm-inline .confirm-no { color: var(--text-muted); }
 
 /* ── Login ────────────────────────────────────────────────────────── */
 

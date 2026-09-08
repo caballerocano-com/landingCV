@@ -4,12 +4,14 @@ const FIELD_BY_TYPE = {
   presupuesto: 'ultimo_num_presupuesto',
   factura: 'ultimo_num_factura',
   recibo: 'ultimo_num_recibo',
+  encargo: 'ultimo_num_encargo',
 };
 
 const PREFIX_BY_TYPE = {
   presupuesto: 'PRES',
   factura: 'FACT',
   recibo: 'REC',
+  encargo: 'ENC',
 };
 
 export function generarNumero(tipo) {

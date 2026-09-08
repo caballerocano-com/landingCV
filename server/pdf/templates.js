@@ -128,6 +128,10 @@ function drawTotals(doc, subtotal, ivaPorcentaje = 21) {
   doc.text('TOTAL', valX, doc.y, { width: labelW });
   doc.text(formatMoney(total), valX + labelW, doc.y - doc.currentLineHeight(), { width: 80, align: 'right' });
 
+  // The calls above leave doc.x pinned at the narrow right-hand value column;
+  // reset it so whatever the caller draws next starts fresh at the left
+  // margin with the full page width, instead of wrapping inside that column.
+  doc.x = PAGE_MARGIN;
   doc.moveDown(1);
   return { iva, total };
 }
@@ -250,15 +254,37 @@ export async function buildReciboPDF({ recibo, ingreso, cliente, filePath }) {
   return finalize(doc, filePath);
 }
 
+const PAGE_HEIGHT = 841.89; // A4 pt
+// Must stay inside the page's own bottom margin box (PAGE_HEIGHT - PAGE_MARGIN
+// = 791.89); anything past that and pdfkit treats the text as not fitting and
+// silently starts a new page for it instead of drawing it as a footer.
+const FOOTER_Y = 780;
+
+function stampPageNumbers(doc, pageCount) {
+  const range = doc.bufferedPageRange();
+  for (let i = range.start; i < range.start + range.count; i++) {
+    doc.switchToPage(i);
+    doc.font(FONTS.regular).fontSize(8).fillColor(COLORS.textMuted)
+      .text(`Página ${i + 1} de ${pageCount}`, PAGE_MARGIN, FOOTER_Y, {
+        width: PAGE_WIDTH - 2 * PAGE_MARGIN,
+        align: 'center',
+      });
+  }
+}
+
 export async function buildContratoPDF({
   contrato, proyecto, cliente, conceptos, firmaPngBuffer, hash, filePath,
 }) {
   const doc = new PDFDocument({ size: 'A4', margin: PAGE_MARGIN });
 
-  drawHeader(doc, { tipoDocumento: 'CONTRATO', numero: `C-${contrato.id}`, fecha: contrato.created_at });
+  let pageCount = 1;
+  doc.on('pageAdded', () => { pageCount++; });
+
+  const numero = contrato.numero || `ENC-${contrato.id}`;
+  drawHeader(doc, { tipoDocumento: 'ENCARGO', numero, fecha: contrato.created_at });
 
   doc.font(FONTS.bold).fontSize(14).fillColor(COLORS.text)
-    .text('CONTRATO DE SERVICIOS', { align: 'center' });
+    .text('HOJA DE ENCARGO', { align: 'center' });
   doc.moveDown(1);
 
   drawClientBlock(doc, cliente);
@@ -267,23 +293,32 @@ export async function buildContratoPDF({
   const subtotal = drawConceptsTable(doc, conceptos);
   drawTotals(doc, subtotal, 21);
 
+  // Condiciones de pago, Formas de pago and Firma are stacked sequentially,
+  // full width — never in a side column — each its own labeled block.
   if (contrato.metodo_pago || contrato.plazos_pago) {
     doc.font(FONTS.bold).fontSize(9.5).fillColor(COLORS.text).text('Condiciones de pago');
     doc.font(FONTS.regular).fontSize(9).fillColor(COLORS.textMuted);
     if (contrato.metodo_pago) doc.text(`Método: ${contrato.metodo_pago}`);
     if (contrato.plazos_pago) doc.text(`Plazos: ${contrato.plazos_pago}`);
-    doc.moveDown(1);
+    doc.moveDown(1.2);
   }
 
   drawPaymentBlock(doc);
+  doc.moveDown(0.4);
 
   if (contrato.terminos) {
     doc.font(FONTS.bold).fontSize(9.5).fillColor(COLORS.text).text('Términos y condiciones');
     doc.font(FONTS.regular).fontSize(9).fillColor(COLORS.textMuted).text(contrato.terminos);
-    doc.moveDown(1);
+    doc.moveDown(1.2);
   }
 
-  if (doc.y > 620) doc.addPage();
+  // The signature block (label + image + hash) must stay together. If it
+  // doesn't fit in the remaining space, push the whole block to a new page
+  // rather than splitting the image away from its "Firmado..." line.
+  const SIGNATURE_BLOCK_HEIGHT = 9.5 + 8.5 + 100 + 20 + 30;
+  if (doc.y + SIGNATURE_BLOCK_HEIGHT > PAGE_HEIGHT - PAGE_MARGIN) {
+    doc.addPage();
+  }
 
   doc.font(FONTS.bold).fontSize(9.5).fillColor(COLORS.text).text('Firma');
   doc.font(FONTS.regular).fontSize(8.5).fillColor(COLORS.textMuted)
@@ -299,10 +334,15 @@ export async function buildContratoPDF({
     }
   }
 
+  // SHA-256 verification footer: bottom of the LAST page only, right below
+  // the signature — never on its own page.
   if (hash) {
-    doc.font(FONTS.regular).fontSize(6.5).fillColor(COLORS.textMuted)
-      .text(`SHA-256: ${hash}`, PAGE_MARGIN, 800, { width: PAGE_WIDTH - 2 * PAGE_MARGIN });
+    doc.moveDown(0.5);
+    doc.font(FONTS.regular).fontSize(8).fillColor(COLORS.textMuted)
+      .text(`Verificación: ${hash}`, PAGE_MARGIN, doc.y, { width: PAGE_WIDTH - 2 * PAGE_MARGIN });
   }
+
+  stampPageNumbers(doc, pageCount);
 
   return finalize(doc, filePath);
 }

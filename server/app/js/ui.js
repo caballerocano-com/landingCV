@@ -41,6 +41,7 @@ function todayIso() {
 }
 
 const ESTADO_LABELS = {
+  creado: 'Creado',
   presupuestado: 'Presupuestado',
   en_curso: 'En curso',
   pendiente_cobro: 'Pendiente de cobro',
@@ -78,26 +79,31 @@ function mountChrome(activeKey, title) {
   const links = el('div', { className: 'nav-overlay__links' },
     NAV_LINKS.map((l) => el('a', { href: l.href, className: l.key === activeKey ? 'is-active' : '', text: l.label }))
   );
+  const overlayLogout = el('button', { className: 'nav-overlay__logout', text: 'Salir' });
+  overlayLogout.addEventListener('click', () => logout());
+
   overlay.appendChild(closeBtn);
   overlay.appendChild(links);
+  overlay.appendChild(overlayLogout);
 
   const hamburger = el('button', { className: 'topbar__hamburger', 'aria-label': 'Abrir menú' }, '☰');
   hamburger.addEventListener('click', () => { overlay.hidden = false; });
   closeBtn.addEventListener('click', () => { overlay.hidden = true; });
 
+  const homeBtn = el('a', { href: '/app/dashboard.html', className: 'topbar__home', 'aria-label': 'Panel' },
+    el('i', { className: 'ti ti-home' })
+  );
+
   const desktopNav = el('nav', { className: 'topbar__nav' },
     NAV_LINKS.map((l) => el('a', { href: l.href, className: 'topbar__link' + (l.key === activeKey ? ' is-active' : ''), text: l.label }))
   );
 
-  const logoutBtn = el('button', { className: 'topbar__logout', text: 'Salir' });
-  logoutBtn.addEventListener('click', () => logout());
-
   const topbar = el('header', { className: 'topbar' }, [
+    homeBtn,
     el('span', { className: 'topbar__brand', text: 'Caballero Cano · Gestión' }),
     el('span', { className: 'topbar__title', text: title || '' }),
     el('span', { className: 'topbar__spacer' }),
     desktopNav,
-    logoutBtn,
     hamburger,
   ]);
 

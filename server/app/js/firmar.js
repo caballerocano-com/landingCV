@@ -13,14 +13,14 @@ async function init() {
   try {
     const res = await fetch(`/api/contratos/public/${token}`);
     data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error al cargar el contrato');
+    if (!res.ok) throw new Error(data.error || 'Error al cargar la hoja de encargo');
   } catch (err) {
-    showMessage(err.message || 'No se pudo cargar el contrato.');
+    showMessage(err.message || 'No se pudo cargar la hoja de encargo.');
     return;
   }
 
   if (data.estado === 'firmado') {
-    showMessage(`Este contrato ya fue firmado el ${formatDateEs(data.firmado_at)}.`);
+    showMessage(`Este encargo ya fue firmado el ${formatDateEs(data.firmado_at)}.`);
     return;
   }
   if (data.estado === 'expirado') {
@@ -171,18 +171,18 @@ async function onSubmitSignature() {
       body: JSON.stringify({ firma }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error al firmar el contrato');
+    if (!res.ok) throw new Error(data.error || 'Error al firmar el encargo');
 
     document.getElementById('contract-root').hidden = true;
     const screen = document.getElementById('message-screen');
     screen.hidden = false;
     screen.textContent = '';
-    screen.appendChild(el('p', { text: '¡Contrato firmado correctamente!' }));
+    screen.appendChild(el('p', { text: '¡Encargo firmado correctamente!' }));
     screen.appendChild(el('a', {
       href: data.downloadUrl,
       target: '_blank',
       className: 'btn btn-primary mt-16',
-      text: 'Descargar contrato firmado',
+      text: 'Descargar encargo firmado',
     }));
   } catch (err) {
     errorEl.textContent = err.message;

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import db from '../db/database.js';
 import { requireAuth } from '../middleware/auth.js';
 import { buildContratoPDF } from '../pdf/templates.js';
+import { generarNumero } from './documentos.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const STORAGE_DIR = join(__dirname, '../storage/contratos');
@@ -41,11 +42,12 @@ export default async function contratosRoutes(app) {
 
       const token = crypto.randomBytes(16).toString('hex'); // 32 hex chars
       const expiresAt = new Date(Date.now() + THIRTY_DAYS_MS).toISOString();
+      const numero = generarNumero('encargo');
 
       const result = db.prepare(
-        `INSERT INTO contratos (proyecto_id, token, terminos, metodo_pago, plazos_pago, expires_at)
-         VALUES (?, ?, ?, ?, ?, ?)`
-      ).run(proyecto_id, token, terminos || null, metodo_pago || null, plazos_pago || null, expiresAt);
+        `INSERT INTO contratos (proyecto_id, numero, token, terminos, metodo_pago, plazos_pago, expires_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`
+      ).run(proyecto_id, numero, token, terminos || null, metodo_pago || null, plazos_pago || null, expiresAt);
 
       return db.prepare('SELECT * FROM contratos WHERE id = ?').get(result.lastInsertRowid);
     });
@@ -102,6 +104,7 @@ export default async function contratosRoutes(app) {
       estado: contrato.estado,
       contrato: {
         id: contrato.id,
+        numero: contrato.numero,
         terminos: contrato.terminos,
         metodo_pago: contrato.metodo_pago,
         plazos_pago: contrato.plazos_pago,

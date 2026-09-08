@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS proyectos (
   descripcion TEXT,
   tipo_servicio TEXT,
   direccion_obra TEXT,
-  estado TEXT DEFAULT 'presupuestado',
+  estado TEXT DEFAULT 'creado',
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now'))
 );
@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS facturas (
 CREATE TABLE IF NOT EXISTS contratos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   proyecto_id INTEGER REFERENCES proyectos(id),
+  numero TEXT,
   token TEXT NOT NULL UNIQUE,
   terminos TEXT,
   metodo_pago TEXT,
@@ -82,6 +83,8 @@ CREATE TABLE IF NOT EXISTS contratos (
   expires_at TEXT,
   created_at TEXT DEFAULT (datetime('now'))
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_contratos_numero ON contratos(numero) WHERE numero IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS ingresos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -129,8 +132,9 @@ CREATE TABLE IF NOT EXISTS config (
   id INTEGER PRIMARY KEY DEFAULT 1,
   ultimo_num_presupuesto INTEGER DEFAULT 0,
   ultimo_num_factura INTEGER DEFAULT 0,
-  ultimo_num_recibo INTEGER DEFAULT 0
+  ultimo_num_recibo INTEGER DEFAULT 0,
+  ultimo_num_encargo INTEGER DEFAULT 0
 );
 
-INSERT OR IGNORE INTO config (id, ultimo_num_presupuesto, ultimo_num_factura, ultimo_num_recibo)
-VALUES (1, 0, 0, 0);
+INSERT OR IGNORE INTO config (id, ultimo_num_presupuesto, ultimo_num_factura, ultimo_num_recibo, ultimo_num_encargo)
+VALUES (1, 0, 0, 0, 0);

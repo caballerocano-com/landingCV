@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/app/css/reset.css">
   <link rel="stylesheet" href="/app/css/vars.css">
   <link rel="stylesheet" href="/app/css/app.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css">
 </head>
 <body>
   <div id="topbar-root"></div>
@@ -14,7 +15,10 @@
   <main>
     <div class="page-header">
       <h1>Proyectos activos</h1>
-      <a href="/app/proyectos.html?new=1" class="btn btn-primary" id="new-project-btn">+ Nuevo proyecto</a>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="/app/clientes.html" class="btn btn-secondary" id="new-client-btn"><i class="ti ti-user-plus"></i> Nuevo cliente</a>
+        <a href="/app/proyectos.html?new=1" class="btn btn-primary" id="new-project-btn"><i class="ti ti-folder-plus"></i> Nuevo proyecto</a>
+      </div>
     </div>
 
     <div id="projects-list" class="grid grid-2"></div>

@@ -34,6 +34,10 @@ async function init() {
   }
 
   loadProjects();
+
+  window.addEventListener('pageshow', () => {
+    loadProjects();
+  });
 }
 
 function fillClienteSelects() {

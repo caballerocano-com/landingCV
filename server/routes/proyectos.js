@@ -1,7 +1,7 @@
 import db from '../db/database.js';
 import { requireAuth } from '../middleware/auth.js';
 
-const ESTADOS = ['presupuestado', 'en_curso', 'pendiente_cobro', 'cobrado', 'finalizado'];
+const ESTADOS = ['creado', 'presupuestado', 'en_curso', 'pendiente_cobro', 'cobrado', 'finalizado'];
 
 export default async function proyectosRoutes(app) {
   app.addHook('preHandler', requireAuth);
@@ -38,7 +38,7 @@ export default async function proyectosRoutes(app) {
       descripcion || null,
       tipo_servicio || null,
       direccion_obra || null,
-      estado && ESTADOS.includes(estado) ? estado : 'presupuestado'
+      estado && ESTADOS.includes(estado) ? estado : 'creado'
     );
 
     return db.prepare('SELECT * FROM proyectos WHERE id = ?').get(result.lastInsertRowid);

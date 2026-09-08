@@ -30,4 +30,26 @@ async function apiFetch(path, options = {}) {
   return data;
 }
 
-export { apiFetch, getToken, BASE };
+async function downloadPDF(apiPath, filename) {
+  const res = await fetch(apiPath, {
+    headers: {
+      'Authorization': `Bearer ${getToken()}`,
+    },
+  });
+  if (!res.ok) {
+    console.error('PDF download failed:', res.status);
+    return;
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename || 'documento.pdf';
+  a.target = '_blank';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
+export { apiFetch, getToken, BASE, downloadPDF };

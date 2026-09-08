@@ -1,4 +1,4 @@
-import { apiFetch } from './api.js';
+import { apiFetch, downloadPDF } from './api.js';
 import { guard } from './auth.js';
 import { el, badge, mountChrome, formatMoney, formatDateEs, todayIso, ESTADO_LABELS } from './ui.js';
 
@@ -12,6 +12,11 @@ if (!proyectoId) {
 let proyecto = null;
 let clientes = [];
 let elementosCatalogo = [];
+
+// Reassigned on every renderConceptos() call to point at whichever catalog
+// dropdown is currently mounted; a single listener below delegates to it.
+let closeActiveCatalogDropdown = () => {};
+document.addEventListener('click', (e) => closeActiveCatalogDropdown(e));
 
 if (await guard()) {
   mountChrome('proyectos', 'Proyecto');
@@ -92,6 +97,7 @@ function renderHeader() {
   const controls = el('div', { style: 'display:flex; gap:10px; align-items:center; margin-top:12px; flex-wrap:wrap;' });
 
   const select = el('select', {}, Object.entries({
+    creado: ESTADO_LABELS.creado,
     presupuestado: ESTADO_LABELS.presupuestado,
     en_curso: ESTADO_LABELS.en_curso,
     pendiente_cobro: ESTADO_LABELS.pendiente_cobro,
@@ -188,15 +194,15 @@ function renderStats() {
   container.textContent = '';
   const c = proyecto.counts;
   const items = [
-    ['Conceptos', c.conceptos],
-    ['Horas', c.horas],
-    ['Presupuestos', c.presupuestos],
-    ['Facturas', c.facturas],
-    ['Contratos', c.contratos],
-    ['Ingresos', c.ingresos],
+    ['Conceptos', c.conceptos, '#section-conceptos'],
+    ['Horas', c.horas, '#section-horas'],
+    ['Presupuestos', c.presupuestos, '#section-presupuestos'],
+    ['Facturas', c.facturas, '#section-facturas'],
+    ['Encargos', c.contratos, '#section-encargos'],
+    ['Ingresos', c.ingresos, '#section-ingresos'],
   ];
-  for (const [label, value] of items) {
-    container.appendChild(el('div', { className: 'stat-pill' }, [
+  for (const [label, value, href] of items) {
+    container.appendChild(el('a', { className: 'stat-pill', href }, [
       el('strong', { text: String(value) }),
       ' ' + label,
     ]));
@@ -209,33 +215,94 @@ function renderConceptos() {
   const addContainer = document.getElementById('conceptos-add');
   addContainer.textContent = '';
 
-  const form = el('form', { className: 'inline-form' });
-
-  const catalogSelect = el('select', { style: 'min-width:220px;' }, [el('option', { value: '', text: 'Elemento del catálogo (opcional)' })].concat(
-    elementosCatalogo.filter((e) => e.activo).map((e) => el('option', { value: e.id, text: `${e.nombre} — ${formatMoney(e.precio_unitario)}/${e.unidad}` }))
-  ));
+  const form = el('form', { className: 'inline-form concept-form', style: 'flex-direction:column; align-items:stretch;' });
 
   const nombreInput = el('input', { type: 'text', placeholder: 'Nombre del concepto' });
-  const cantidadInput = el('input', { type: 'number', step: '0.01', value: '1', style: 'width:90px;' });
-  const precioInput = el('input', { type: 'number', step: '0.01', value: '0', style: 'width:100px;' });
-  const unidadInput = el('input', { type: 'text', value: 'ud', style: 'width:70px;' });
+  const cantidadInput = el('input', { type: 'number', step: '0.01', value: '1' });
+  const precioInput = el('input', { type: 'number', step: '0.01', value: '0' });
+  const unidadInput = el('input', { type: 'text', value: 'ud' });
 
-  catalogSelect.addEventListener('change', () => {
-    const item = elementosCatalogo.find((e) => String(e.id) === catalogSelect.value);
-    if (item) {
-      nombreInput.value = item.nombre;
-      precioInput.value = item.precio_unitario;
-      unidadInput.value = item.unidad;
+  let selectedElementoId = null;
+
+  const searchInput = el('input', { type: 'text', placeholder: 'Buscar en catálogo...' });
+  const dropdown = el('div', { className: 'catalog-dropdown', hidden: '' });
+  const searchWrap = el('div', { className: 'field catalog-search' }, [
+    el('label', { text: 'Catálogo' }),
+    searchInput,
+    dropdown,
+  ]);
+
+  function closeDropdown() {
+    dropdown.hidden = true;
+    dropdown.textContent = '';
+  }
+
+  function showResults(items) {
+    dropdown.textContent = '';
+    if (items.length === 0) {
+      dropdown.appendChild(el('div', { className: 'catalog-dropdown-empty', text: 'Sin resultados' }));
+    } else {
+      for (const item of items) {
+        const row = el('div', {
+          className: 'catalog-dropdown-item',
+          text: `${item.nombre} — ${formatMoney(item.precio_unitario)}/${item.unidad}`,
+        });
+        row.addEventListener('click', () => {
+          selectedElementoId = item.id;
+          nombreInput.value = item.nombre;
+          precioInput.value = item.precio_unitario;
+          unidadInput.value = item.unidad;
+          searchInput.value = item.nombre;
+          closeDropdown();
+        });
+        dropdown.appendChild(row);
+      }
     }
+    dropdown.hidden = false;
+  }
+
+  searchInput.addEventListener('input', async () => {
+    const query = searchInput.value.trim().toLowerCase();
+    if (!query) {
+      closeDropdown();
+      selectedElementoId = null;
+      nombreInput.value = '';
+      precioInput.value = '0';
+      unidadInput.value = 'ud';
+      return;
+    }
+    // Elementos are already loaded at page init; only hit the API if that
+    // load hasn't happened yet, rather than re-fetching on every keystroke.
+    if (elementosCatalogo.length === 0) {
+      try { elementosCatalogo = await apiFetch('/elementos'); } catch { elementosCatalogo = []; }
+    }
+    const matches = elementosCatalogo.filter((e) => e.activo && e.nombre.toLowerCase().includes(query));
+    showResults(matches);
   });
 
-  form.appendChild(fieldWrap('Catálogo', catalogSelect));
-  form.appendChild(fieldWrap('Nombre', nombreInput));
-  form.appendChild(fieldWrap('Cant.', cantidadInput));
-  form.appendChild(fieldWrap('Ud.', unidadInput));
-  form.appendChild(fieldWrap('Precio (€)', precioInput));
+  // A single document-level listener (registered once in init()) delegates
+  // to whichever dropdown is currently open, so re-rendering this form on
+  // every reload never accumulates extra document listeners.
+  closeActiveCatalogDropdown = (e) => {
+    if (!searchWrap.contains(e.target)) closeDropdown();
+  };
 
-  const addBtn = el('button', { type: 'submit', className: 'btn btn-primary btn-sm', text: 'Añadir concepto' });
+  const row1 = el('div', { className: 'form-row' }, [searchWrap, fieldWrap('Nombre', nombreInput)]);
+  const row2 = el('div', { className: 'form-row' }, [
+    fieldWrap('Cant.', cantidadInput),
+    fieldWrap('Ud.', unidadInput),
+    fieldWrap('Precio (€)', precioInput),
+  ]);
+
+  form.appendChild(row1);
+  form.appendChild(row2);
+
+  const addBtn = el('button', {
+    type: 'submit',
+    className: 'btn btn-primary btn-sm',
+    style: 'align-self:flex-start;',
+    text: 'Añadir concepto',
+  });
   form.appendChild(addBtn);
 
   form.addEventListener('submit', async (e) => {
@@ -244,7 +311,7 @@ function renderConceptos() {
     await apiFetch(`/proyectos/${proyectoId}/conceptos`, {
       method: 'POST',
       body: JSON.stringify({
-        elemento_id: catalogSelect.value || null,
+        elemento_id: selectedElementoId,
         nombre: nombreInput.value,
         cantidad: parseFloat(cantidadInput.value) || 1,
         precio_unitario: parseFloat(precioInput.value) || 0,
@@ -377,13 +444,16 @@ function renderPresupuestos() {
     listEl.appendChild(el('p', { className: 'text-muted', text: 'Sin presupuestos generados.' }));
   }
   for (const p of proyecto.presupuestos) {
+    const pdfBtn = el('button', { className: 'btn btn-secondary btn-sm', text: 'PDF' });
+    pdfBtn.addEventListener('click', () => downloadPDF(`/api/presupuestos/${p.id}/pdf`, `${p.numero}.pdf`));
+
     listEl.appendChild(el('div', { className: 'list-row' }, [
       el('div', { className: 'list-row__main' }, [
         el('div', { text: p.numero }),
         el('div', { className: 'list-row__meta', text: formatDateEs(p.created_at) }),
       ]),
       badge(p.estado),
-      el('a', { href: `/api/presupuestos/${p.id}/pdf`, target: '_blank', className: 'btn btn-secondary btn-sm', text: 'PDF' }),
+      pdfBtn,
     ]));
   }
 
@@ -409,13 +479,16 @@ function renderFacturas() {
     listEl.appendChild(el('p', { className: 'text-muted', text: 'Sin facturas generadas.' }));
   }
   for (const f of proyecto.facturas) {
+    const pdfBtn = el('button', { className: 'btn btn-secondary btn-sm', text: 'PDF' });
+    pdfBtn.addEventListener('click', () => downloadPDF(`/api/facturas/${f.id}/pdf`, `${f.numero}.pdf`));
+
     listEl.appendChild(el('div', { className: 'list-row' }, [
       el('div', { className: 'list-row__main' }, [
         el('div', { text: f.numero }),
         el('div', { className: 'list-row__meta', text: formatDateEs(f.created_at) }),
       ]),
       badge(f.estado),
-      el('a', { href: `/api/facturas/${f.id}/pdf`, target: '_blank', className: 'btn btn-secondary btn-sm', text: 'PDF' }),
+      pdfBtn,
     ]));
   }
 
@@ -441,14 +514,16 @@ function renderContratos() {
   for (const c of proyecto.contratos) {
     const row = el('div', { className: 'list-row' }, [
       el('div', { className: 'list-row__main' }, [
-        el('div', { text: `Contrato #${c.id}` }),
+        el('div', { text: c.numero ? `Encargo ${c.numero}` : `Encargo #${c.id}` }),
         el('div', { className: 'list-row__meta', text: formatDateEs(c.created_at) }),
       ]),
       badge(c.estado),
     ]);
 
     if (c.estado === 'firmado') {
-      row.appendChild(el('a', { href: `/api/contratos/${c.id}/pdf`, target: '_blank', className: 'btn btn-secondary btn-sm', text: 'PDF' }));
+      const pdfBtn = el('button', { className: 'btn btn-secondary btn-sm', text: 'PDF' });
+      pdfBtn.addEventListener('click', () => downloadPDF(`/api/contratos/${c.id}/pdf`, `${c.numero || 'ENC-' + c.id}.pdf`));
+      row.appendChild(pdfBtn);
     } else {
       const copyBtn = el('button', { className: 'btn btn-secondary btn-sm', text: 'Copiar enlace' });
       copyBtn.addEventListener('click', () => {
@@ -473,7 +548,7 @@ function renderContratos() {
   form.appendChild(fieldWrap('Método de pago', metodo));
   form.appendChild(fieldWrap('Plazos de pago', plazos));
   form.appendChild(fieldWrap('Términos', terminos));
-  form.appendChild(el('button', { type: 'submit', className: 'btn btn-primary btn-sm', text: 'Nuevo contrato', style: 'align-self:flex-start;' }));
+  form.appendChild(el('button', { type: 'submit', className: 'btn btn-primary btn-sm', text: 'Nuevo encargo', style: 'align-self:flex-start;' }));
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -496,16 +571,16 @@ function renderIngresos() {
     listEl.appendChild(el('p', { className: 'text-muted', text: 'Sin ingresos registrados.' }));
   }
   for (const i of proyecto.ingresos) {
-    const reciboBtn = i.recibo_pdf_path
-      ? el('a', { href: `/api/ingresos/${i.id}/recibo/pdf`, target: '_blank', className: 'btn btn-secondary btn-sm', text: 'Recibo' })
-      : el('button', { className: 'btn btn-secondary btn-sm', text: 'Generar recibo' });
+    const reciboBtn = el('button', { className: 'btn btn-secondary btn-sm', text: i.recibo_pdf_path ? 'Recibo' : 'Generar recibo' });
 
-    if (!i.recibo_pdf_path) {
-      reciboBtn.addEventListener('click', async () => {
+    reciboBtn.addEventListener('click', async () => {
+      if (i.recibo_pdf_path) {
+        downloadPDF(`/api/ingresos/${i.id}/recibo/pdf`, `recibo-${i.id}.pdf`);
+      } else {
         await apiFetch(`/ingresos/${i.id}/recibo`, { method: 'POST' });
         await loadProject();
-      });
-    }
+      }
+    });
 
     listEl.appendChild(el('div', { className: 'list-row' }, [
       el('div', { className: 'list-row__main' }, [

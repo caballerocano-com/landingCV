@@ -5,6 +5,10 @@ import { el, badge, mountChrome } from './ui.js';
 if (await guard()) {
   mountChrome('dashboard', 'Proyectos activos');
   loadProjects();
+
+  window.addEventListener('pageshow', () => {
+    loadProjects();
+  });
 }
 
 async function loadProjects() {
@@ -51,9 +55,15 @@ function buildCard(p) {
   }
 
   const actions = el('div', { className: 'project-card__actions' }, [
-    el('a', { href: `/app/proyecto.html?id=${p.id}`, className: 'btn btn-secondary btn-sm', text: 'Ver proyecto' }),
-    el('a', { href: `/app/proyecto.html?id=${p.id}&action=horas`, className: 'btn btn-secondary btn-sm', text: 'Añadir horas' }),
-    el('a', { href: `/app/proyecto.html?id=${p.id}&action=gasto`, className: 'btn btn-secondary btn-sm', text: 'Añadir gasto' }),
+    el('a', { href: `/app/proyecto.html?id=${p.id}`, className: 'btn btn-secondary btn-sm' }, [
+      el('i', { className: 'ti ti-eye' }), ' Ver proyecto',
+    ]),
+    el('a', { href: `/app/proyecto.html?id=${p.id}&action=horas`, className: 'btn btn-secondary btn-sm' }, [
+      el('i', { className: 'ti ti-clock' }), ' Añadir horas',
+    ]),
+    el('a', { href: `/app/proyecto.html?id=${p.id}&action=gasto`, className: 'btn btn-secondary btn-sm' }, [
+      el('i', { className: 'ti ti-receipt' }), ' Añadir gasto',
+    ]),
   ]);
   card.appendChild(actions);
 
