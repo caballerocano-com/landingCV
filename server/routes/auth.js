@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 import { sessions, requireAuth } from '../middleware/auth.js';
 
-const USERNAME = 'admin';
-const PASSWORD = 'caballero2026';
+const USERNAME = 'kaseo';
+const PASSWORD = 'sv*kI45ñÑl7+7O/)Q9dEu|yI';
 
 export default async function authRoutes(app) {
   app.post('/api/auth/login', async (req, reply) => {
