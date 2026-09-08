@@ -1,0 +1,52 @@
+:root {
+  /* Colors (shared with caballerocano.com) */
+  --bg:          #ffffff;
+  --bg-alt:      #f4f6f8;
+  --bg-dark:     #0b2a4d;
+  --bg-dark-2:   #081d38;
+  --text:        #0f1f2e;
+  --text-mid:    #2c3e50;
+  --text-muted:  #57677a;
+  --text-dim:    #758699;
+  --border:      #dfe3e8;
+  --border-dk:   #1c3b5e;
+  --accent:      #f15a24;
+  --accent-dark: #cf4415;
+  --accent-bg:   #fff1ea;
+  --white:       #ffffff;
+  --whatsapp:      #25d366;
+  --whatsapp-dark: #1ebe5a;
+
+  --on-dark-muted:  #b9c6d4;
+  --on-dark-dim:    #7f92a6;
+  --on-dark-border: #254a72;
+
+  /* Typography */
+  --heading: 'Poppins', system-ui, sans-serif;
+  --sans:    'DM Sans', system-ui, sans-serif;
+
+  /* Spacing */
+  --pad:        24px;
+  --pad-sm:     16px;
+  --section-v:  32px;
+
+  /* Transitions */
+  --transition: 0.2s ease;
+
+  /* Platform-specific tokens */
+  --sidebar-width: 240px;
+  --topbar-height: 56px;
+
+  --status-presupuestado:   #3b82f6;
+  --status-en_curso:        #E8630A;
+  --status-pendiente_cobro: #f59e0b;
+  --status-cobrado:         #22c55e;
+  --status-finalizado:      #888880;
+}
+
+@media (min-width: 601px) {
+  :root { --pad: 32px; }
+}
+@media (min-width: 901px) {
+  :root { --pad: 40px; --section-v: 40px; }
+}

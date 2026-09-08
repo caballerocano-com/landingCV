@@ -1,1 +1,11 @@
 node_modules
+
+# Platform runtime data (generated at runtime, not checked in)
+server/storage/*.db
+server/storage/*.db-journal
+server/storage/*.db-wal
+server/storage/*.db-shm
+server/storage/contratos/*.pdf
+server/storage/facturas/*.pdf
+server/storage/presupuestos/*.pdf
+server/storage/recibos/*.pdf

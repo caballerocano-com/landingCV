@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo de elementos · Caballero Cano</title>
+  <link rel="stylesheet" href="/app/css/reset.css">
+  <link rel="stylesheet" href="/app/css/vars.css">
+  <link rel="stylesheet" href="/app/css/app.css">
+</head>
+<body>
+  <div id="topbar-root"></div>
+
+  <main>
+    <div class="page-header">
+      <h1>Catálogo de elementos</h1>
+      <button class="btn btn-primary" id="new-element-btn">+ Nuevo elemento</button>
+    </div>
+
+    <div class="section" id="new-element-section" hidden>
+      <h2>Nuevo elemento</h2>
+      <form id="new-element-form">
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="ne-nombre">Nombre</label>
+            <input type="text" id="ne-nombre" required>
+          </div>
+          <div class="field">
+            <label for="ne-unidad">Unidad</label>
+            <select id="ne-unidad">
+              <option value="ud">ud</option>
+              <option value="m2">m²</option>
+              <option value="ml">ml</option>
+              <option value="hora">hora</option>
+              <option value="kg">kg</option>
+              <option value="global">global</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ne-precio">Precio unitario (€)</label>
+            <input type="number" id="ne-precio" step="0.01" min="0" value="0">
+          </div>
+        </div>
+        <div class="field">
+          <label for="ne-descripcion">Descripción</label>
+          <textarea id="ne-descripcion"></textarea>
+        </div>
+        <p class="error-text" id="new-element-error" hidden></p>
+        <div style="display:flex; gap:10px;">
+          <button type="submit" class="btn btn-primary">Crear elemento</button>
+          <button type="button" class="btn btn-secondary" id="cancel-new-element">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="section">
+      <div class="field" style="max-width:320px;">
+        <label for="search">Buscar</label>
+        <input type="text" id="search" placeholder="Nombre o descripción...">
+      </div>
+    </div>
+
+    <div class="section">
+      <div id="elements-table-wrap"></div>
+    </div>
+  </main>
+
+  <script type="module" src="/app/js/elementos.js"></script>
+</body>
+</html>

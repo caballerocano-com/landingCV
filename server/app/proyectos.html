@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todos los proyectos · Caballero Cano</title>
+  <link rel="stylesheet" href="/app/css/reset.css">
+  <link rel="stylesheet" href="/app/css/vars.css">
+  <link rel="stylesheet" href="/app/css/app.css">
+</head>
+<body>
+  <div id="topbar-root"></div>
+
+  <main>
+    <div class="page-header">
+      <h1>Todos los proyectos</h1>
+      <button class="btn btn-primary" id="new-project-btn">+ Nuevo proyecto</button>
+    </div>
+
+    <div class="section" id="new-project-section" hidden>
+      <h2>Nuevo proyecto</h2>
+      <form id="new-project-form">
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="np-nombre">Nombre del proyecto</label>
+            <input type="text" id="np-nombre" required>
+          </div>
+          <div class="field">
+            <label for="np-cliente">Cliente</label>
+            <select id="np-cliente"><option value="">Sin cliente</option></select>
+          </div>
+          <div class="field">
+            <label for="np-tipo">Tipo de servicio</label>
+            <input type="text" id="np-tipo" placeholder="Electricidad, fontanería...">
+          </div>
+          <div class="field">
+            <label for="np-direccion">Dirección de la obra</label>
+            <input type="text" id="np-direccion">
+          </div>
+        </div>
+        <div class="field">
+          <label for="np-descripcion">Descripción</label>
+          <textarea id="np-descripcion"></textarea>
+        </div>
+        <p class="error-text" id="new-project-error" hidden></p>
+        <div style="display:flex; gap:10px;">
+          <button type="submit" class="btn btn-primary">Crear proyecto</button>
+          <button type="button" class="btn btn-secondary" id="cancel-new-project">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="section">
+      <div class="inline-form" style="margin-top:0;">
+        <div class="field">
+          <label for="filter-estado">Estado</label>
+          <select id="filter-estado">
+            <option value="">Todos</option>
+            <option value="presupuestado">Presupuestado</option>
+            <option value="en_curso">En curso</option>
+            <option value="pendiente_cobro">Pendiente de cobro</option>
+            <option value="cobrado">Cobrado</option>
+            <option value="finalizado">Finalizado</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="filter-cliente">Cliente</label>
+          <select id="filter-cliente"><option value="">Todos</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div id="projects-table-wrap"></div>
+    </div>
+  </main>
+
+  <script type="module" src="/app/js/proyectos.js"></script>
+</body>
+</html>

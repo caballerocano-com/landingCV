@@ -2,9 +2,28 @@ import Fastify from 'fastify';
 import fastifyStatic from '@fastify/static';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { mkdirSync } from 'fs';
+
+import './db/database.js';
+import authRoutes from './routes/auth.js';
+import clientesRoutes from './routes/clientes.js';
+import proyectosRoutes from './routes/proyectos.js';
+import elementosRoutes from './routes/elementos.js';
+import presupuestosRoutes from './routes/presupuestos.js';
+import facturasRoutes from './routes/facturas.js';
+import contratosRoutes from './routes/contratos.js';
+import ingresosRoutes from './routes/ingresos.js';
+import gastosRoutes from './routes/gastos.js';
+import horasRoutes from './routes/horas.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC = join(__dirname, '../public');
+const APP_DIR = join(__dirname, 'app');
+const STORAGE_DIR = join(__dirname, 'storage');
+
+for (const dir of ['contratos', 'facturas', 'presupuestos', 'recibos']) {
+  mkdirSync(join(STORAGE_DIR, dir), { recursive: true });
+}
 
 const SECTIONS = [
   'electricidad', 'construccion', 'pladur', 'alicatados', 'fontaneria',
@@ -12,9 +31,55 @@ const SECTIONS = [
 ];
 const LANGS = ['es', 'en', 'fr', 'de'];
 
-const app = Fastify({ logger: false });
+const app = Fastify({
+  logger: false,
+  // Runs before routing: app.caballerocano.com is transparently mapped
+  // onto the /app/ static prefix so the same routes below serve both.
+  rewriteUrl(req) {
+    const host = (req.headers.host || '').split(':')[0];
+    const isPlatformHost = host === 'app.caballerocano.com';
+    const alreadyRouted = req.url.startsWith('/api/') || req.url.startsWith('/storage/') || req.url.startsWith('/app/') || req.url.startsWith('/firmar/');
+    if (isPlatformHost && !alreadyRouted) {
+      return req.url === '/' ? '/app/index.html' : `/app${req.url}`;
+    }
+    return req.url;
+  },
+});
 
-// Serve static files (css, js, assets, etc.)
+// ── Platform (app.caballerocano.com) ────────────────────────────────
+// Serves server/app/ under /app/ for local dev, and at the subdomain root
+// when the request host is app.caballerocano.com.
+
+await app.register(fastifyStatic, {
+  root: APP_DIR,
+  prefix: '/app/',
+  decorateReply: false,
+});
+
+await app.register(fastifyStatic, {
+  root: STORAGE_DIR,
+  prefix: '/storage/',
+  decorateReply: false,
+});
+
+app.get('/firmar/:token', (req, reply) => {
+  reply.sendFile('firmar.html', APP_DIR);
+});
+
+// Platform API routes
+app.register(authRoutes);
+app.register(clientesRoutes);
+app.register(proyectosRoutes);
+app.register(elementosRoutes);
+app.register(presupuestosRoutes);
+app.register(facturasRoutes);
+app.register(contratosRoutes);
+app.register(ingresosRoutes);
+app.register(gastosRoutes);
+app.register(horasRoutes);
+
+// ── Public website (caballerocano.com) ──────────────────────────────
+
 await app.register(fastifyStatic, {
   root: PUBLIC,
   prefix: '/',
@@ -53,6 +118,9 @@ app.get(`/:section(${sectionPattern})/:lang(${langPattern})`, (req, reply) => {
 
 // Fallback
 app.setNotFoundHandler((req, reply) => {
+  if (req.url.startsWith('/api/')) {
+    return reply.code(404).send({ error: 'No encontrado' });
+  }
   reply.code(404).sendFile('index.html');
 });
 

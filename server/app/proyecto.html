@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proyecto · Caballero Cano</title>
+  <link rel="stylesheet" href="/app/css/reset.css">
+  <link rel="stylesheet" href="/app/css/vars.css">
+  <link rel="stylesheet" href="/app/css/app.css">
+</head>
+<body>
+  <div id="topbar-root"></div>
+
+  <main>
+    <div id="loading" class="spinner-text">Cargando proyecto…</div>
+
+    <div id="project-root" hidden>
+
+      <!-- 1. HEADER -->
+      <div class="section" id="project-header"></div>
+
+      <!-- 2. SUMMARY COUNTS -->
+      <div class="stats-row" id="project-stats"></div>
+
+      <!-- 3. CONCEPTOS -->
+      <div class="section">
+        <h2>Conceptos</h2>
+        <div id="conceptos-add"></div>
+        <div id="conceptos-list"></div>
+        <div class="totals-row" id="conceptos-totals"></div>
+      </div>
+
+      <!-- 4. HORAS -->
+      <div class="section">
+        <h2>Horas registradas</h2>
+        <div id="horas-list"></div>
+        <form class="inline-form" id="horas-form">
+          <div class="field">
+            <label for="h-fecha">Fecha</label>
+            <input type="date" id="h-fecha" required>
+          </div>
+          <div class="field">
+            <label for="h-horas">Horas</label>
+            <input type="number" id="h-horas" step="0.25" min="0" required>
+          </div>
+          <div class="field" style="flex:2;">
+            <label for="h-descripcion">Descripción</label>
+            <input type="text" id="h-descripcion">
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm">Registrar horas</button>
+        </form>
+      </div>
+
+      <!-- 5. DOCUMENTOS -->
+      <div class="section">
+        <h2>Presupuestos</h2>
+        <div id="presupuestos-list"></div>
+        <div id="presupuestos-form-wrap" class="mt-16"></div>
+      </div>
+
+      <div class="section">
+        <h2>Facturas</h2>
+        <div id="facturas-list"></div>
+        <div id="facturas-form-wrap" class="mt-16"></div>
+      </div>
+
+      <div class="section">
+        <h2>Contratos</h2>
+        <div id="contratos-list"></div>
+        <div id="contratos-form-wrap" class="mt-16"></div>
+      </div>
+
+      <!-- 6. INGRESOS -->
+      <div class="section">
+        <h2>Ingresos</h2>
+        <div id="ingresos-list"></div>
+        <form class="inline-form" id="ingresos-form">
+          <div class="field">
+            <label for="i-fecha">Fecha</label>
+            <input type="date" id="i-fecha" required>
+          </div>
+          <div class="field" style="flex:2;">
+            <label for="i-concepto">Concepto</label>
+            <input type="text" id="i-concepto" required>
+          </div>
+          <div class="field">
+            <label for="i-importe">Importe (€)</label>
+            <input type="number" id="i-importe" step="0.01" min="0" required>
+          </div>
+          <div class="field">
+            <label for="i-metodo">Método</label>
+            <select id="i-metodo">
+              <option value="transferencia">Transferencia</option>
+              <option value="bizum">Bizum</option>
+              <option value="efectivo">Efectivo</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm">Registrar ingreso</button>
+        </form>
+      </div>
+
+      <!-- 7. GASTOS -->
+      <div class="section">
+        <h2>Gastos del proyecto</h2>
+        <div id="gastos-list"></div>
+        <form class="inline-form" id="gastos-form">
+          <div class="field">
+            <label for="g-fecha">Fecha</label>
+            <input type="date" id="g-fecha" required>
+          </div>
+          <div class="field" style="flex:2;">
+            <label for="g-concepto">Concepto</label>
+            <input type="text" id="g-concepto" required>
+          </div>
+          <div class="field">
+            <label for="g-importe">Importe (€)</label>
+            <input type="number" id="g-importe" step="0.01" min="0" required>
+          </div>
+          <div class="field">
+            <label for="g-categoria">Categoría</label>
+            <select id="g-categoria">
+              <option value="material">Material</option>
+              <option value="herramienta">Herramienta</option>
+              <option value="desplazamiento">Desplazamiento</option>
+              <option value="general">General</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm">Añadir gasto</button>
+        </form>
+      </div>
+
+      <!-- 8. DANGER ZONE -->
+      <div class="section">
+        <h2>Zona de peligro</h2>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-secondary" id="finalize-btn">Finalizar proyecto</button>
+          <button class="btn btn-danger" id="delete-project-btn">Eliminar proyecto</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module" src="/app/js/proyecto.js"></script>
+</body>
+</html>
