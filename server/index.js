@@ -16,13 +16,14 @@ import contratosRoutes from './routes/contratos.js';
 import ingresosRoutes from './routes/ingresos.js';
 import gastosRoutes from './routes/gastos.js';
 import horasRoutes from './routes/horas.js';
+import archivosRoutes from './routes/archivos.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC = join(__dirname, '../public');
 const APP_DIR = join(__dirname, 'app');
 const STORAGE_DIR = join(__dirname, 'storage');
 
-for (const dir of ['contratos', 'facturas', 'presupuestos', 'recibos']) {
+for (const dir of ['contratos', 'facturas', 'presupuestos', 'recibos', 'proyectos']) {
   mkdirSync(join(STORAGE_DIR, dir), { recursive: true });
 }
 
@@ -34,6 +35,8 @@ const LANGS = ['es', 'en', 'fr', 'de'];
 
 const app = Fastify({
   logger: false,
+  // Default is 1MB, too small for photo/video uploads (archivos.js).
+  bodyLimit: 100 * 1024 * 1024,
   // Runs before routing: app.caballerocano.com is transparently mapped
   // onto the /app/ static prefix so the same routes below serve both.
   rewriteUrl(req) {
@@ -79,6 +82,7 @@ app.register(contratosRoutes);
 app.register(ingresosRoutes);
 app.register(gastosRoutes);
 app.register(horasRoutes);
+app.register(archivosRoutes);
 
 // ── Public website (caballerocano.com) ──────────────────────────────
 

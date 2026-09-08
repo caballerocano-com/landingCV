@@ -1,9 +1,18 @@
 import PDFDocument from 'pdfkit';
-import { createWriteStream } from 'fs';
+import { createWriteStream, existsSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { OWNER, COLORS, FONTS, formatMoney, formatDateEs } from './styles.js';
 
 const PAGE_MARGIN = 50;
 const PAGE_WIDTH = 595.28; // A4 pt
+const PAGE_HEIGHT = 841.89; // A4 pt
+// Must stay inside the page's own bottom margin box (PAGE_HEIGHT - PAGE_MARGIN
+// = 791.89); anything past that and pdfkit treats the text as not fitting and
+// silently starts a new page for it instead of drawing it as a footer.
+const FOOTER_Y = 780;
+
+const ARCHIVOS_DIR = join(dirname(fileURLToPath(import.meta.url)), '../storage/proyectos');
 
 function drawHeader(doc, { tipoDocumento, numero, fecha }) {
   const startY = PAGE_MARGIN;
@@ -154,8 +163,8 @@ function finalize(doc, filePath) {
   });
 }
 
-export async function buildPresupuestoPDF({ presupuesto, proyecto, cliente, conceptos, filePath }) {
-  const doc = new PDFDocument({ size: 'A4', margin: PAGE_MARGIN });
+export async function buildPresupuestoPDF({ presupuesto, proyecto, cliente, conceptos, filePath, fotos }) {
+  const doc = new PDFDocument({ size: 'A4', margin: PAGE_MARGIN, bufferPages: true });
   drawHeader(doc, { tipoDocumento: 'PRESUPUESTO', numero: presupuesto.numero, fecha: presupuesto.created_at });
   drawClientBlock(doc, cliente);
   drawProjectBlock(doc, proyecto);
@@ -180,6 +189,10 @@ export async function buildPresupuestoPDF({ presupuesto, proyecto, cliente, conc
 
   doc.font(FONTS.regular).fontSize(8).fillColor(COLORS.textMuted)
     .text('Presupuesto válido por 30 días.', PAGE_MARGIN, 780, { width: PAGE_WIDTH - 2 * PAGE_MARGIN, align: 'center' });
+
+  if (fotos && fotos.length > 0) {
+    drawFotosAnexo(doc, fotos);
+  }
 
   return finalize(doc, filePath);
 }
@@ -254,12 +267,6 @@ export async function buildReciboPDF({ recibo, ingreso, cliente, filePath }) {
   return finalize(doc, filePath);
 }
 
-const PAGE_HEIGHT = 841.89; // A4 pt
-// Must stay inside the page's own bottom margin box (PAGE_HEIGHT - PAGE_MARGIN
-// = 791.89); anything past that and pdfkit treats the text as not fitting and
-// silently starts a new page for it instead of drawing it as a footer.
-const FOOTER_Y = 780;
-
 function stampPageNumbers(doc, pageCount) {
   const range = doc.bufferedPageRange();
   for (let i = range.start; i < range.start + range.count; i++) {
@@ -272,10 +279,72 @@ function stampPageNumbers(doc, pageCount) {
   }
 }
 
+// Appends a "Anexo — Fotos de obra" section: fresh pages, 2 columns × 3 rows
+// (max 6 photos/page), each photo with its own optional caption below it.
+// Numbered separately from the rest of the document ("Anexo — Página X de Y",
+// local to the annexe) since it's appended after the main body's own page
+// numbers have already been stamped.
+function drawFotosAnexo(doc, fotos) {
+  if (!fotos || fotos.length === 0) return;
+
+  const rangeBefore = doc.bufferedPageRange();
+  const annexStartIndex = rangeBefore.start + rangeBefore.count;
+
+  const cols = 2;
+  const rows = 3;
+  const perPage = cols * rows;
+  const gapX = 16;
+  const gapY = 24;
+  const cellW = (PAGE_WIDTH - 2 * PAGE_MARGIN - (cols - 1) * gapX) / cols;
+  const cellH = 150;
+  const gridTop = PAGE_MARGIN + 40;
+
+  for (let i = 0; i < fotos.length; i++) {
+    const posInPage = i % perPage;
+    if (posInPage === 0) {
+      doc.addPage();
+      doc.font(FONTS.bold).fontSize(13).fillColor(COLORS.text)
+        .text('Anexo — Fotos de obra', PAGE_MARGIN, PAGE_MARGIN, { width: PAGE_WIDTH - 2 * PAGE_MARGIN });
+    }
+
+    const col = posInPage % cols;
+    const row = Math.floor(posInPage / cols);
+    const x = PAGE_MARGIN + col * (cellW + gapX);
+    const y = gridTop + row * (cellH + gapY);
+
+    const foto = fotos[i];
+    const filePath = join(ARCHIVOS_DIR, String(foto.proyecto_id), foto.filename);
+
+    if (existsSync(filePath)) {
+      try {
+        doc.image(filePath, x, y, { fit: [cellW, cellH], align: 'center', valign: 'center' });
+      } catch {
+        // Skip a corrupt/unreadable image rather than aborting the whole PDF.
+      }
+    }
+
+    if (foto.descripcion) {
+      doc.font(FONTS.regular).fontSize(9).fillColor(COLORS.textMuted)
+        .text(foto.descripcion, x, y + cellH + 2, { width: cellW, align: 'center' });
+    }
+  }
+
+  const rangeAfter = doc.bufferedPageRange();
+  const annexPageCount = (rangeAfter.start + rangeAfter.count) - annexStartIndex;
+  for (let i = 0; i < annexPageCount; i++) {
+    doc.switchToPage(annexStartIndex + i);
+    doc.font(FONTS.regular).fontSize(8).fillColor(COLORS.textMuted)
+      .text(`Anexo — Página ${i + 1} de ${annexPageCount}`, PAGE_MARGIN, FOOTER_Y, {
+        width: PAGE_WIDTH - 2 * PAGE_MARGIN,
+        align: 'center',
+      });
+  }
+}
+
 export async function buildContratoPDF({
-  contrato, proyecto, cliente, conceptos, firmaPngBuffer, hash, filePath,
+  contrato, proyecto, cliente, conceptos, firmaPngBuffer, hash, filePath, fotos,
 }) {
-  const doc = new PDFDocument({ size: 'A4', margin: PAGE_MARGIN });
+  const doc = new PDFDocument({ size: 'A4', margin: PAGE_MARGIN, bufferPages: true });
 
   let pageCount = 1;
   doc.on('pageAdded', () => { pageCount++; });
@@ -343,6 +412,10 @@ export async function buildContratoPDF({
   }
 
   stampPageNumbers(doc, pageCount);
+
+  if (fotos && fotos.length > 0) {
+    drawFotosAnexo(doc, fotos);
+  }
 
   return finalize(doc, filePath);
 }

@@ -1,11 +1,11 @@
 export const OWNER = {
   nombre: 'Antonio Caballero Cano',
-  nif: 'XXXXXXXX', // Antonio: replace with your NIF
-  direccion: 'Salteras, Sevilla',
+  nif: '30954648Y', 
+  direccion: 'Calle Noria 7, Salteras, Sevilla',
   telefono: '+34 623 800 979',
   email: 'antonio@caballerocano.com',
   web: 'caballerocano.com',
-  cuenta_bancaria: 'ESXX XXXX XXXX XXXX XXXX XXXX', // Antonio: replace
+  cuenta_bancaria: 'ES46 2095 8057 1091 2789 0941', 
   bizum: '623 800 979',
 };
 

@@ -34,7 +34,7 @@ export default async function contratosRoutes(app) {
     });
 
     protectedApp.post('/api/contratos', async (req, reply) => {
-      const { proyecto_id, terminos, metodo_pago, plazos_pago } = req.body || {};
+      const { proyecto_id, terminos, metodo_pago, plazos_pago, incluirFotos } = req.body || {};
       if (!proyecto_id) return reply.code(400).send({ error: 'proyecto_id es obligatorio' });
 
       const proyecto = db.prepare('SELECT * FROM proyectos WHERE id = ?').get(proyecto_id);
@@ -45,9 +45,9 @@ export default async function contratosRoutes(app) {
       const numero = generarNumero('encargo');
 
       const result = db.prepare(
-        `INSERT INTO contratos (proyecto_id, numero, token, terminos, metodo_pago, plazos_pago, expires_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`
-      ).run(proyecto_id, numero, token, terminos || null, metodo_pago || null, plazos_pago || null, expiresAt);
+        `INSERT INTO contratos (proyecto_id, numero, token, terminos, metodo_pago, plazos_pago, expires_at, incluir_fotos)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+      ).run(proyecto_id, numero, token, terminos || null, metodo_pago || null, plazos_pago || null, expiresAt, incluirFotos ? 1 : 0);
 
       return db.prepare('SELECT * FROM contratos WHERE id = ?').get(result.lastInsertRowid);
     });
@@ -137,6 +137,9 @@ export default async function contratosRoutes(app) {
     const proyecto = proyectoConCliente(contrato.proyecto_id);
     const cliente = proyecto?.cliente_id ? db.prepare('SELECT * FROM clientes WHERE id = ?').get(proyecto.cliente_id) : null;
     const conceptos = db.prepare('SELECT * FROM conceptos WHERE proyecto_id = ? ORDER BY orden ASC, id ASC').all(contrato.proyecto_id);
+    const fotos = contrato.incluir_fotos
+      ? db.prepare(`SELECT * FROM archivos WHERE proyecto_id = ? AND tipo = 'foto' ORDER BY created_at ASC`).all(contrato.proyecto_id)
+      : [];
 
     const firmadoAt = new Date().toISOString();
     const firmadoIp = req.ip || req.headers['x-forwarded-for'] || '';
@@ -150,6 +153,7 @@ export default async function contratosRoutes(app) {
       proyecto,
       cliente,
       conceptos,
+      fotos,
       firmaPngBuffer,
       hash: null,
       filePath,
@@ -164,6 +168,7 @@ export default async function contratosRoutes(app) {
       proyecto,
       cliente,
       conceptos,
+      fotos,
       firmaPngBuffer,
       hash,
       filePath,

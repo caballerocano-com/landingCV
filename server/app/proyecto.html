@@ -131,13 +131,45 @@
         </form>
       </div>
 
-      <!-- 8. DANGER ZONE -->
-      <div class="section">
-        <h2>Zona de peligro</h2>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn btn-secondary" id="finalize-btn">Finalizar proyecto</button>
-          <button class="btn btn-danger" id="delete-project-btn">Eliminar proyecto</button>
+      <!-- 8. ARCHIVOS MULTIMEDIA -->
+      <section class="section" id="section-archivos">
+        <h2>Archivos multimedia</h2>
+
+        <div class="archivos-actions">
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-add-fotos">
+            <i class="ti ti-photo"></i> Añadir fotos
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-add-video">
+            <i class="ti ti-video"></i> Hacer foto / vídeo
+          </button>
+          <input type="file" id="input-galeria" multiple accept="image/*,video/*" style="display:none">
+          <input type="file" id="input-camara" accept="image/*,video/*" capture="environment" style="display:none">
         </div>
+
+        <div id="upload-queue" style="display:none">
+          <div id="queue-previews" class="queue-previews"></div>
+          <div style="display:flex; gap:10px; margin-top:8px;">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-upload-confirm">Subir archivos</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-upload-cancel">Cancelar</button>
+          </div>
+        </div>
+
+        <div id="archivos-strip" class="archivos-strip mt-16"></div>
+        <p id="archivos-empty" class="text-muted mt-16">No hay archivos multimedia.</p>
+      </section>
+
+      <!-- 9. DANGER ZONE -->
+      <div class="danger-zone-toggle">
+        <button type="button" id="btn-toggle-danger" class="btn-danger-toggle">⚠ Zona de peligro</button>
+      </div>
+      <div class="section" id="danger-zone-content" style="display:none">
+        <p class="text-muted">Esta acción es irreversible.</p>
+        <button class="btn btn-danger" id="btn-delete-proyecto">Eliminar proyecto</button>
+        <span id="delete-proyecto-confirm" style="display:none; margin-left:10px;">
+          ¿Seguro?
+          <button type="button" class="btn btn-sm btn-danger" id="btn-delete-confirm-yes">Sí, eliminar</button>
+          <button type="button" class="btn btn-sm btn-secondary" id="btn-delete-confirm-no">Cancelar</button>
+        </span>
       </div>
 
     </div>

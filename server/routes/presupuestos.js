@@ -21,7 +21,7 @@ export default async function presupuestosRoutes(app) {
   });
 
   app.post('/api/presupuestos', async (req, reply) => {
-    const { proyecto_id, porcentaje_cobro, notas } = req.body || {};
+    const { proyecto_id, porcentaje_cobro, notas, incluirFotos } = req.body || {};
     if (!proyecto_id) return reply.code(400).send({ error: 'proyecto_id es obligatorio' });
 
     const proyecto = db.prepare('SELECT * FROM proyectos WHERE id = ?').get(proyecto_id);
@@ -31,6 +31,9 @@ export default async function presupuestosRoutes(app) {
       ? db.prepare('SELECT * FROM clientes WHERE id = ?').get(proyecto.cliente_id)
       : null;
     const conceptos = db.prepare('SELECT * FROM conceptos WHERE proyecto_id = ? ORDER BY orden ASC, id ASC').all(proyecto_id);
+    const fotos = incluirFotos
+      ? db.prepare(`SELECT * FROM archivos WHERE proyecto_id = ? AND tipo = 'foto' ORDER BY created_at ASC`).all(proyecto_id)
+      : [];
 
     const numero = generarNumero('presupuesto');
 
@@ -41,7 +44,7 @@ export default async function presupuestosRoutes(app) {
     const presupuesto = db.prepare('SELECT * FROM presupuestos WHERE id = ?').get(result.lastInsertRowid);
 
     const filePath = join(STORAGE_DIR, `${numero}.pdf`);
-    await buildPresupuestoPDF({ presupuesto, proyecto, cliente, conceptos, filePath });
+    await buildPresupuestoPDF({ presupuesto, proyecto, cliente, conceptos, fotos, filePath });
 
     db.prepare('UPDATE presupuestos SET pdf_path = ? WHERE id = ?').run(filePath, presupuesto.id);
 

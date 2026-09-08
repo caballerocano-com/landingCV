@@ -86,6 +86,7 @@ CREATE TABLE IF NOT EXISTS contratos (
   pdf_path TEXT,
   pdf_hash TEXT,
   expires_at TEXT,
+  incluir_fotos INTEGER DEFAULT 0,
   created_at TEXT DEFAULT (datetime('now'))
 );
 
@@ -129,6 +130,15 @@ CREATE TABLE IF NOT EXISTS horas (
   proyecto_id INTEGER REFERENCES proyectos(id),
   fecha TEXT NOT NULL,
   horas REAL NOT NULL,
+  descripcion TEXT,
+  created_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS archivos (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  proyecto_id INTEGER NOT NULL REFERENCES proyectos(id) ON DELETE CASCADE,
+  filename TEXT NOT NULL,
+  tipo TEXT NOT NULL CHECK(tipo IN ('foto', 'video')),
   descripcion TEXT,
   created_at TEXT DEFAULT (datetime('now'))
 );

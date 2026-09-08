@@ -62,6 +62,10 @@ function migrate() {
     db.exec(`ALTER TABLE config ADD COLUMN ultimo_num_encargo INTEGER DEFAULT 0`);
   }
 
+  if (tableExists('contratos') && !columnExists('contratos', 'incluir_fotos')) {
+    db.exec(`ALTER TABLE contratos ADD COLUMN incluir_fotos INTEGER DEFAULT 0`);
+  }
+
   const proyectosTable = db.prepare(`SELECT sql FROM sqlite_master WHERE type='table' AND name='proyectos'`).get();
   const needsProyectosRebuild = proyectosTable && proyectosTable.sql.includes("DEFAULT 'presupuestado'");
   const hasStaleMigrationTable = tableExists('proyectos_migration_old');

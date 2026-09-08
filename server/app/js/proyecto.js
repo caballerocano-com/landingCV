@@ -1,4 +1,4 @@
-import { apiFetch, downloadPDF } from './api.js';
+import { apiFetch, downloadPDF, getToken } from './api.js';
 import { guard } from './auth.js';
 import { el, badge, mountChrome, formatMoney, formatDateEs, todayIso, ESTADO_LABELS, buildTipoServicioField } from './ui.js';
 
@@ -12,6 +12,7 @@ if (!proyectoId) {
 let proyecto = null;
 let clientes = [];
 let elementosCatalogo = [];
+let queueFiles = [];
 
 // Reassigned on every renderConceptos() call to point at whichever catalog
 // dropdown is currently mounted; a single listener below delegates to it.
@@ -31,8 +32,32 @@ async function init() {
   document.getElementById('horas-form').addEventListener('submit', onAddHora);
   document.getElementById('ingresos-form').addEventListener('submit', onAddIngreso);
   document.getElementById('gastos-form').addEventListener('submit', onAddGasto);
-  document.getElementById('finalize-btn').addEventListener('click', onFinalize);
-  document.getElementById('delete-project-btn').addEventListener('click', onDeleteProject);
+
+  document.getElementById('btn-add-fotos').addEventListener('click', () => {
+    document.getElementById('input-galeria').click();
+  });
+  document.getElementById('btn-add-video').addEventListener('click', () => {
+    document.getElementById('input-camara').click();
+  });
+  document.getElementById('input-galeria').addEventListener('change', (e) => onFilesSelected(e.target.files));
+  document.getElementById('input-camara').addEventListener('change', (e) => onFilesSelected(e.target.files));
+  document.getElementById('btn-upload-confirm').addEventListener('click', onUploadConfirm);
+  document.getElementById('btn-upload-cancel').addEventListener('click', onUploadCancel);
+
+  document.getElementById('btn-toggle-danger').addEventListener('click', () => {
+    const content = document.getElementById('danger-zone-content');
+    const isVisible = content.style.display !== 'none';
+    content.style.display = isVisible ? 'none' : '';
+  });
+  document.getElementById('btn-delete-proyecto').addEventListener('click', () => {
+    document.getElementById('btn-delete-proyecto').style.display = 'none';
+    document.getElementById('delete-proyecto-confirm').style.display = '';
+  });
+  document.getElementById('btn-delete-confirm-yes').addEventListener('click', onDeleteProject);
+  document.getElementById('btn-delete-confirm-no').addEventListener('click', () => {
+    document.getElementById('delete-proyecto-confirm').style.display = 'none';
+    document.getElementById('btn-delete-proyecto').style.display = '';
+  });
 
   try {
     [clientes, elementosCatalogo] = await Promise.all([
@@ -71,6 +96,7 @@ async function loadProject() {
   renderContratos();
   renderIngresos();
   renderGastos();
+  await loadArchivos();
 }
 
 // ── 1. HEADER ────────────────────────────────────────────────────────
@@ -592,10 +618,23 @@ function renderPresupuestos() {
   const form = el('form', { className: 'inline-form' });
   const porcentaje = el('select', {}, [100, 50, 40, 30].map((v) => el('option', { value: v, text: `${v}%` })));
   form.appendChild(fieldWrap('% a solicitar', porcentaje));
+
+  const anexoCheckPres = el('input', { type: 'checkbox', id: 'check-anexo-pres' });
+  form.appendChild(el('div', { className: 'anexo-check-row', style: 'display:none; width:100%;' },
+    el('label', {}, [anexoCheckPres, ' Incluir anexo de fotos de obra'])
+  ));
+
   form.appendChild(el('button', { type: 'submit', className: 'btn btn-primary btn-sm', text: 'Nuevo presupuesto' }));
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    await apiFetch('/presupuestos', { method: 'POST', body: JSON.stringify({ proyecto_id: proyectoId, porcentaje_cobro: parseInt(porcentaje.value, 10) }) });
+    await apiFetch('/presupuestos', {
+      method: 'POST',
+      body: JSON.stringify({
+        proyecto_id: proyectoId,
+        porcentaje_cobro: parseInt(porcentaje.value, 10),
+        incluirFotos: anexoCheckPres.checked,
+      }),
+    });
     await loadProject();
   });
   formWrap.appendChild(form);
@@ -678,13 +717,25 @@ function renderContratos() {
   form.appendChild(fieldWrap('Método de pago', metodo));
   form.appendChild(fieldWrap('Plazos de pago', plazos));
   form.appendChild(fieldWrap('Términos', terminos));
+
+  const anexoCheckEnc = el('input', { type: 'checkbox', id: 'check-anexo-enc' });
+  form.appendChild(el('div', { className: 'anexo-check-row', style: 'display:none;' },
+    el('label', {}, [anexoCheckEnc, ' Incluir anexo de fotos de obra'])
+  ));
+
   form.appendChild(el('button', { type: 'submit', className: 'btn btn-primary btn-sm', text: 'Nuevo encargo', style: 'align-self:flex-start;' }));
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     await apiFetch('/contratos', {
       method: 'POST',
-      body: JSON.stringify({ proyecto_id: proyectoId, metodo_pago: metodo.value, plazos_pago: plazos.value, terminos: terminos.value }),
+      body: JSON.stringify({
+        proyecto_id: proyectoId,
+        metodo_pago: metodo.value,
+        plazos_pago: plazos.value,
+        terminos: terminos.value,
+        incluirFotos: anexoCheckEnc.checked,
+      }),
     });
     await loadProject();
   });
@@ -776,16 +827,212 @@ async function onAddGasto(e) {
   await loadProject();
 }
 
-// ── 8. DANGER ZONE ───────────────────────────────────────────────────
+// ── 8. ARCHIVOS MULTIMEDIA ───────────────────────────────────────────
 
-async function onFinalize() {
-  if (!confirm('¿Marcar este proyecto como finalizado? Dejará de aparecer en el panel de proyectos activos.')) return;
-  await apiFetch(`/proyectos/${proyectoId}/estado`, { method: 'PATCH', body: JSON.stringify({ estado: 'finalizado' }) });
-  await loadProject();
+async function loadArchivos() {
+  let archivos;
+  try {
+    archivos = await apiFetch(`/archivos?proyecto_id=${proyectoId}`);
+  } catch {
+    archivos = [];
+  }
+  renderArchivosStrip(archivos);
+  updateAnexoCheckVisibility(archivos);
 }
 
+function updateAnexoCheckVisibility(archivos) {
+  const hasFotos = (archivos || []).some((a) => a.tipo === 'foto');
+  const checkPres = document.getElementById('check-anexo-pres');
+  const checkEnc = document.getElementById('check-anexo-enc');
+  if (checkPres) checkPres.closest('.anexo-check-row').style.display = hasFotos ? '' : 'none';
+  if (checkEnc) checkEnc.closest('.anexo-check-row').style.display = hasFotos ? '' : 'none';
+}
+
+function renderArchivosStrip(archivos) {
+  const strip = document.getElementById('archivos-strip');
+  const empty = document.getElementById('archivos-empty');
+  strip.textContent = '';
+
+  if (!archivos || archivos.length === 0) {
+    empty.style.display = '';
+    strip.style.display = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  strip.style.display = 'flex';
+  for (const a of archivos) {
+    strip.appendChild(buildArchivoThumb(a));
+  }
+}
+
+function buildArchivoThumb(a) {
+  const isVideo = a.tipo === 'video';
+  const src = `/storage/proyectos/${proyectoId}/${a.filename}`;
+
+  const media = el(isVideo ? 'video' : 'img', { src });
+  if (isVideo) {
+    media.setAttribute('preload', 'metadata');
+    media.muted = true;
+  }
+  media.addEventListener('click', () => openLightbox(a));
+
+  const thumb = el('div', { className: 'archivo-thumb' });
+
+  if (isVideo) {
+    const overlay = el('div', { className: 'thumb-overlay' }, el('span', { className: 'play-icon', text: '▶' }));
+    overlay.addEventListener('click', () => openLightbox(a));
+    thumb.appendChild(overlay);
+  }
+
+  const delBtn = el('button', { type: 'button', className: 'btn-delete-archivo', text: '×' });
+  delBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    confirmDeleteArchivo(a.id, thumb);
+  });
+
+  thumb.appendChild(media);
+  thumb.appendChild(delBtn);
+
+  if (a.descripcion) {
+    thumb.appendChild(el('div', { className: 'archivo-descripcion', text: a.descripcion }));
+  }
+
+  return thumb;
+}
+
+function confirmDeleteArchivo(id, thumbEl) {
+  const deleteBtn = thumbEl.querySelector('.btn-delete-archivo');
+  if (deleteBtn) deleteBtn.style.display = 'none';
+
+  const yes = el('button', { type: 'button', className: 'confirm-yes', text: 'Sí' });
+  const no = el('button', { type: 'button', className: 'confirm-no', text: 'No' });
+  const confirmEl = el('div', { className: 'archivo-confirm' }, [yes, no]);
+
+  yes.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    await apiFetch(`/archivos/${id}`, { method: 'DELETE' });
+    await loadArchivos();
+  });
+  no.addEventListener('click', (e) => {
+    e.stopPropagation();
+    confirmEl.remove();
+    if (deleteBtn) deleteBtn.style.display = '';
+  });
+
+  thumbEl.appendChild(confirmEl);
+}
+
+function openLightbox(archivo) {
+  const isVideo = archivo.tipo === 'video';
+  const src = `/storage/proyectos/${proyectoId}/${archivo.filename}`;
+
+  const media = el(isVideo ? 'video' : 'img', {
+    src,
+    style: 'max-width:95vw; max-height:90vh; border-radius:8px;',
+  });
+  if (isVideo) {
+    media.controls = true;
+    media.autoplay = true;
+  }
+
+  const closeBtn = el('button', {
+    type: 'button',
+    text: '×',
+    style: 'position:absolute; top:16px; right:20px; background:none; border:none; color:white; font-size:36px; cursor:pointer; line-height:1;',
+  });
+  closeBtn.addEventListener('click', () => overlay.remove());
+
+  const overlay = el('div', {
+    style: 'position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:9999; display:flex; align-items:center; justify-content:center;',
+  }, [media, closeBtn]);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.remove();
+  });
+
+  document.body.appendChild(overlay);
+}
+
+// ── Upload queue ─────────────────────────────────────────────────────
+
+function onFilesSelected(fileList) {
+  for (const file of fileList) {
+    queueFiles.push(file);
+  }
+  renderUploadQueue();
+  // Reset both inputs so picking the same file again later still fires 'change'.
+  document.getElementById('input-galeria').value = '';
+  document.getElementById('input-camara').value = '';
+}
+
+function renderUploadQueue() {
+  const queueDiv = document.getElementById('upload-queue');
+  const previews = document.getElementById('queue-previews');
+  previews.textContent = '';
+
+  if (queueFiles.length === 0) {
+    queueDiv.style.display = 'none';
+    return;
+  }
+
+  queueDiv.style.display = '';
+  queueFiles.forEach((file, index) => {
+    const isVideo = file.type.startsWith('video/');
+    const media = el(isVideo ? 'video' : 'img', { src: URL.createObjectURL(file) });
+    if (isVideo) media.muted = true;
+
+    const removeBtn = el('button', { type: 'button', className: 'btn-remove-queue', text: '×' });
+    removeBtn.addEventListener('click', () => {
+      queueFiles.splice(index, 1);
+      renderUploadQueue();
+    });
+
+    previews.appendChild(el('div', { className: 'queue-thumb' }, [media, removeBtn]));
+  });
+}
+
+async function onUploadConfirm() {
+  if (queueFiles.length === 0) return;
+
+  const formData = new FormData();
+  formData.append('proyecto_id', proyectoId);
+  for (const file of queueFiles) {
+    formData.append('files', file);
+  }
+
+  const confirmBtn = document.getElementById('btn-upload-confirm');
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = 'Subiendo...';
+
+  try {
+    // Raw fetch (not apiFetch): a FormData body needs the browser to set its
+    // own multipart Content-Type with boundary, which apiFetch would override.
+    const res = await fetch('/api/archivos/upload', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${getToken()}` },
+      body: formData,
+    });
+    if (res.ok) {
+      queueFiles = [];
+      renderUploadQueue();
+      await loadArchivos();
+    }
+  } finally {
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = 'Subir archivos';
+  }
+}
+
+function onUploadCancel() {
+  queueFiles = [];
+  renderUploadQueue();
+}
+
+// ── 9. DANGER ZONE ───────────────────────────────────────────────────
+// Confirmation is the inline Sí/No UI wired in init() — estado=finalizado
+// is set exclusively via the estado selector in the header, never here.
+
 async function onDeleteProject() {
-  if (!confirm('¿Eliminar este proyecto de forma permanente? Esta acción no se puede deshacer.')) return;
   await apiFetch(`/proyectos/${proyectoId}`, { method: 'DELETE' });
   window.location.href = '/app/proyectos.html';
 }
