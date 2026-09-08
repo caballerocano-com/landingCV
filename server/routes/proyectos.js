@@ -148,7 +148,7 @@ export default async function proyectosRoutes(app) {
     return db.prepare('SELECT * FROM conceptos WHERE id = ?').get(result.lastInsertRowid);
   });
 
-  app.put('/api/conceptos/:id', async (req, reply) => {
+  async function updateConcepto(req, reply) {
     const existing = db.prepare('SELECT * FROM conceptos WHERE id = ?').get(req.params.id);
     if (!existing) return reply.code(404).send({ error: 'No encontrado' });
 
@@ -167,7 +167,13 @@ export default async function proyectosRoutes(app) {
     );
 
     return db.prepare('SELECT * FROM conceptos WHERE id = ?').get(req.params.id);
-  });
+  }
+
+  // PATCH behaves the same as PUT here: every field already falls back to its
+  // existing value when omitted, so a partial body (e.g. just { cantidad })
+  // updates only that field either way.
+  app.put('/api/conceptos/:id', updateConcepto);
+  app.patch('/api/conceptos/:id', updateConcepto);
 
   app.delete('/api/conceptos/:id', async (req, reply) => {
     const existing = db.prepare('SELECT * FROM conceptos WHERE id = ?').get(req.params.id);

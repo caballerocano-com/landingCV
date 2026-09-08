@@ -1,6 +1,6 @@
 import { apiFetch, downloadPDF } from './api.js';
 import { guard } from './auth.js';
-import { el, badge, mountChrome, formatMoney, formatDateEs, todayIso, ESTADO_LABELS } from './ui.js';
+import { el, badge, mountChrome, formatMoney, formatDateEs, todayIso, ESTADO_LABELS, buildTipoServicioField } from './ui.js';
 
 const params = new URLSearchParams(window.location.search);
 const proyectoId = params.get('id');
@@ -139,12 +139,12 @@ function toggleEditForm(container) {
       })
     )),
   ]);
-  const tipoField = labeledInput('Tipo de servicio', 'text', proyecto.tipo_servicio);
+  const tipoField = buildTipoServicioField(proyecto.tipo_servicio);
   const direccionField = labeledInput('Dirección de obra', 'text', proyecto.direccion_obra);
 
   form.appendChild(nombreField);
   form.appendChild(clienteField);
-  form.appendChild(tipoField);
+  form.appendChild(tipoField.wrapper);
   form.appendChild(direccionField);
 
   const descField = el('div', { className: 'field', style: 'grid-column: 1 / -1;' }, [
@@ -167,7 +167,7 @@ function toggleEditForm(container) {
       body: JSON.stringify({
         nombre: nombreField.querySelector('input').value,
         cliente_id: clienteField.querySelector('select').value || null,
-        tipo_servicio: tipoField.querySelector('input').value,
+        tipo_servicio: tipoField.input.value.trim() || null,
         direccion_obra: direccionField.querySelector('input').value,
         descripcion: descArea.value,
       }),
@@ -211,23 +211,49 @@ function renderStats() {
 
 // ── 3. CONCEPTOS ─────────────────────────────────────────────────────
 
+const UNIDAD_OPTIONS = [
+  ['ud', 'Unidades (ud)'],
+  ['hora', 'Horas (h)'],
+  ['m2', 'Metros cuadrados (m²)'],
+  ['ml', 'Metros lineales (ml)'],
+  ['kg', 'Kilogramos (kg)'],
+  ['global', 'Global'],
+];
+
+function buildUnidadSelect(initialValue) {
+  return el('select', {}, UNIDAD_OPTIONS.map(([value, label]) => {
+    const opt = el('option', { value, text: label });
+    if (value === (initialValue || 'ud')) opt.selected = true;
+    return opt;
+  }));
+}
+
+function precioLabelText(unidad) {
+  return unidad === 'hora' ? 'Precio por hora (€)' : 'Precio (€)';
+}
+
 function renderConceptos() {
   const addContainer = document.getElementById('conceptos-add');
   addContainer.textContent = '';
 
   const form = el('form', { className: 'inline-form concept-form', style: 'flex-direction:column; align-items:stretch;' });
 
-  const nombreInput = el('input', { type: 'text', placeholder: 'Nombre del concepto' });
   const cantidadInput = el('input', { type: 'number', step: '0.01', value: '1' });
   const precioInput = el('input', { type: 'number', step: '0.01', value: '0' });
-  const unidadInput = el('input', { type: 'text', value: 'ud' });
+  const unidadSelect = buildUnidadSelect('ud');
+  const priceLabel = el('label', { text: precioLabelText('ud') });
+  const priceError = el('p', { className: 'error-text', hidden: '' });
+
+  unidadSelect.addEventListener('change', () => {
+    priceLabel.textContent = precioLabelText(unidadSelect.value);
+  });
 
   let selectedElementoId = null;
 
   const searchInput = el('input', { type: 'text', placeholder: 'Buscar en catálogo...' });
   const dropdown = el('div', { className: 'catalog-dropdown', hidden: '' });
   const searchWrap = el('div', { className: 'field catalog-search' }, [
-    el('label', { text: 'Catálogo' }),
+    el('label', { text: 'Concepto (buscar en catálogo)' }),
     searchInput,
     dropdown,
   ]);
@@ -237,38 +263,62 @@ function renderConceptos() {
     dropdown.textContent = '';
   }
 
-  function showResults(items) {
+  function applyElemento(item) {
+    selectedElementoId = item.id;
+    precioInput.value = item.precio_unitario;
+    unidadSelect.value = item.unidad;
+    priceLabel.textContent = precioLabelText(item.unidad);
+    searchInput.value = item.nombre;
+    closeDropdown();
+  }
+
+  function showResults(rawQuery, items) {
     dropdown.textContent = '';
-    if (items.length === 0) {
-      dropdown.appendChild(el('div', { className: 'catalog-dropdown-empty', text: 'Sin resultados' }));
-    } else {
+    if (items.length > 0) {
       for (const item of items) {
         const row = el('div', {
           className: 'catalog-dropdown-item',
           text: `${item.nombre} — ${formatMoney(item.precio_unitario)}/${item.unidad}`,
         });
-        row.addEventListener('click', () => {
-          selectedElementoId = item.id;
-          nombreInput.value = item.nombre;
-          precioInput.value = item.precio_unitario;
-          unidadInput.value = item.unidad;
-          searchInput.value = item.nombre;
-          closeDropdown();
-        });
+        row.addEventListener('click', () => applyElemento(item));
         dropdown.appendChild(row);
       }
+    } else if (rawQuery.length >= 2) {
+      const createRow = el('div', {
+        className: 'catalog-dropdown-item',
+        style: 'color: var(--accent); font-weight: 600;',
+        text: `+ Crear elemento nuevo: "${rawQuery}"`,
+      });
+      createRow.addEventListener('click', async () => {
+        let nuevo;
+        try {
+          nuevo = await apiFetch('/elementos', {
+            method: 'POST',
+            body: JSON.stringify({ nombre: rawQuery, precio_unitario: 0, unidad: 'ud' }),
+          });
+        } catch {
+          return;
+        }
+        elementosCatalogo.push(nuevo);
+        applyElemento(nuevo);
+        precioInput.focus();
+      });
+      dropdown.appendChild(createRow);
+    } else {
+      dropdown.appendChild(el('div', { className: 'catalog-dropdown-empty', text: 'Sin resultados' }));
     }
     dropdown.hidden = false;
   }
 
   searchInput.addEventListener('input', async () => {
-    const query = searchInput.value.trim().toLowerCase();
+    selectedElementoId = null;
+    const rawQuery = searchInput.value.trim();
+    const query = rawQuery.toLowerCase();
     if (!query) {
       closeDropdown();
-      selectedElementoId = null;
-      nombreInput.value = '';
       precioInput.value = '0';
-      unidadInput.value = 'ud';
+      unidadSelect.value = 'ud';
+      priceLabel.textContent = precioLabelText('ud');
       return;
     }
     // Elementos are already loaded at page init; only hit the API if that
@@ -277,7 +327,7 @@ function renderConceptos() {
       try { elementosCatalogo = await apiFetch('/elementos'); } catch { elementosCatalogo = []; }
     }
     const matches = elementosCatalogo.filter((e) => e.activo && e.nombre.toLowerCase().includes(query));
-    showResults(matches);
+    showResults(rawQuery, matches);
   });
 
   // A single document-level listener (registered once in init()) delegates
@@ -287,11 +337,13 @@ function renderConceptos() {
     if (!searchWrap.contains(e.target)) closeDropdown();
   };
 
-  const row1 = el('div', { className: 'form-row' }, [searchWrap, fieldWrap('Nombre', nombreInput)]);
+  const precioFieldWrap = el('div', { className: 'field' }, [priceLabel, precioInput, priceError]);
+
+  const row1 = el('div', { className: 'form-row' }, [searchWrap]);
   const row2 = el('div', { className: 'form-row' }, [
     fieldWrap('Cant.', cantidadInput),
-    fieldWrap('Ud.', unidadInput),
-    fieldWrap('Precio (€)', precioInput),
+    fieldWrap('Ud.', unidadSelect),
+    precioFieldWrap,
   ]);
 
   form.appendChild(row1);
@@ -307,15 +359,26 @@ function renderConceptos() {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!nombreInput.value.trim()) return;
+    priceError.hidden = true;
+
+    const nombre = searchInput.value.trim();
+    if (!nombre) return;
+
+    const precio = parseFloat(precioInput.value);
+    if (!precio || precio <= 0) {
+      priceError.textContent = 'El precio no puede ser 0. Define un precio estimado.';
+      priceError.hidden = false;
+      return;
+    }
+
     await apiFetch(`/proyectos/${proyectoId}/conceptos`, {
       method: 'POST',
       body: JSON.stringify({
         elemento_id: selectedElementoId,
-        nombre: nombreInput.value,
+        nombre,
         cantidad: parseFloat(cantidadInput.value) || 1,
-        precio_unitario: parseFloat(precioInput.value) || 0,
-        unidad: unidadInput.value || 'ud',
+        precio_unitario: precio,
+        unidad: unidadSelect.value,
       }),
     });
     await loadProject();
@@ -359,6 +422,16 @@ function totalItem(label, value, isTotal) {
   ]);
 }
 
+function formatConceptoLine(c) {
+  const lineTotal = (Number(c.cantidad) || 0) * (Number(c.precio_unitario) || 0);
+  const precioStr = formatMoney(c.precio_unitario);
+  const totalStr = formatMoney(lineTotal);
+  if (c.unidad === 'hora') {
+    return `${c.cantidad} h × ${precioStr}/h = ${totalStr}`;
+  }
+  return `${c.cantidad} ${c.unidad} × ${precioStr} = ${totalStr}`;
+}
+
 function buildConceptoRow(c) {
   const checkbox = el('input', { type: 'checkbox' });
   checkbox.checked = !!c.completado;
@@ -367,14 +440,12 @@ function buildConceptoRow(c) {
     await loadProject();
   });
 
-  const priceInput = el('input', { type: 'number', step: '0.01', style: 'width:90px;' });
+  const priceInput = el('input', { type: 'number', step: '0.01', style: 'width:90px;', title: precioLabelText(c.unidad) });
   priceInput.value = c.precio_unitario;
   priceInput.addEventListener('change', async () => {
     await apiFetch(`/conceptos/${c.id}`, { method: 'PUT', body: JSON.stringify({ precio_unitario: parseFloat(priceInput.value) || 0 }) });
     await loadProject();
   });
-
-  const lineTotal = (Number(c.cantidad) || 0) * (Number(c.precio_unitario) || 0);
 
   const deleteBtn = el('button', { className: 'btn-ghost', text: '🗑' });
   deleteBtn.addEventListener('click', async () => {
@@ -382,15 +453,74 @@ function buildConceptoRow(c) {
     await loadProject();
   });
 
-  return el('div', { className: 'list-row' }, [
+  const mainRow = el('div', { className: 'list-row' }, [
     checkbox,
     el('div', { className: 'list-row__main' }, [
       el('div', { text: c.nombre, style: c.completado ? 'text-decoration:line-through; color:var(--text-muted);' : '' }),
-      el('div', { className: 'list-row__meta', text: `${c.cantidad} ${c.unidad} · ${formatMoney(lineTotal)}` }),
+      el('div', { className: 'list-row__meta', text: formatConceptoLine(c) }),
     ]),
     priceInput,
     deleteBtn,
   ]);
+
+  if (c.unidad !== 'hora') {
+    return mainRow;
+  }
+
+  const wrapper = el('div', {});
+  wrapper.appendChild(mainRow);
+  const actionArea = el('div', { className: 'mt-8', style: 'padding-left:26px;' });
+  renderUseHoursAction(c, actionArea);
+  wrapper.appendChild(actionArea);
+  return wrapper;
+}
+
+function renderUseHoursAction(c, container) {
+  container.textContent = '';
+  const btn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm' }, [
+    el('i', { className: 'ti ti-clock' }),
+    ' Usar horas reales',
+  ]);
+  btn.addEventListener('click', async () => {
+    let horasList;
+    try {
+      horasList = await apiFetch(`/horas?proyecto_id=${proyectoId}`);
+    } catch {
+      horasList = [];
+    }
+    const totalHoras = (horasList || []).reduce((sum, h) => sum + (Number(h.horas) || 0), 0);
+
+    container.textContent = '';
+
+    if (totalHoras === 0) {
+      const msg = el('div', { className: 'confirm-inline' }, [
+        el('span', { className: 'text-muted', text: 'No hay horas registradas' }),
+      ]);
+      const closeBtn = el('button', { type: 'button', className: 'confirm-no', text: 'Cerrar' });
+      closeBtn.addEventListener('click', () => renderUseHoursAction(c, container));
+      msg.appendChild(closeBtn);
+      container.appendChild(msg);
+      return;
+    }
+
+    const nuevoTotal = totalHoras * (Number(c.precio_unitario) || 0);
+    const confirmWrap = el('div', { className: 'confirm-inline' }, [
+      el('span', {
+        text: `Actualizar cantidad a ${totalHoras}h — el total pasará a ${formatMoney(nuevoTotal)}. ¿Confirmar?`,
+      }),
+    ]);
+    const yes = el('button', { type: 'button', className: 'confirm-yes', text: 'Sí' });
+    yes.addEventListener('click', async () => {
+      await apiFetch(`/conceptos/${c.id}`, { method: 'PATCH', body: JSON.stringify({ cantidad: totalHoras }) });
+      await loadProject();
+    });
+    const no = el('button', { type: 'button', className: 'confirm-no', text: 'No' });
+    no.addEventListener('click', () => renderUseHoursAction(c, container));
+    confirmWrap.appendChild(yes);
+    confirmWrap.appendChild(no);
+    container.appendChild(confirmWrap);
+  });
+  container.appendChild(btn);
 }
 
 // ── 4. HORAS ─────────────────────────────────────────────────────────

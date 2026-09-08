@@ -8,6 +8,7 @@ import './db/database.js';
 import authRoutes from './routes/auth.js';
 import clientesRoutes from './routes/clientes.js';
 import proyectosRoutes from './routes/proyectos.js';
+import tiposRoutes from './routes/tipos.js';
 import elementosRoutes from './routes/elementos.js';
 import presupuestosRoutes from './routes/presupuestos.js';
 import facturasRoutes from './routes/facturas.js';
@@ -70,6 +71,7 @@ app.get('/firmar/:token', (req, reply) => {
 app.register(authRoutes);
 app.register(clientesRoutes);
 app.register(proyectosRoutes);
+app.register(tiposRoutes);
 app.register(elementosRoutes);
 app.register(presupuestosRoutes);
 app.register(facturasRoutes);

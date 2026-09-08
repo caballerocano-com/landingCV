@@ -1,6 +1,6 @@
 import { apiFetch } from './api.js';
 import { guard } from './auth.js';
-import { el, badge, mountChrome, formatDateEs } from './ui.js';
+import { el, badge, mountChrome, formatDateEs, buildTipoServicioField } from './ui.js';
 
 if (await guard()) {
   mountChrome('proyectos', 'Todos los proyectos');
@@ -8,8 +8,12 @@ if (await guard()) {
 }
 
 let clientes = [];
+let tipoField;
 
 async function init() {
+  tipoField = buildTipoServicioField('');
+  document.getElementById('np-tipo-wrap').appendChild(tipoField.wrapper);
+
   try {
     clientes = await apiFetch('/clientes');
   } catch {
@@ -58,7 +62,7 @@ async function onCreateProject(e) {
   const body = {
     nombre: document.getElementById('np-nombre').value,
     cliente_id: document.getElementById('np-cliente').value || null,
-    tipo_servicio: document.getElementById('np-tipo').value || null,
+    tipo_servicio: tipoField.input.value.trim() || null,
     direccion_obra: document.getElementById('np-direccion').value || null,
     descripcion: document.getElementById('np-descripcion').value || null,
   };

@@ -96,7 +96,7 @@ function drawConceptsTable(doc, conceptos) {
     const nameHeight = doc.heightOfString(c.nombre || '', { width: COL.descW - 6 });
     doc.text(c.nombre || '', COL.desc + 6, y, { width: COL.descW - 6 });
     doc.text(String(c.cantidad), COL.qty, y, { width: COL.qtyW, align: 'right' });
-    doc.text(c.unidad || '', COL.unit, y, { width: COL.unitW, align: 'right' });
+    doc.text(c.unidad === 'hora' ? 'h' : (c.unidad || ''), COL.unit, y, { width: COL.unitW, align: 'right' });
     doc.text(formatMoney(c.precio_unitario), COL.price, y, { width: COL.priceW, align: 'right' });
     doc.text(formatMoney(lineTotal), COL.total, y, { width: COL.totalW - 6, align: 'right' });
 

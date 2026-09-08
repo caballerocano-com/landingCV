@@ -15,6 +15,11 @@ const CATALOGO = [
   { nombre: 'Material y gestión', descripcion: 'Precio a definir según proyecto', precio_unitario: 0, unidad: 'global' },
 ];
 
+const TIPOS_SERVICIO = [
+  'Electricidad', 'Construcción', 'Pladur', 'Alicatados', 'Fontanería',
+  'Piscinas', 'Seguridad', 'Carpintería', 'Soldadura', 'Manitas', 'Reformas',
+];
+
 function seed() {
   const count = db.prepare('SELECT COUNT(*) AS c FROM elementos').get().c;
   if (count > 0) {
@@ -32,4 +37,19 @@ function seed() {
   console.log(`Seed completado: ${CATALOGO.length} elementos insertados`);
 }
 
+function seedTiposServicio() {
+  const count = db.prepare('SELECT COUNT(*) AS c FROM tipos_servicio').get().c;
+  if (count > 0) {
+    console.log('tipos_servicio ya tiene datos, seed omitido');
+    return;
+  }
+  const insert = db.prepare('INSERT INTO tipos_servicio (nombre) VALUES (?)');
+  const insertMany = db.transaction((items) => {
+    for (const nombre of items) insert.run(nombre);
+  });
+  insertMany(TIPOS_SERVICIO);
+  console.log(`Seed completado: ${TIPOS_SERVICIO.length} tipos de servicio insertados`);
+}
+
 seed();
+seedTiposServicio();

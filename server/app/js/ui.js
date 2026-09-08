@@ -1,4 +1,5 @@
 import { logout } from './auth.js';
+import { apiFetch } from './api.js';
 
 function el(tag, props = {}, children = []) {
   const node = document.createElement(tag);
@@ -63,6 +64,122 @@ function badge(estado) {
   return el('span', { className: 'badge', 'data-estado': estado, text: ESTADO_LABELS[estado] || estado });
 }
 
+// Generic "click outside closes this" registry, backed by a single
+// document-level listener. Widgets register their container + close callback
+// and are pruned lazily once their container leaves the document, so
+// repeatedly opening/closing a form (each time building a fresh widget)
+// never accumulates listeners.
+const outsideClickRegistry = [];
+document.addEventListener('click', (e) => {
+  for (let i = outsideClickRegistry.length - 1; i >= 0; i--) {
+    const { containerEl, onOutside } = outsideClickRegistry[i];
+    if (!document.contains(containerEl)) {
+      outsideClickRegistry.splice(i, 1);
+      continue;
+    }
+    if (!containerEl.contains(e.target)) onOutside();
+  }
+});
+
+function registerOutsideClick(containerEl, onOutside) {
+  outsideClickRegistry.push({ containerEl, onOutside });
+}
+
+// Tag-style autocomplete for "tipo de servicio": suggests previously used
+// values from /api/tipos-servicio and, on blur/Enter, saves a typed value
+// that isn't in the list yet so it shows up in future searches.
+function buildTipoServicioField(initialValue) {
+  const input = el('input', { type: 'text', placeholder: 'Tipo de servicio...' });
+  input.value = initialValue || '';
+
+  const dropdown = el('div', { className: 'catalog-dropdown', hidden: '' });
+  const wrapper = el('div', { className: 'field catalog-search' }, [
+    el('label', { text: 'Tipo de servicio' }),
+    input,
+    dropdown,
+  ]);
+
+  let tiposCache = null;
+  const knownValues = new Set();
+
+  function closeDropdown() {
+    dropdown.hidden = true;
+    dropdown.textContent = '';
+  }
+
+  function showResults(items) {
+    dropdown.textContent = '';
+    if (items.length === 0) {
+      dropdown.appendChild(el('div', { className: 'catalog-dropdown-empty', text: 'Sin coincidencias' }));
+    } else {
+      for (const item of items) {
+        const row = el('div', { className: 'catalog-dropdown-item', text: item.nombre });
+        row.addEventListener('mousedown', (e) => {
+          // mousedown (not click) fires before the input's blur handler,
+          // so the selection wins over the "save new value" blur logic.
+          e.preventDefault();
+          input.value = item.nombre;
+          closeDropdown();
+        });
+        dropdown.appendChild(row);
+      }
+    }
+    dropdown.hidden = false;
+  }
+
+  async function ensureTiposLoaded() {
+    if (tiposCache) return tiposCache;
+    try {
+      tiposCache = await apiFetch('/tipos-servicio');
+    } catch {
+      tiposCache = [];
+    }
+    for (const t of tiposCache) knownValues.add(t.nombre.toLowerCase());
+    return tiposCache;
+  }
+
+  input.addEventListener('input', async () => {
+    const query = input.value.trim().toLowerCase();
+    if (!query) {
+      closeDropdown();
+      return;
+    }
+    const tipos = await ensureTiposLoaded();
+    showResults(tipos.filter((t) => t.nombre.toLowerCase().includes(query)));
+  });
+
+  async function saveIfNew() {
+    const value = input.value.trim();
+    if (!value) return;
+    await ensureTiposLoaded();
+    if (knownValues.has(value.toLowerCase())) return;
+    knownValues.add(value.toLowerCase());
+    try {
+      await apiFetch('/tipos-servicio', { method: 'POST', body: JSON.stringify({ nombre: value }) });
+    } catch {
+      // Non-critical: the project itself still saves with this tipo_servicio
+      // text even if it doesn't make it into future autocomplete lists.
+    }
+  }
+
+  input.addEventListener('blur', () => {
+    closeDropdown();
+    saveIfNew();
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      closeDropdown();
+      saveIfNew();
+    }
+  });
+
+  registerOutsideClick(wrapper, closeDropdown);
+
+  return { wrapper, input };
+}
+
 const NAV_LINKS = [
   { href: '/app/dashboard.html', label: 'Panel', key: 'dashboard' },
   { href: '/app/proyectos.html', label: 'Proyectos', key: 'proyectos' },
@@ -111,4 +228,4 @@ function mountChrome(activeKey, title) {
   root.appendChild(overlay);
 }
 
-export { el, formatMoney, formatDateEs, todayIso, badge, mountChrome, ESTADO_LABELS };
+export { el, formatMoney, formatDateEs, todayIso, badge, mountChrome, ESTADO_LABELS, registerOutsideClick, buildTipoServicioField };
