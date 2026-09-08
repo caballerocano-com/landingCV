@@ -1,4 +1,4 @@
-import { createReadStream, existsSync } from 'fs';
+import { createReadStream, existsSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import db from '../db/database.js';
@@ -12,12 +12,20 @@ const STORAGE_DIR = join(__dirname, '../storage/recibos');
 export default async function ingresosRoutes(app) {
   app.addHook('preHandler', requireAuth);
 
+  // Recibo fields are embedded via LEFT JOIN so the frontend never needs a
+  // separate /api/recibos call to render each ingreso's recibo state/number.
+  const INGRESOS_SELECT = `
+    SELECT i.*, r.id AS recibo_id, r.numero AS recibo_numero, r.estado AS recibo_estado
+    FROM ingresos i
+    LEFT JOIN recibos r ON r.ingreso_id = i.id
+  `;
+
   app.get('/api/ingresos', async (req) => {
     const { proyecto_id } = req.query || {};
     if (proyecto_id) {
-      return db.prepare('SELECT * FROM ingresos WHERE proyecto_id = ? ORDER BY fecha DESC').all(proyecto_id);
+      return db.prepare(`${INGRESOS_SELECT} WHERE i.proyecto_id = ? ORDER BY i.fecha DESC`).all(proyecto_id);
     }
-    return db.prepare('SELECT * FROM ingresos ORDER BY fecha DESC').all();
+    return db.prepare(`${INGRESOS_SELECT} ORDER BY i.fecha DESC`).all();
   });
 
   app.post('/api/ingresos', async (req, reply) => {
@@ -100,5 +108,34 @@ export default async function ingresosRoutes(app) {
     }
     reply.header('Content-Type', 'application/pdf');
     return reply.send(createReadStream(ingreso.recibo_pdf_path));
+  });
+
+  // ── Recibos: delete (emitido only) / anular ─────────────────────────
+
+  app.delete('/api/recibos/:id', async (req, reply) => {
+    const recibo = db.prepare('SELECT * FROM recibos WHERE id = ?').get(req.params.id);
+    if (!recibo) return reply.code(404).send({ error: 'No encontrado' });
+    if (recibo.estado !== 'emitido') {
+      return reply.code(403).send({ error: 'Un recibo anulado no se puede eliminar' });
+    }
+
+    if (recibo.pdf_path) {
+      try { unlinkSync(recibo.pdf_path); } catch { /* already gone */ }
+    }
+    db.prepare('DELETE FROM recibos WHERE id = ?').run(req.params.id);
+    db.prepare('UPDATE ingresos SET recibo_pdf_path = NULL WHERE id = ?').run(recibo.ingreso_id);
+    // Deleted document numbers are never reused (fiscal integrity)
+    return { success: true };
+  });
+
+  app.patch('/api/recibos/:id/anular', async (req, reply) => {
+    const recibo = db.prepare('SELECT * FROM recibos WHERE id = ?').get(req.params.id);
+    if (!recibo) return reply.code(404).send({ error: 'No encontrado' });
+    if (recibo.estado !== 'emitido') {
+      return reply.code(403).send({ error: 'Este recibo ya está anulado' });
+    }
+
+    db.prepare(`UPDATE recibos SET estado = 'anulado' WHERE id = ?`).run(req.params.id);
+    return db.prepare('SELECT * FROM recibos WHERE id = ?').get(req.params.id);
   });
 }

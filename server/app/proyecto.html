@@ -54,26 +54,51 @@
 
       <!-- 5. DOCUMENTOS -->
       <div class="section">
-        <h2 id="section-presupuestos">Presupuestos</h2>
+        <div class="section-header">
+          <h2 id="section-presupuestos">Presupuestos</h2>
+          <label class="toggle-anulados">
+            <input type="checkbox" id="toggle-anulados-pres">
+            <span>Mostrar anulados</span>
+          </label>
+        </div>
         <div id="presupuestos-list"></div>
         <div id="presupuestos-form-wrap" class="mt-16"></div>
       </div>
 
       <div class="section">
-        <h2 id="section-facturas">Facturas</h2>
+        <div class="section-header">
+          <h2 id="section-facturas">Facturas</h2>
+          <label class="toggle-anulados">
+            <input type="checkbox" id="toggle-anulados-fact">
+            <span>Mostrar anulados</span>
+          </label>
+        </div>
         <div id="facturas-list"></div>
         <div id="facturas-form-wrap" class="mt-16"></div>
+        <div id="rectificativa-form-wrap"></div>
       </div>
 
       <div class="section">
-        <h2 id="section-encargos">Encargos</h2>
+        <div class="section-header">
+          <h2 id="section-encargos">Encargos</h2>
+          <label class="toggle-anulados">
+            <input type="checkbox" id="toggle-anulados-enc">
+            <span>Mostrar anulados</span>
+          </label>
+        </div>
         <div id="contratos-list"></div>
         <div id="contratos-form-wrap" class="mt-16"></div>
       </div>
 
       <!-- 6. INGRESOS -->
       <div class="section">
-        <h2 id="section-ingresos">Ingresos</h2>
+        <div class="section-header">
+          <h2 id="section-ingresos">Ingresos</h2>
+          <label class="toggle-anulados">
+            <input type="checkbox" id="toggle-anulados-recibos">
+            <span>Mostrar recibos anulados</span>
+          </label>
+        </div>
         <div id="ingresos-list"></div>
         <form class="inline-form" id="ingresos-form">
           <div class="field">

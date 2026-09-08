@@ -56,7 +56,12 @@ export default async function proyectosRoutes(app) {
     const presupuestos = db.prepare('SELECT * FROM presupuestos WHERE proyecto_id = ? ORDER BY created_at DESC').all(req.params.id);
     const facturas = db.prepare('SELECT * FROM facturas WHERE proyecto_id = ? ORDER BY created_at DESC').all(req.params.id);
     const contratos = db.prepare('SELECT * FROM contratos WHERE proyecto_id = ? ORDER BY created_at DESC').all(req.params.id);
-    const ingresos = db.prepare('SELECT * FROM ingresos WHERE proyecto_id = ? ORDER BY fecha DESC').all(req.params.id);
+    const ingresos = db.prepare(
+      `SELECT i.*, r.id AS recibo_id, r.numero AS recibo_numero, r.estado AS recibo_estado
+       FROM ingresos i
+       LEFT JOIN recibos r ON r.ingreso_id = i.id
+       WHERE i.proyecto_id = ? ORDER BY i.fecha DESC`
+    ).all(req.params.id);
     const gastos = db.prepare('SELECT * FROM gastos WHERE proyecto_id = ? ORDER BY fecha DESC').all(req.params.id);
 
     return {

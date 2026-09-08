@@ -323,18 +323,23 @@ main {
 .badge[data-estado="cobrado"]          { background: var(--status-cobrado); }
 .badge[data-estado="finalizado"]       { background: var(--status-finalizado); }
 
-.badge[data-estado="borrador"]  { background: var(--text-dim); }
-.badge[data-estado="enviado"]   { background: var(--status-presupuestado); }
-.badge[data-estado="aceptado"]  { background: var(--status-cobrado); }
-.badge[data-estado="rechazado"] { background: #c0392b; }
+.badge[data-estado="borrador"]  { background: var(--status-borrador); }
+.badge[data-estado="enviado"]   { background: var(--status-enviado); }
+.badge[data-estado="aceptado"]  { background: var(--status-aceptado); }
+.badge[data-estado="rechazado"] { background: var(--status-rechazado); }
+.badge[data-estado="anulado"],
+.badge[data-estado="anulada"]   { background: var(--status-anulado); color: var(--text-mid); }
 
-.badge[data-estado="emitida"]   { background: var(--status-presupuestado); }
-.badge[data-estado="cobrada"]   { background: var(--status-cobrado); }
-.badge[data-estado="vencida"]   { background: #c0392b; }
+.badge[data-estado="emitida"]   { background: var(--status-emitida); }
+.badge[data-estado="cobrada"]   { background: var(--status-cobrada); }
+.badge[data-estado="vencida"]   { background: var(--status-vencida); }
 
 .badge[data-estado="pendiente"] { background: var(--status-pendiente_cobro); }
-.badge[data-estado="firmado"]   { background: var(--status-cobrado); }
+.badge[data-estado="firmado"]   { background: var(--status-firmado); }
 .badge[data-estado="expirado"]  { background: var(--status-finalizado); }
+.badge[data-estado="emitido"]   { background: var(--status-emitida); }
+
+.badge[data-estado="rect"] { background: var(--accent); }
 
 /* ── Forms ────────────────────────────────────────────────────────── */
 
@@ -797,6 +802,60 @@ a.stat-pill:hover {
 .btn-danger-toggle:hover {
   border-color: #ef4444;
   color: #ef4444;
+}
+
+/* ── Documents: anulados toggle + edit rows ──────────────────────────── */
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.section-header h2 { margin-bottom: 0; }
+
+.toggle-anulados {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.doc-anulado {
+  opacity: 0.5;
+}
+
+.doc-anulado .doc-numero {
+  text-decoration: line-through;
+}
+
+.doc-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13.5px;
+}
+
+.doc-row:last-child { border-bottom: none; }
+
+.doc-row__main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.doc-row__main .list-row__main { flex: 1; min-width: 0; }
+
+.doc-row__ref {
+  font-size: 12px;
+  color: var(--text-muted);
 }
 
 /* ── Misc ─────────────────────────────────────────────────────────── */

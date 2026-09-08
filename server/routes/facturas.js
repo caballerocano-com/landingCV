@@ -1,4 +1,4 @@
-import { createReadStream, existsSync } from 'fs';
+import { createReadStream, existsSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import db from '../db/database.js';
@@ -21,28 +21,47 @@ export default async function facturasRoutes(app) {
   });
 
   app.post('/api/facturas', async (req, reply) => {
-    const { proyecto_id, presupuesto_id, iva_porcentaje, fecha_vencimiento, notas } = req.body || {};
+    const {
+      proyecto_id, presupuesto_id, iva_porcentaje, fecha_vencimiento, notas,
+      es_rectificativa, factura_original_id,
+    } = req.body || {};
     if (!proyecto_id) return reply.code(400).send({ error: 'proyecto_id es obligatorio' });
 
     const proyecto = db.prepare('SELECT * FROM proyectos WHERE id = ?').get(proyecto_id);
     if (!proyecto) return reply.code(404).send({ error: 'Proyecto no encontrado' });
+
+    let facturaOriginal = null;
+    if (es_rectificativa) {
+      if (!factura_original_id) return reply.code(400).send({ error: 'factura_original_id es obligatorio para una rectificativa' });
+      facturaOriginal = db.prepare('SELECT * FROM facturas WHERE id = ?').get(factura_original_id);
+      if (!facturaOriginal) return reply.code(404).send({ error: 'Factura original no encontrada' });
+    }
 
     const cliente = proyecto.cliente_id
       ? db.prepare('SELECT * FROM clientes WHERE id = ?').get(proyecto.cliente_id)
       : null;
     const conceptos = db.prepare('SELECT * FROM conceptos WHERE proyecto_id = ? ORDER BY orden ASC, id ASC').all(proyecto_id);
 
-    const numero = generarNumero('factura');
+    const numero = generarNumero(es_rectificativa ? 'rectificativa' : 'factura');
 
     const result = db.prepare(
-      `INSERT INTO facturas (proyecto_id, presupuesto_id, numero, iva_porcentaje, fecha_vencimiento, notas)
-       VALUES (?, ?, ?, ?, ?, ?)`
-    ).run(proyecto_id, presupuesto_id || null, numero, iva_porcentaje ?? 21, fecha_vencimiento || null, notas || null);
+      `INSERT INTO facturas (proyecto_id, presupuesto_id, numero, iva_porcentaje, fecha_vencimiento, notas, es_rectificativa, factura_original_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+    ).run(
+      proyecto_id,
+      presupuesto_id || null,
+      numero,
+      iva_porcentaje ?? 21,
+      fecha_vencimiento || null,
+      notas || null,
+      es_rectificativa ? 1 : 0,
+      es_rectificativa ? factura_original_id : null
+    );
 
     const factura = db.prepare('SELECT * FROM facturas WHERE id = ?').get(result.lastInsertRowid);
 
     const filePath = join(STORAGE_DIR, `${numero}.pdf`);
-    await buildFacturaPDF({ factura, proyecto, cliente, conceptos, filePath });
+    await buildFacturaPDF({ factura, proyecto, cliente, conceptos, facturaOriginal, filePath });
 
     db.prepare('UPDATE facturas SET pdf_path = ? WHERE id = ?').run(filePath, factura.id);
 
@@ -58,18 +77,62 @@ export default async function facturasRoutes(app) {
   app.put('/api/facturas/:id', async (req, reply) => {
     const existing = db.prepare('SELECT * FROM facturas WHERE id = ?').get(req.params.id);
     if (!existing) return reply.code(404).send({ error: 'No encontrado' });
+    if (existing.estado !== 'borrador') {
+      return reply.code(403).send({ error: 'No se puede editar un documento ya emitido' });
+    }
 
-    const { numero, estado, fecha_vencimiento, notas } = req.body || {};
+    const { estado, fecha_vencimiento, notas } = req.body || {};
     db.prepare(
-      `UPDATE facturas SET numero = ?, estado = ?, fecha_vencimiento = ?, notas = ? WHERE id = ?`
+      `UPDATE facturas SET estado = ?, fecha_vencimiento = ?, notas = ? WHERE id = ?`
     ).run(
-      numero ?? existing.numero,
       estado ?? existing.estado,
       fecha_vencimiento ?? existing.fecha_vencimiento,
       notas ?? existing.notas,
       req.params.id
     );
 
+    const factura = db.prepare('SELECT * FROM facturas WHERE id = ?').get(req.params.id);
+
+    const proyecto = db.prepare('SELECT * FROM proyectos WHERE id = ?').get(factura.proyecto_id);
+    const cliente = proyecto?.cliente_id
+      ? db.prepare('SELECT * FROM clientes WHERE id = ?').get(proyecto.cliente_id)
+      : null;
+    const conceptos = db.prepare('SELECT * FROM conceptos WHERE proyecto_id = ? ORDER BY orden ASC, id ASC').all(factura.proyecto_id);
+    const facturaOriginal = factura.factura_original_id
+      ? db.prepare('SELECT * FROM facturas WHERE id = ?').get(factura.factura_original_id)
+      : null;
+    const filePath = factura.pdf_path || join(STORAGE_DIR, `${factura.numero}.pdf`);
+    await buildFacturaPDF({ factura, proyecto, cliente, conceptos, facturaOriginal, filePath });
+    if (!factura.pdf_path) {
+      db.prepare('UPDATE facturas SET pdf_path = ? WHERE id = ?').run(filePath, factura.id);
+    }
+
+    return db.prepare('SELECT * FROM facturas WHERE id = ?').get(req.params.id);
+  });
+
+  app.delete('/api/facturas/:id', async (req, reply) => {
+    const existing = db.prepare('SELECT * FROM facturas WHERE id = ?').get(req.params.id);
+    if (!existing) return reply.code(404).send({ error: 'No encontrado' });
+    if (existing.estado !== 'borrador') {
+      return reply.code(403).send({ error: 'Solo se pueden eliminar borradores' });
+    }
+
+    if (existing.pdf_path) {
+      try { unlinkSync(existing.pdf_path); } catch { /* already gone */ }
+    }
+    db.prepare('DELETE FROM facturas WHERE id = ?').run(req.params.id);
+    // Deleted document numbers are never reused (fiscal integrity)
+    return { success: true };
+  });
+
+  app.patch('/api/facturas/:id/anular', async (req, reply) => {
+    const existing = db.prepare('SELECT * FROM facturas WHERE id = ?').get(req.params.id);
+    if (!existing) return reply.code(404).send({ error: 'No encontrado' });
+    if (existing.estado !== 'emitida' && existing.estado !== 'vencida') {
+      return reply.code(403).send({ error: 'Este documento no se puede anular' });
+    }
+
+    db.prepare(`UPDATE facturas SET estado = 'anulada' WHERE id = ?`).run(req.params.id);
     return db.prepare('SELECT * FROM facturas WHERE id = ?').get(req.params.id);
   });
 

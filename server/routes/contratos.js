@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { createReadStream, existsSync, readFileSync } from 'fs';
+import { createReadStream, existsSync, readFileSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import db from '../db/database.js';
@@ -58,6 +58,64 @@ export default async function contratosRoutes(app) {
       return contrato;
     });
 
+    protectedApp.put('/api/contratos/:id', async (req, reply) => {
+      const existing = db.prepare('SELECT * FROM contratos WHERE id = ?').get(req.params.id);
+      if (!existing) return reply.code(404).send({ error: 'No encontrado' });
+      if (existing.estado !== 'borrador') {
+        return reply.code(403).send({ error: 'No se puede editar un documento ya emitido' });
+      }
+
+      const { terminos, metodo_pago, plazos_pago } = req.body || {};
+      db.prepare(
+        `UPDATE contratos SET terminos = ?, metodo_pago = ?, plazos_pago = ? WHERE id = ?`
+      ).run(
+        terminos ?? existing.terminos,
+        metodo_pago ?? existing.metodo_pago,
+        plazos_pago ?? existing.plazos_pago,
+        req.params.id
+      );
+
+      // PDF is only generated at signing time — no regeneration here.
+      return db.prepare('SELECT * FROM contratos WHERE id = ?').get(req.params.id);
+    });
+
+    protectedApp.delete('/api/contratos/:id', async (req, reply) => {
+      const existing = db.prepare('SELECT * FROM contratos WHERE id = ?').get(req.params.id);
+      if (!existing) return reply.code(404).send({ error: 'No encontrado' });
+      if (existing.estado !== 'borrador') {
+        return reply.code(403).send({ error: 'Solo se pueden eliminar borradores' });
+      }
+
+      if (existing.pdf_path) {
+        try { unlinkSync(existing.pdf_path); } catch { /* already gone */ }
+      }
+      db.prepare('DELETE FROM contratos WHERE id = ?').run(req.params.id);
+      // Deleted document numbers are never reused (fiscal integrity)
+      return { success: true };
+    });
+
+    protectedApp.patch('/api/contratos/:id/enviar', async (req, reply) => {
+      const existing = db.prepare('SELECT * FROM contratos WHERE id = ?').get(req.params.id);
+      if (!existing) return reply.code(404).send({ error: 'No encontrado' });
+      if (existing.estado !== 'borrador') {
+        return db.prepare('SELECT * FROM contratos WHERE id = ?').get(req.params.id);
+      }
+
+      db.prepare(`UPDATE contratos SET estado = 'enviado' WHERE id = ?`).run(req.params.id);
+      return db.prepare('SELECT * FROM contratos WHERE id = ?').get(req.params.id);
+    });
+
+    protectedApp.patch('/api/contratos/:id/anular', async (req, reply) => {
+      const existing = db.prepare('SELECT * FROM contratos WHERE id = ?').get(req.params.id);
+      if (!existing) return reply.code(404).send({ error: 'No encontrado' });
+      if (existing.estado !== 'enviado') {
+        return reply.code(403).send({ error: 'Este documento no se puede anular' });
+      }
+
+      db.prepare(`UPDATE contratos SET estado = 'anulado' WHERE id = ?`).run(req.params.id);
+      return db.prepare('SELECT * FROM contratos WHERE id = ?').get(req.params.id);
+    });
+
     protectedApp.get('/api/contratos/:id/pdf', async (req, reply) => {
       const contrato = db.prepare('SELECT * FROM contratos WHERE id = ?').get(req.params.id);
       if (!contrato || !contrato.pdf_path || !existsSync(contrato.pdf_path)) {
@@ -89,10 +147,10 @@ export default async function contratosRoutes(app) {
       return { estado: 'firmado', firmado_at: contrato.firmado_at };
     }
 
+    // 'expirado' is a computed, transient condition (from expires_at) rather
+    // than a persisted estado — the stored state machine is only
+    // borrador | enviado | firmado | anulado.
     if (new Date(contrato.expires_at).getTime() < Date.now()) {
-      if (contrato.estado !== 'expirado') {
-        db.prepare(`UPDATE contratos SET estado = 'expirado' WHERE id = ?`).run(contrato.id);
-      }
       return { estado: 'expirado' };
     }
 

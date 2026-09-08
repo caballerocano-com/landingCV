@@ -58,6 +58,9 @@ const ESTADO_LABELS = {
   pendiente: 'Pendiente',
   firmado: 'Firmado',
   expirado: 'Expirado',
+  anulado: 'Anulado',
+  anulada: 'Anulada',
+  emitido: 'Emitido',
 };
 
 function badge(estado) {

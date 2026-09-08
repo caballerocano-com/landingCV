@@ -14,6 +14,13 @@ let clientes = [];
 let elementosCatalogo = [];
 let queueFiles = [];
 
+// Inline edit / confirm state for document lists — only one row across all
+// document sections can be in edit or confirm mode at a time.
+let editingDoc = null; // { type: 'presupuesto'|'factura'|'encargo', id }
+let confirmingDoc = null; // { type, id, action: 'delete'|'anular' }
+let showRectificativaForm = false;
+let archivosCache = [];
+
 // Reassigned on every renderConceptos() call to point at whichever catalog
 // dropdown is currently mounted; a single listener below delegates to it.
 let closeActiveCatalogDropdown = () => {};
@@ -43,6 +50,11 @@ async function init() {
   document.getElementById('input-camara').addEventListener('change', (e) => onFilesSelected(e.target.files));
   document.getElementById('btn-upload-confirm').addEventListener('click', onUploadConfirm);
   document.getElementById('btn-upload-cancel').addEventListener('click', onUploadCancel);
+
+  document.getElementById('toggle-anulados-pres').addEventListener('change', renderPresupuestos);
+  document.getElementById('toggle-anulados-fact').addEventListener('change', renderFacturas);
+  document.getElementById('toggle-anulados-enc').addEventListener('change', renderContratos);
+  document.getElementById('toggle-anulados-recibos').addEventListener('change', renderIngresos);
 
   document.getElementById('btn-toggle-danger').addEventListener('click', () => {
     const content = document.getElementById('danger-zone-content');
@@ -592,25 +604,185 @@ async function onAddHora(e) {
 
 // ── 5. DOCUMENTOS ────────────────────────────────────────────────────
 
+const API_PATH_BY_DOC_TYPE = {
+  presupuesto: '/presupuestos',
+  factura: '/facturas',
+  encargo: '/contratos',
+  recibo: '/recibos',
+};
+
+function rerenderDocSection(type) {
+  if (type === 'presupuesto') renderPresupuestos();
+  else if (type === 'factura') renderFacturas();
+  else if (type === 'encargo') renderContratos();
+  else if (type === 'recibo') renderIngresos();
+}
+
+function buildConfirmInline(message, onYes, onNo) {
+  const yes = el('button', { type: 'button', className: 'confirm-yes', text: 'Sí' });
+  const no = el('button', { type: 'button', className: 'confirm-no', text: 'No' });
+  yes.addEventListener('click', onYes);
+  no.addEventListener('click', onNo);
+  return el('div', { className: 'confirm-inline' }, [el('span', { text: message }), yes, no]);
+}
+
+function buildDocConfirmRow(type, id, action) {
+  const apiPath = API_PATH_BY_DOC_TYPE[type];
+  const message = action === 'delete'
+    ? '¿Eliminar? Esta acción no se puede deshacer.'
+    : '¿Anular este documento?';
+
+  return buildConfirmInline(message, async () => {
+    if (action === 'delete') {
+      await apiFetch(`${apiPath}/${id}`, { method: 'DELETE' });
+    } else {
+      await apiFetch(`${apiPath}/${id}/anular`, { method: 'PATCH' });
+    }
+    confirmingDoc = null;
+    await loadProject();
+  }, () => {
+    confirmingDoc = null;
+    rerenderDocSection(type);
+  });
+}
+
+function docActionButtons({ type, id, deletable, anulable, onEdit }) {
+  const wrap = el('div', { style: 'display:flex; gap:8px; align-items:center; flex-wrap:wrap;' });
+
+  if (onEdit) {
+    const editBtn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm' }, el('i', { className: 'ti ti-edit' }));
+    editBtn.addEventListener('click', onEdit);
+    wrap.appendChild(editBtn);
+  }
+
+  if (deletable) {
+    const delBtn = el('button', { type: 'button', className: 'btn btn-danger btn-sm' }, el('i', { className: 'ti ti-trash' }));
+    delBtn.addEventListener('click', () => {
+      confirmingDoc = { type, id, action: 'delete' };
+      rerenderDocSection(type);
+    });
+    wrap.appendChild(delBtn);
+  }
+
+  if (anulable) {
+    const anularBtn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm', text: 'Anular' });
+    anularBtn.addEventListener('click', () => {
+      confirmingDoc = { type, id, action: 'anular' };
+      rerenderDocSection(type);
+    });
+    wrap.appendChild(anularBtn);
+  }
+
+  return wrap;
+}
+
+// ── Presupuestos ─────────────────────────────────────────────────────
+
+function buildPresupuestoEditForm(p) {
+  const form = el('form', { className: 'mt-8' });
+
+  const estadoField = el('div', { className: 'field' }, [el('label', { text: 'Estado' })]);
+  const estadoSelect = el('select', {}, ['borrador', 'enviado', 'aceptado', 'rechazado'].map((v) => {
+    const opt = el('option', { value: v, text: ESTADO_LABELS[v] || v });
+    if (v === p.estado) opt.selected = true;
+    return opt;
+  }));
+  estadoField.appendChild(estadoSelect);
+
+  const porcentajeField = el('div', { className: 'field' }, [el('label', { text: '% a solicitar' })]);
+  const porcentajeSelect = el('select', {}, [100, 50, 40, 30].map((v) => {
+    const opt = el('option', { value: v, text: `${v}%` });
+    if (v === p.porcentaje_cobro) opt.selected = true;
+    return opt;
+  }));
+  porcentajeField.appendChild(porcentajeSelect);
+
+  const notasField = el('div', { className: 'field' }, [el('label', { text: 'Notas' })]);
+  const notasArea = el('textarea');
+  notasArea.value = p.notas || '';
+  notasField.appendChild(notasArea);
+
+  form.appendChild(el('div', { className: 'grid grid-2' }, [estadoField, porcentajeField]));
+  form.appendChild(notasField);
+
+  const actions = el('div', { style: 'display:flex; gap:10px;' });
+  const saveBtn = el('button', { type: 'submit', className: 'btn btn-primary btn-sm', text: 'Guardar' });
+  const cancelBtn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm', text: 'Cancelar' });
+  cancelBtn.addEventListener('click', () => { editingDoc = null; renderPresupuestos(); });
+  actions.appendChild(saveBtn);
+  actions.appendChild(cancelBtn);
+  form.appendChild(actions);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await apiFetch(`/presupuestos/${p.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        estado: estadoSelect.value,
+        porcentaje_cobro: parseInt(porcentajeSelect.value, 10),
+        notas: notasArea.value,
+      }),
+    });
+    editingDoc = null;
+    await loadProject();
+  });
+
+  return form;
+}
+
+function buildPresupuestoRow(p) {
+  const isAnulado = p.estado === 'anulado';
+  const isBorrador = p.estado === 'borrador';
+  const isConfirming = confirmingDoc && confirmingDoc.type === 'presupuesto' && confirmingDoc.id === p.id;
+
+  const pdfBtn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm', text: 'PDF' });
+  pdfBtn.addEventListener('click', () => downloadPDF(`/api/presupuestos/${p.id}/pdf`, `${p.numero}.pdf`));
+
+  const mainRow = el('div', { className: 'doc-row__main' }, [
+    el('div', { className: 'list-row__main' }, [
+      el('div', { className: 'doc-numero', text: p.numero }),
+      el('div', { className: 'list-row__meta', text: formatDateEs(p.created_at) }),
+    ]),
+    badge(p.estado),
+    pdfBtn,
+  ]);
+
+  const row = el('div', { className: 'doc-row' + (isAnulado ? ' doc-anulado' : '') }, [mainRow]);
+
+  if (isConfirming) {
+    row.appendChild(buildDocConfirmRow('presupuesto', p.id, confirmingDoc.action));
+  } else if (!isAnulado) {
+    row.appendChild(docActionButtons({
+      type: 'presupuesto',
+      id: p.id,
+      deletable: isBorrador,
+      anulable: !isBorrador,
+      onEdit: isBorrador ? () => {
+        editingDoc = editingDoc && editingDoc.type === 'presupuesto' && editingDoc.id === p.id ? null : { type: 'presupuesto', id: p.id };
+        renderPresupuestos();
+      } : null,
+    }));
+  }
+
+  if (editingDoc && editingDoc.type === 'presupuesto' && editingDoc.id === p.id) {
+    row.appendChild(buildPresupuestoEditForm(p));
+  }
+
+  return row;
+}
+
 function renderPresupuestos() {
   const listEl = document.getElementById('presupuestos-list');
   listEl.textContent = '';
 
-  if (proyecto.presupuestos.length === 0) {
+  const showAnulados = document.getElementById('toggle-anulados-pres').checked;
+  const items = proyecto.presupuestos.filter((p) => showAnulados || p.estado !== 'anulado');
+
+  if (items.length === 0) {
     listEl.appendChild(el('p', { className: 'text-muted', text: 'Sin presupuestos generados.' }));
   }
-  for (const p of proyecto.presupuestos) {
-    const pdfBtn = el('button', { className: 'btn btn-secondary btn-sm', text: 'PDF' });
-    pdfBtn.addEventListener('click', () => downloadPDF(`/api/presupuestos/${p.id}/pdf`, `${p.numero}.pdf`));
-
-    listEl.appendChild(el('div', { className: 'list-row' }, [
-      el('div', { className: 'list-row__main' }, [
-        el('div', { text: p.numero }),
-        el('div', { className: 'list-row__meta', text: formatDateEs(p.created_at) }),
-      ]),
-      badge(p.estado),
-      pdfBtn,
-    ]));
+  for (const p of items) {
+    listEl.appendChild(buildPresupuestoRow(p));
   }
 
   const formWrap = document.getElementById('presupuestos-form-wrap');
@@ -638,27 +810,166 @@ function renderPresupuestos() {
     await loadProject();
   });
   formWrap.appendChild(form);
+  updateAnexoCheckVisibility(archivosCache);
+}
+
+// ── Facturas (+ rectificativas) ──────────────────────────────────────
+
+function buildFacturaEditForm(f) {
+  const form = el('form', { className: 'mt-8' });
+
+  const estadoField = el('div', { className: 'field' }, [el('label', { text: 'Estado' })]);
+  const estadoSelect = el('select', {}, ['borrador', 'emitida'].map((v) => {
+    const opt = el('option', { value: v, text: ESTADO_LABELS[v] || v });
+    if (v === f.estado) opt.selected = true;
+    return opt;
+  }));
+  estadoField.appendChild(estadoSelect);
+
+  const vencField = el('div', { className: 'field' }, [el('label', { text: 'Fecha de vencimiento' })]);
+  const vencInput = el('input', { type: 'date' });
+  vencInput.value = f.fecha_vencimiento || '';
+  vencField.appendChild(vencInput);
+
+  const notasField = el('div', { className: 'field' }, [el('label', { text: 'Notas' })]);
+  const notasArea = el('textarea');
+  notasArea.value = f.notas || '';
+  notasField.appendChild(notasArea);
+
+  form.appendChild(el('div', { className: 'grid grid-2' }, [estadoField, vencField]));
+  form.appendChild(notasField);
+
+  const actions = el('div', { style: 'display:flex; gap:10px;' });
+  const saveBtn = el('button', { type: 'submit', className: 'btn btn-primary btn-sm', text: 'Guardar' });
+  const cancelBtn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm', text: 'Cancelar' });
+  cancelBtn.addEventListener('click', () => { editingDoc = null; renderFacturas(); });
+  actions.appendChild(saveBtn);
+  actions.appendChild(cancelBtn);
+  form.appendChild(actions);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await apiFetch(`/facturas/${f.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        estado: estadoSelect.value,
+        fecha_vencimiento: vencInput.value || null,
+        notas: notasArea.value,
+      }),
+    });
+    editingDoc = null;
+    await loadProject();
+  });
+
+  return form;
+}
+
+function buildFacturaRow(f) {
+  const isAnulado = f.estado === 'anulada';
+  const isBorrador = f.estado === 'borrador';
+  const isRect = !!f.es_rectificativa;
+  const isConfirming = confirmingDoc && confirmingDoc.type === 'factura' && confirmingDoc.id === f.id;
+
+  const pdfBtn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm', text: 'PDF' });
+  pdfBtn.addEventListener('click', () => downloadPDF(`/api/facturas/${f.id}/pdf`, `${f.numero}.pdf`));
+
+  const statusBadge = isRect
+    ? el('span', { className: 'badge', 'data-estado': 'rect', text: 'RECT' })
+    : badge(f.estado);
+
+  const mainRow = el('div', { className: 'doc-row__main' }, [
+    el('div', { className: 'list-row__main' }, [
+      el('div', { className: 'doc-numero', text: f.numero }),
+      el('div', { className: 'list-row__meta', text: formatDateEs(f.created_at) }),
+    ]),
+    statusBadge,
+    pdfBtn,
+  ]);
+
+  const row = el('div', { className: 'doc-row' + (isAnulado ? ' doc-anulado' : '') }, [mainRow]);
+
+  if (isRect && f.factura_original_id) {
+    const original = proyecto.facturas.find((x) => x.id === f.factura_original_id);
+    row.appendChild(el('div', { className: 'doc-row__ref', text: `Rectifica: ${original ? original.numero : 'FACT-' + f.factura_original_id}` }));
+  }
+
+  if (isConfirming) {
+    row.appendChild(buildDocConfirmRow('factura', f.id, confirmingDoc.action));
+  } else if (!isAnulado && f.estado !== 'cobrada') {
+    row.appendChild(docActionButtons({
+      type: 'factura',
+      id: f.id,
+      deletable: isBorrador,
+      anulable: f.estado === 'emitida' || f.estado === 'vencida',
+      onEdit: isBorrador ? () => {
+        editingDoc = editingDoc && editingDoc.type === 'factura' && editingDoc.id === f.id ? null : { type: 'factura', id: f.id };
+        renderFacturas();
+      } : null,
+    }));
+  }
+
+  if (editingDoc && editingDoc.type === 'factura' && editingDoc.id === f.id) {
+    row.appendChild(buildFacturaEditForm(f));
+  }
+
+  return row;
+}
+
+function renderRectificativaForm() {
+  const wrap = document.getElementById('rectificativa-form-wrap');
+  wrap.textContent = '';
+  if (!showRectificativaForm) return;
+
+  const facturasRectificables = proyecto.facturas.filter((f) => f.estado !== 'borrador' && !f.es_rectificativa);
+  if (facturasRectificables.length === 0) {
+    wrap.appendChild(el('p', { className: 'text-muted mt-8', text: 'No hay facturas emitidas que rectificar.' }));
+    return;
+  }
+
+  const form = el('form', { className: 'inline-form mt-8', style: 'flex-direction:column; align-items:stretch;' });
+  const select = el('select', {}, facturasRectificables.map((f) => el('option', { value: f.id, text: `${f.numero} — ${formatDateEs(f.created_at)}` })));
+  const notasArea = el('textarea', { placeholder: 'Motivo de la rectificación' });
+
+  form.appendChild(fieldWrap('Factura a rectificar', select));
+  form.appendChild(fieldWrap('Notas', notasArea));
+
+  const actions = el('div', { style: 'display:flex; gap:10px;' });
+  actions.appendChild(el('button', { type: 'submit', className: 'btn btn-primary btn-sm', text: 'Crear rectificativa' }));
+  const cancelBtn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm', text: 'Cancelar' });
+  cancelBtn.addEventListener('click', () => { showRectificativaForm = false; renderRectificativaForm(); });
+  actions.appendChild(cancelBtn);
+  form.appendChild(actions);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await apiFetch('/facturas', {
+      method: 'POST',
+      body: JSON.stringify({
+        proyecto_id: proyectoId,
+        es_rectificativa: true,
+        factura_original_id: parseInt(select.value, 10),
+        notas: notasArea.value,
+      }),
+    });
+    showRectificativaForm = false;
+    await loadProject();
+  });
+
+  wrap.appendChild(form);
 }
 
 function renderFacturas() {
   const listEl = document.getElementById('facturas-list');
   listEl.textContent = '';
 
-  if (proyecto.facturas.length === 0) {
+  const showAnulados = document.getElementById('toggle-anulados-fact').checked;
+  const items = proyecto.facturas.filter((f) => showAnulados || (f.estado !== 'anulada' && !f.es_rectificativa));
+
+  if (items.length === 0) {
     listEl.appendChild(el('p', { className: 'text-muted', text: 'Sin facturas generadas.' }));
   }
-  for (const f of proyecto.facturas) {
-    const pdfBtn = el('button', { className: 'btn btn-secondary btn-sm', text: 'PDF' });
-    pdfBtn.addEventListener('click', () => downloadPDF(`/api/facturas/${f.id}/pdf`, `${f.numero}.pdf`));
-
-    listEl.appendChild(el('div', { className: 'list-row' }, [
-      el('div', { className: 'list-row__main' }, [
-        el('div', { text: f.numero }),
-        el('div', { className: 'list-row__meta', text: formatDateEs(f.created_at) }),
-      ]),
-      badge(f.estado),
-      pdfBtn,
-    ]));
+  for (const f of items) {
+    listEl.appendChild(buildFacturaRow(f));
   }
 
   const formWrap = document.getElementById('facturas-form-wrap');
@@ -671,40 +982,125 @@ function renderFacturas() {
     await loadProject();
   });
   formWrap.appendChild(form);
+
+  const rectBtn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm mt-8', text: 'Nueva rectificativa' });
+  rectBtn.addEventListener('click', () => {
+    showRectificativaForm = !showRectificativaForm;
+    renderRectificativaForm();
+  });
+  formWrap.appendChild(rectBtn);
+
+  renderRectificativaForm();
+}
+
+// ── Encargos (hojas de encargo) ──────────────────────────────────────
+
+function buildContratoEditForm(c) {
+  const form = el('form', { className: 'mt-8' });
+  const metodoField = labeledInput('Método de pago', 'text', c.metodo_pago);
+  const plazosField = labeledInput('Plazos de pago', 'text', c.plazos_pago);
+  const terminosField = el('div', { className: 'field' }, [el('label', { text: 'Términos' })]);
+  const terminosArea = el('textarea');
+  terminosArea.value = c.terminos || '';
+  terminosField.appendChild(terminosArea);
+
+  form.appendChild(metodoField);
+  form.appendChild(plazosField);
+  form.appendChild(terminosField);
+
+  const actions = el('div', { style: 'display:flex; gap:10px;' });
+  const saveBtn = el('button', { type: 'submit', className: 'btn btn-primary btn-sm', text: 'Guardar' });
+  const cancelBtn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm', text: 'Cancelar' });
+  cancelBtn.addEventListener('click', () => { editingDoc = null; renderContratos(); });
+  actions.appendChild(saveBtn);
+  actions.appendChild(cancelBtn);
+  form.appendChild(actions);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await apiFetch(`/contratos/${c.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        metodo_pago: metodoField.querySelector('input').value,
+        plazos_pago: plazosField.querySelector('input').value,
+        terminos: terminosArea.value,
+      }),
+    });
+    editingDoc = null;
+    await loadProject();
+  });
+
+  return form;
+}
+
+function buildContratoRow(c) {
+  const isAnulado = c.estado === 'anulado';
+  const isBorrador = c.estado === 'borrador';
+  const isConfirming = confirmingDoc && confirmingDoc.type === 'encargo' && confirmingDoc.id === c.id;
+
+  const mainRow = el('div', { className: 'doc-row__main' }, [
+    el('div', { className: 'list-row__main' }, [
+      el('div', { className: 'doc-numero', text: `Encargo ${c.numero || '#' + c.id}` }),
+      el('div', { className: 'list-row__meta', text: formatDateEs(c.created_at) }),
+    ]),
+    badge(c.estado),
+  ]);
+
+  if (c.estado === 'firmado') {
+    const pdfBtn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm', text: 'PDF' });
+    pdfBtn.addEventListener('click', () => downloadPDF(`/api/contratos/${c.id}/pdf`, `${c.numero || 'ENC-' + c.id}.pdf`));
+    mainRow.appendChild(pdfBtn);
+  } else if (!isAnulado) {
+    const copyBtn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm', text: 'Copiar enlace' });
+    copyBtn.addEventListener('click', async () => {
+      const url = `${window.location.origin}/firmar/${c.token}`;
+      navigator.clipboard.writeText(url).catch(() => {});
+      copyBtn.textContent = 'Copiado';
+      setTimeout(() => { copyBtn.textContent = 'Copiar enlace'; }, 1500);
+      if (c.estado === 'borrador') {
+        await apiFetch(`/contratos/${c.id}/enviar`, { method: 'PATCH' });
+        await loadProject();
+      }
+    });
+    mainRow.appendChild(copyBtn);
+  }
+
+  const row = el('div', { className: 'doc-row' + (isAnulado ? ' doc-anulado' : '') }, [mainRow]);
+
+  if (isConfirming) {
+    row.appendChild(buildDocConfirmRow('encargo', c.id, confirmingDoc.action));
+  } else if (!isAnulado && c.estado !== 'firmado') {
+    row.appendChild(docActionButtons({
+      type: 'encargo',
+      id: c.id,
+      deletable: isBorrador,
+      anulable: c.estado === 'enviado',
+      onEdit: isBorrador ? () => {
+        editingDoc = editingDoc && editingDoc.type === 'encargo' && editingDoc.id === c.id ? null : { type: 'encargo', id: c.id };
+        renderContratos();
+      } : null,
+    }));
+  }
+
+  if (editingDoc && editingDoc.type === 'encargo' && editingDoc.id === c.id) {
+    row.appendChild(buildContratoEditForm(c));
+  }
+
+  return row;
 }
 
 function renderContratos() {
   const listEl = document.getElementById('contratos-list');
   listEl.textContent = '';
 
-  if (proyecto.contratos.length === 0) {
-    listEl.appendChild(el('p', { className: 'text-muted', text: 'Sin contratos generados.' }));
+  const showAnulados = document.getElementById('toggle-anulados-enc').checked;
+  const items = proyecto.contratos.filter((c) => showAnulados || c.estado !== 'anulado');
+
+  if (items.length === 0) {
+    listEl.appendChild(el('p', { className: 'text-muted', text: 'Sin encargos generados.' }));
   }
-  for (const c of proyecto.contratos) {
-    const row = el('div', { className: 'list-row' }, [
-      el('div', { className: 'list-row__main' }, [
-        el('div', { text: c.numero ? `Encargo ${c.numero}` : `Encargo #${c.id}` }),
-        el('div', { className: 'list-row__meta', text: formatDateEs(c.created_at) }),
-      ]),
-      badge(c.estado),
-    ]);
-
-    if (c.estado === 'firmado') {
-      const pdfBtn = el('button', { className: 'btn btn-secondary btn-sm', text: 'PDF' });
-      pdfBtn.addEventListener('click', () => downloadPDF(`/api/contratos/${c.id}/pdf`, `${c.numero || 'ENC-' + c.id}.pdf`));
-      row.appendChild(pdfBtn);
-    } else {
-      const copyBtn = el('button', { className: 'btn btn-secondary btn-sm', text: 'Copiar enlace' });
-      copyBtn.addEventListener('click', () => {
-        const url = `${window.location.origin}/firmar/${c.token}`;
-        navigator.clipboard.writeText(url).catch(() => {});
-        copyBtn.textContent = 'Copiado';
-        setTimeout(() => { copyBtn.textContent = 'Copiar enlace'; }, 1500);
-      });
-      row.appendChild(copyBtn);
-    }
-
-    listEl.appendChild(row);
+  for (const c of items) {
+    listEl.appendChild(buildContratoRow(c));
   }
 
   const formWrap = document.getElementById('contratos-form-wrap');
@@ -740,36 +1136,67 @@ function renderContratos() {
     await loadProject();
   });
   formWrap.appendChild(form);
+  updateAnexoCheckVisibility(archivosCache);
 }
 
-// ── 6. INGRESOS ──────────────────────────────────────────────────────
+// ── 6. INGRESOS (+ recibos) ──────────────────────────────────────────
+
+function buildIngresoRow(i) {
+  const hasRecibo = !!i.recibo_id;
+  const isAnulado = i.recibo_estado === 'anulado';
+  const isConfirming = confirmingDoc && confirmingDoc.type === 'recibo' && confirmingDoc.id === i.recibo_id;
+
+  const metaText = `${formatMoney(i.importe)} · ${i.metodo || '—'}` + (hasRecibo ? ` · ${i.recibo_numero}` : '');
+  const mainRow = el('div', { className: 'doc-row__main' }, [
+    el('div', { className: 'list-row__main' }, [
+      el('div', { text: `${formatDateEs(i.fecha)} · ${i.concepto}` }),
+      el('div', { className: 'list-row__meta', text: metaText }),
+    ]),
+  ]);
+
+  if (hasRecibo) mainRow.appendChild(badge(i.recibo_estado));
+
+  const reciboBtn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm', text: hasRecibo ? 'Recibo' : 'Generar recibo' });
+  reciboBtn.addEventListener('click', async () => {
+    if (hasRecibo) {
+      downloadPDF(`/api/ingresos/${i.id}/recibo/pdf`, `${i.recibo_numero}.pdf`);
+    } else {
+      await apiFetch(`/ingresos/${i.id}/recibo`, { method: 'POST' });
+      await loadProject();
+      downloadPDF(`/api/ingresos/${i.id}/recibo/pdf`, `recibo-${i.id}.pdf`);
+    }
+  });
+  mainRow.appendChild(reciboBtn);
+
+  const row = el('div', { className: 'doc-row' + (isAnulado ? ' doc-anulado' : '') }, [mainRow]);
+
+  if (isConfirming) {
+    row.appendChild(buildDocConfirmRow('recibo', i.recibo_id, confirmingDoc.action));
+  } else if (hasRecibo && !isAnulado) {
+    row.appendChild(docActionButtons({
+      type: 'recibo',
+      id: i.recibo_id,
+      deletable: true,
+      anulable: true,
+      onEdit: null,
+    }));
+  }
+
+  return row;
+}
 
 function renderIngresos() {
   const listEl = document.getElementById('ingresos-list');
   listEl.textContent = '';
 
-  if (proyecto.ingresos.length === 0) {
+  const showAnulados = document.getElementById('toggle-anulados-recibos').checked;
+  const items = proyecto.ingresos.filter((i) => showAnulados || i.recibo_estado !== 'anulado');
+
+  if (items.length === 0) {
     listEl.appendChild(el('p', { className: 'text-muted', text: 'Sin ingresos registrados.' }));
   }
-  for (const i of proyecto.ingresos) {
-    const reciboBtn = el('button', { className: 'btn btn-secondary btn-sm', text: i.recibo_pdf_path ? 'Recibo' : 'Generar recibo' });
-
-    reciboBtn.addEventListener('click', async () => {
-      if (i.recibo_pdf_path) {
-        downloadPDF(`/api/ingresos/${i.id}/recibo/pdf`, `recibo-${i.id}.pdf`);
-      } else {
-        await apiFetch(`/ingresos/${i.id}/recibo`, { method: 'POST' });
-        await loadProject();
-      }
-    });
-
-    listEl.appendChild(el('div', { className: 'list-row' }, [
-      el('div', { className: 'list-row__main' }, [
-        el('div', { text: `${formatDateEs(i.fecha)} · ${i.concepto}` }),
-        el('div', { className: 'list-row__meta', text: `${formatMoney(i.importe)} · ${i.metodo || '—'}` }),
-      ]),
-      reciboBtn,
-    ]));
+  for (const i of items) {
+    listEl.appendChild(buildIngresoRow(i));
   }
 }
 
@@ -836,8 +1263,9 @@ async function loadArchivos() {
   } catch {
     archivos = [];
   }
-  renderArchivosStrip(archivos);
-  updateAnexoCheckVisibility(archivos);
+  archivosCache = archivos || [];
+  renderArchivosStrip(archivosCache);
+  updateAnexoCheckVisibility(archivosCache);
 }
 
 function updateAnexoCheckVisibility(archivos) {

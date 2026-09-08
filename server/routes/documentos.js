@@ -5,6 +5,7 @@ const FIELD_BY_TYPE = {
   factura: 'ultimo_num_factura',
   recibo: 'ultimo_num_recibo',
   encargo: 'ultimo_num_encargo',
+  rectificativa: 'ultimo_num_rectificativa',
 };
 
 const PREFIX_BY_TYPE = {
@@ -12,6 +13,7 @@ const PREFIX_BY_TYPE = {
   factura: 'FACT',
   recibo: 'REC',
   encargo: 'ENC',
+  rectificativa: 'RECT',
 };
 
 export function generarNumero(tipo) {

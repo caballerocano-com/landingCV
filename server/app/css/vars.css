@@ -43,6 +43,16 @@
   --status-pendiente_cobro: #f59e0b;
   --status-cobrado:         #22c55e;
   --status-finalizado:      #888880;
+
+  --status-borrador:  #94a3b8;
+  --status-enviado:   #3b82f6;
+  --status-aceptado:  #22c55e;
+  --status-rechazado: #ef4444;
+  --status-anulado:   #d1d5db;
+  --status-emitida:   #f59e0b;
+  --status-cobrada:   #22c55e;
+  --status-vencida:   #ef4444;
+  --status-firmado:   #22c55e;
 }
 
 @media (min-width: 601px) {

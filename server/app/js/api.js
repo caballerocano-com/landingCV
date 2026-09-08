@@ -5,7 +5,11 @@ async function apiFetch(path, options = {}) {
   const res = await fetch(BASE + path, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      // Only set when there's an actual body: Fastify's JSON parser rejects
+      // a request with Content-Type: application/json and no body at all
+      // (FST_ERR_CTP_EMPTY_JSON_BODY) — this hit every bodiless POST, e.g.
+      // recibo generation and logout.
+      ...(options.body !== undefined ? { 'Content-Type': 'application/json' } : {}),
       'Authorization': `Bearer ${getToken()}`,
       ...options.headers,
     },

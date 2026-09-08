@@ -197,10 +197,21 @@ export async function buildPresupuestoPDF({ presupuesto, proyecto, cliente, conc
   return finalize(doc, filePath);
 }
 
-export async function buildFacturaPDF({ factura, proyecto, cliente, conceptos, filePath }) {
+export async function buildFacturaPDF({ factura, proyecto, cliente, conceptos, filePath, facturaOriginal }) {
   const doc = new PDFDocument({ size: 'A4', margin: PAGE_MARGIN });
-  drawHeader(doc, { tipoDocumento: 'FACTURA', numero: factura.numero, fecha: factura.created_at });
+  const esRectificativa = !!(factura.es_rectificativa || facturaOriginal);
+  drawHeader(doc, {
+    tipoDocumento: esRectificativa ? 'FACTURA RECTIFICATIVA' : 'FACTURA',
+    numero: factura.numero,
+    fecha: factura.created_at,
+  });
   drawClientBlock(doc, cliente);
+
+  if (esRectificativa && facturaOriginal) {
+    doc.font(FONTS.bold).fontSize(9.5).fillColor(COLORS.accent)
+      .text(`Rectifica la factura: ${facturaOriginal.numero} de fecha ${formatDateEs(facturaOriginal.created_at)}`);
+    doc.moveDown(1);
+  }
 
   if (factura.fecha_vencimiento) {
     doc.font(FONTS.regular).fontSize(9).fillColor(COLORS.textMuted)

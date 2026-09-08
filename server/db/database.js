@@ -62,8 +62,93 @@ function migrate() {
     db.exec(`ALTER TABLE config ADD COLUMN ultimo_num_encargo INTEGER DEFAULT 0`);
   }
 
+  if (tableExists('config') && !columnExists('config', 'ultimo_num_rectificativa')) {
+    db.exec(`ALTER TABLE config ADD COLUMN ultimo_num_rectificativa INTEGER DEFAULT 0`);
+  }
+
   if (tableExists('contratos') && !columnExists('contratos', 'incluir_fotos')) {
     db.exec(`ALTER TABLE contratos ADD COLUMN incluir_fotos INTEGER DEFAULT 0`);
+  }
+
+  if (tableExists('recibos') && !columnExists('recibos', 'estado')) {
+    // Backfills existing rows to 'emitido' too (SQLite applies a column's
+    // DEFAULT to already-existing rows on ALTER TABLE ADD COLUMN), which is
+    // correct here: a pre-existing recibo already represents money received.
+    db.exec(`ALTER TABLE recibos ADD COLUMN estado TEXT DEFAULT 'emitido'`);
+  }
+
+  if (tableExists('facturas') && !columnExists('facturas', 'factura_original_id')) {
+    db.exec(`ALTER TABLE facturas ADD COLUMN factura_original_id INTEGER REFERENCES facturas(id)`);
+  }
+  if (tableExists('facturas') && !columnExists('facturas', 'es_rectificativa')) {
+    db.exec(`ALTER TABLE facturas ADD COLUMN es_rectificativa INTEGER DEFAULT 0`);
+  }
+
+  // facturas used to default new rows to estado='emitida'; SQLite can't
+  // ALTER a column's DEFAULT in place, so the table is rebuilt with an
+  // explicit column list on both sides of the copy (never SELECT *) since
+  // columns added later via ALTER TABLE ADD COLUMN live at the *end* of the
+  // real on-disk column order, not wherever schema.sql's CREATE TABLE lists
+  // them — a positional SELECT * copy would silently shuffle data between
+  // columns. No other table has a declared FK pointing at facturas(id), so
+  // this rebuild needs no special foreign-key handling.
+  const facturasTable = db.prepare(`SELECT sql FROM sqlite_master WHERE type='table' AND name='facturas'`).get();
+  if (facturasTable && facturasTable.sql.includes("DEFAULT 'emitida'")) {
+    db.exec(`
+      CREATE TABLE facturas_migration_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        proyecto_id INTEGER REFERENCES proyectos(id),
+        presupuesto_id INTEGER,
+        numero TEXT NOT NULL UNIQUE,
+        iva_porcentaje REAL DEFAULT 21,
+        estado TEXT DEFAULT 'borrador',
+        fecha_vencimiento TEXT,
+        notas TEXT,
+        pdf_path TEXT,
+        created_at TEXT DEFAULT (datetime('now')),
+        factura_original_id INTEGER REFERENCES facturas(id),
+        es_rectificativa INTEGER DEFAULT 0
+      );
+      INSERT INTO facturas_migration_new (id, proyecto_id, presupuesto_id, numero, iva_porcentaje, estado, fecha_vencimiento, notas, pdf_path, created_at, factura_original_id, es_rectificativa)
+        SELECT id, proyecto_id, presupuesto_id, numero, iva_porcentaje, estado, fecha_vencimiento, notas, pdf_path, created_at, factura_original_id, es_rectificativa
+        FROM facturas;
+      DROP TABLE facturas;
+      ALTER TABLE facturas_migration_new RENAME TO facturas;
+    `);
+  }
+
+  // Same rebuild for contratos: default was 'pendiente', and the state
+  // machine itself changed (borrador -> enviado -> firmado -> anulado;
+  // 'expirado' is now computed from expires_at at read time instead of
+  // being persisted). Existing rows are normalized to the closest new state.
+  const contratosTable = db.prepare(`SELECT sql FROM sqlite_master WHERE type='table' AND name='contratos'`).get();
+  if (contratosTable && contratosTable.sql.includes("DEFAULT 'pendiente'")) {
+    db.exec(`
+      CREATE TABLE contratos_migration_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        proyecto_id INTEGER REFERENCES proyectos(id),
+        numero TEXT,
+        token TEXT NOT NULL UNIQUE,
+        terminos TEXT,
+        metodo_pago TEXT,
+        plazos_pago TEXT,
+        estado TEXT DEFAULT 'borrador',
+        firmado_at TEXT,
+        firmado_ip TEXT,
+        pdf_path TEXT,
+        pdf_hash TEXT,
+        expires_at TEXT,
+        incluir_fotos INTEGER DEFAULT 0,
+        created_at TEXT DEFAULT (datetime('now'))
+      );
+      INSERT INTO contratos_migration_new (id, proyecto_id, numero, token, terminos, metodo_pago, plazos_pago, estado, firmado_at, firmado_ip, pdf_path, pdf_hash, expires_at, incluir_fotos, created_at)
+        SELECT id, proyecto_id, numero, token, terminos, metodo_pago, plazos_pago, estado, firmado_at, firmado_ip, pdf_path, pdf_hash, expires_at, incluir_fotos, created_at
+        FROM contratos;
+      DROP TABLE contratos;
+      ALTER TABLE contratos_migration_new RENAME TO contratos;
+      UPDATE contratos SET estado = 'borrador' WHERE estado = 'pendiente';
+      UPDATE contratos SET estado = 'enviado' WHERE estado = 'expirado';
+    `);
   }
 
   const proyectosTable = db.prepare(`SELECT sql FROM sqlite_master WHERE type='table' AND name='proyectos'`).get();

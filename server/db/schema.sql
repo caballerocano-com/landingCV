@@ -65,11 +65,13 @@ CREATE TABLE IF NOT EXISTS facturas (
   presupuesto_id INTEGER,
   numero TEXT NOT NULL UNIQUE,
   iva_porcentaje REAL DEFAULT 21,
-  estado TEXT DEFAULT 'emitida',
+  estado TEXT DEFAULT 'borrador',
   fecha_vencimiento TEXT,
   notas TEXT,
   pdf_path TEXT,
-  created_at TEXT DEFAULT (datetime('now'))
+  created_at TEXT DEFAULT (datetime('now')),
+  factura_original_id INTEGER REFERENCES facturas(id),
+  es_rectificativa INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS contratos (
@@ -80,7 +82,7 @@ CREATE TABLE IF NOT EXISTS contratos (
   terminos TEXT,
   metodo_pago TEXT,
   plazos_pago TEXT,
-  estado TEXT DEFAULT 'pendiente',
+  estado TEXT DEFAULT 'borrador',
   firmado_at TEXT,
   firmado_ip TEXT,
   pdf_path TEXT,
@@ -110,6 +112,7 @@ CREATE TABLE IF NOT EXISTS recibos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   ingreso_id INTEGER REFERENCES ingresos(id),
   numero TEXT NOT NULL UNIQUE,
+  estado TEXT DEFAULT 'emitido',
   pdf_path TEXT,
   created_at TEXT DEFAULT (datetime('now'))
 );
@@ -148,8 +151,9 @@ CREATE TABLE IF NOT EXISTS config (
   ultimo_num_presupuesto INTEGER DEFAULT 0,
   ultimo_num_factura INTEGER DEFAULT 0,
   ultimo_num_recibo INTEGER DEFAULT 0,
-  ultimo_num_encargo INTEGER DEFAULT 0
+  ultimo_num_encargo INTEGER DEFAULT 0,
+  ultimo_num_rectificativa INTEGER DEFAULT 0
 );
 
-INSERT OR IGNORE INTO config (id, ultimo_num_presupuesto, ultimo_num_factura, ultimo_num_recibo, ultimo_num_encargo)
-VALUES (1, 0, 0, 0, 0);
+INSERT OR IGNORE INTO config (id, ultimo_num_presupuesto, ultimo_num_factura, ultimo_num_recibo, ultimo_num_encargo, ultimo_num_rectificativa)
+VALUES (1, 0, 0, 0, 0, 0);

@@ -1,4 +1,4 @@
-import { createReadStream, existsSync } from 'fs';
+import { createReadStream, existsSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import db from '../db/database.js';
@@ -60,18 +60,59 @@ export default async function presupuestosRoutes(app) {
   app.put('/api/presupuestos/:id', async (req, reply) => {
     const existing = db.prepare('SELECT * FROM presupuestos WHERE id = ?').get(req.params.id);
     if (!existing) return reply.code(404).send({ error: 'No encontrado' });
+    if (existing.estado !== 'borrador') {
+      return reply.code(403).send({ error: 'No se puede editar un documento ya emitido' });
+    }
 
-    const { numero, porcentaje_cobro, estado, notas } = req.body || {};
+    const { porcentaje_cobro, estado, notas } = req.body || {};
     db.prepare(
-      `UPDATE presupuestos SET numero = ?, porcentaje_cobro = ?, estado = ?, notas = ? WHERE id = ?`
+      `UPDATE presupuestos SET porcentaje_cobro = ?, estado = ?, notas = ? WHERE id = ?`
     ).run(
-      numero ?? existing.numero,
       porcentaje_cobro ?? existing.porcentaje_cobro,
       estado ?? existing.estado,
       notas ?? existing.notas,
       req.params.id
     );
 
+    const presupuesto = db.prepare('SELECT * FROM presupuestos WHERE id = ?').get(req.params.id);
+
+    const proyecto = db.prepare('SELECT * FROM proyectos WHERE id = ?').get(presupuesto.proyecto_id);
+    const cliente = proyecto?.cliente_id
+      ? db.prepare('SELECT * FROM clientes WHERE id = ?').get(proyecto.cliente_id)
+      : null;
+    const conceptos = db.prepare('SELECT * FROM conceptos WHERE proyecto_id = ? ORDER BY orden ASC, id ASC').all(presupuesto.proyecto_id);
+    const filePath = presupuesto.pdf_path || join(STORAGE_DIR, `${presupuesto.numero}.pdf`);
+    await buildPresupuestoPDF({ presupuesto, proyecto, cliente, conceptos, filePath });
+    if (!presupuesto.pdf_path) {
+      db.prepare('UPDATE presupuestos SET pdf_path = ? WHERE id = ?').run(filePath, presupuesto.id);
+    }
+
+    return db.prepare('SELECT * FROM presupuestos WHERE id = ?').get(req.params.id);
+  });
+
+  app.delete('/api/presupuestos/:id', async (req, reply) => {
+    const existing = db.prepare('SELECT * FROM presupuestos WHERE id = ?').get(req.params.id);
+    if (!existing) return reply.code(404).send({ error: 'No encontrado' });
+    if (existing.estado !== 'borrador') {
+      return reply.code(403).send({ error: 'Solo se pueden eliminar borradores' });
+    }
+
+    if (existing.pdf_path) {
+      try { unlinkSync(existing.pdf_path); } catch { /* already gone */ }
+    }
+    db.prepare('DELETE FROM presupuestos WHERE id = ?').run(req.params.id);
+    // Deleted document numbers are never reused (fiscal integrity)
+    return { success: true };
+  });
+
+  app.patch('/api/presupuestos/:id/anular', async (req, reply) => {
+    const existing = db.prepare('SELECT * FROM presupuestos WHERE id = ?').get(req.params.id);
+    if (!existing) return reply.code(404).send({ error: 'No encontrado' });
+    if (existing.estado === 'borrador' || existing.estado === 'anulado') {
+      return reply.code(403).send({ error: 'Este documento no se puede anular' });
+    }
+
+    db.prepare(`UPDATE presupuestos SET estado = 'anulado' WHERE id = ?`).run(req.params.id);
     return db.prepare('SELECT * FROM presupuestos WHERE id = ?').get(req.params.id);
   });
 
