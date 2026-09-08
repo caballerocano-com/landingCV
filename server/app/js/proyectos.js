@@ -2,13 +2,14 @@ import { apiFetch } from './api.js';
 import { guard } from './auth.js';
 import { el, badge, mountChrome, formatDateEs, buildTipoServicioField } from './ui.js';
 
+let clientes = [];
+let tipoField;
+let allProyectos = [];
+
 if (await guard()) {
   mountChrome('proyectos', 'Todos los proyectos');
   init();
 }
-
-let clientes = [];
-let tipoField;
 
 async function init() {
   tipoField = buildTipoServicioField('');
@@ -21,8 +22,9 @@ async function init() {
   }
   fillClienteSelects();
 
-  document.getElementById('filter-estado').addEventListener('change', loadProjects);
-  document.getElementById('filter-cliente').addEventListener('change', loadProjects);
+  document.getElementById('filter-estado').addEventListener('change', applyFilters);
+  document.getElementById('filter-cliente').addEventListener('change', applyFilters);
+  document.getElementById('search-nombre').addEventListener('input', applyFilters);
 
   document.getElementById('new-project-btn').addEventListener('click', () => {
     document.getElementById('new-project-section').hidden = false;
@@ -77,23 +79,37 @@ async function onCreateProject(e) {
 }
 
 async function loadProjects() {
-  const wrap = document.getElementById('projects-table-wrap');
-  wrap.textContent = '';
-
-  const estado = document.getElementById('filter-estado').value;
-  const cliente_id = document.getElementById('filter-cliente').value;
-
-  const query = new URLSearchParams();
-  if (estado) query.set('estado', estado);
-  if (cliente_id) query.set('cliente_id', cliente_id);
-
-  let proyectos;
   try {
-    proyectos = await apiFetch(`/proyectos${query.toString() ? '?' + query.toString() : ''}`);
+    allProyectos = await apiFetch('/proyectos');
   } catch {
+    allProyectos = [];
+    const wrap = document.getElementById('projects-table-wrap');
+    wrap.textContent = '';
     wrap.appendChild(el('div', { className: 'empty-state', text: 'No se pudieron cargar los proyectos.' }));
     return;
   }
+
+  applyFilters();
+}
+
+function applyFilters() {
+  const estado = document.getElementById('filter-estado').value;
+  const cliente_id = document.getElementById('filter-cliente').value;
+  const nombreQuery = document.getElementById('search-nombre').value.trim().toLowerCase();
+
+  const filtered = allProyectos.filter((p) => {
+    if (estado && p.estado !== estado) return false;
+    if (cliente_id && String(p.cliente_id) !== String(cliente_id)) return false;
+    if (nombreQuery && !p.nombre.toLowerCase().includes(nombreQuery)) return false;
+    return true;
+  });
+
+  renderProjectsTable(filtered);
+}
+
+function renderProjectsTable(proyectos) {
+  const wrap = document.getElementById('projects-table-wrap');
+  wrap.textContent = '';
 
   if (!proyectos || proyectos.length === 0) {
     wrap.appendChild(el('div', { className: 'empty-state', text: 'No hay proyectos que coincidan con el filtro.' }));
