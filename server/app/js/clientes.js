@@ -20,6 +20,12 @@ async function init() {
   document.getElementById('new-client-form').addEventListener('submit', onCreateClient);
   document.getElementById('search').addEventListener('input', render);
 
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('new') === '1') {
+    document.getElementById('new-client-section').hidden = false;
+    document.getElementById('nc-nombre').focus();
+  }
+
   await loadClients();
 }
 
