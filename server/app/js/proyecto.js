@@ -1,6 +1,6 @@
 import { apiFetch, downloadPDF, getToken } from './api.js';
 import { guard } from './auth.js';
-import { el, badge, mountChrome, formatMoney, formatDateEs, todayIso, ESTADO_LABELS, buildTipoServicioField } from './ui.js';
+import { el, badge, mountChrome, formatMoney, formatDateEs, todayIso, ESTADO_LABELS, buildTipoServicioField, registerOutsideClick } from './ui.js';
 
 const params = new URLSearchParams(window.location.search);
 const proyectoId = params.get('id');
@@ -20,6 +20,7 @@ let editingDoc = null; // { type: 'presupuesto'|'factura'|'encargo', id }
 let confirmingDoc = null; // { type, id, action: 'delete'|'anular' }
 let showRectificativaForm = false;
 let archivosCache = [];
+let confirmingItem = null; // { type: 'concepto'|'hora'|'gasto', id } — inline delete confirm
 
 // Reassigned on every renderConceptos() call to point at whichever catalog
 // dropdown is currently mounted; a single listener below delegates to it.
@@ -43,11 +44,24 @@ async function init() {
   document.getElementById('btn-add-fotos').addEventListener('click', () => {
     document.getElementById('input-galeria').click();
   });
+
+  const camaraMenu = document.getElementById('camara-choice-menu');
   document.getElementById('btn-add-video').addEventListener('click', () => {
-    document.getElementById('input-camara').click();
+    camaraMenu.hidden = !camaraMenu.hidden;
   });
+  document.getElementById('choice-foto').addEventListener('click', () => {
+    camaraMenu.hidden = true;
+    document.getElementById('input-camara-foto').click();
+  });
+  document.getElementById('choice-video').addEventListener('click', () => {
+    camaraMenu.hidden = true;
+    document.getElementById('input-camara-video').click();
+  });
+  registerOutsideClick(document.querySelector('.camara-btn-wrap'), () => { camaraMenu.hidden = true; });
+
   document.getElementById('input-galeria').addEventListener('change', (e) => onFilesSelected(e.target.files));
-  document.getElementById('input-camara').addEventListener('change', (e) => onFilesSelected(e.target.files));
+  document.getElementById('input-camara-foto').addEventListener('change', (e) => onFilesSelected(e.target.files));
+  document.getElementById('input-camara-video').addEventListener('change', (e) => onFilesSelected(e.target.files));
   document.getElementById('btn-upload-confirm').addEventListener('click', onUploadConfirm);
   document.getElementById('btn-upload-cancel').addEventListener('click', onUploadCancel);
 
@@ -470,6 +484,28 @@ function formatConceptoLine(c) {
   return `${c.cantidad} ${c.unidad} × ${precioStr} = ${totalStr}`;
 }
 
+// Shared inline delete-confirm for the plain list sections below (conceptos,
+// horas, gastos) — same "Sí / No" pattern used everywhere else in the app,
+// never a browser confirm().
+const SIMPLE_API_PATH = { concepto: '/conceptos', hora: '/horas', gasto: '/gastos' };
+
+function rerenderSimpleSection(type) {
+  if (type === 'concepto') renderConceptos();
+  else if (type === 'hora') renderHoras();
+  else if (type === 'gasto') renderGastos();
+}
+
+function buildSimpleDeleteConfirm(type, id) {
+  return buildConfirmInline('¿Eliminar? Esta acción no se puede deshacer.', async () => {
+    await apiFetch(`${SIMPLE_API_PATH[type]}/${id}`, { method: 'DELETE' });
+    confirmingItem = null;
+    await loadProject();
+  }, () => {
+    confirmingItem = null;
+    rerenderSimpleSection(type);
+  });
+}
+
 function buildConceptoRow(c) {
   const checkbox = el('input', { type: 'checkbox' });
   checkbox.checked = !!c.completado;
@@ -485,10 +521,10 @@ function buildConceptoRow(c) {
     await loadProject();
   });
 
-  const deleteBtn = el('button', { className: 'btn-ghost', text: '🗑' });
-  deleteBtn.addEventListener('click', async () => {
-    await apiFetch(`/conceptos/${c.id}`, { method: 'DELETE' });
-    await loadProject();
+  const deleteBtn = el('button', { type: 'button', className: 'btn-ghost', text: '🗑' });
+  deleteBtn.addEventListener('click', () => {
+    confirmingItem = { type: 'concepto', id: c.id };
+    renderConceptos();
   });
 
   const mainRow = el('div', { className: 'list-row' }, [
@@ -501,15 +537,26 @@ function buildConceptoRow(c) {
     deleteBtn,
   ]);
 
-  if (c.unidad !== 'hora') {
+  const isConfirmingDelete = confirmingItem && confirmingItem.type === 'concepto' && confirmingItem.id === c.id;
+  const isHora = c.unidad === 'hora';
+
+  if (!isConfirmingDelete && !isHora) {
     return mainRow;
   }
 
   const wrapper = el('div', {});
   wrapper.appendChild(mainRow);
-  const actionArea = el('div', { className: 'mt-8', style: 'padding-left:26px;' });
-  renderUseHoursAction(c, actionArea);
-  wrapper.appendChild(actionArea);
+
+  if (isConfirmingDelete) {
+    wrapper.appendChild(buildSimpleDeleteConfirm('concepto', c.id));
+  }
+
+  if (isHora) {
+    const actionArea = el('div', { className: 'mt-8', style: 'padding-left:26px;' });
+    renderUseHoursAction(c, actionArea);
+    wrapper.appendChild(actionArea);
+  }
+
   return wrapper;
 }
 
@@ -573,20 +620,32 @@ function renderHoras() {
   }
 
   for (const h of proyecto.horas) {
-    const deleteBtn = el('button', { className: 'btn-ghost', text: '🗑' });
-    deleteBtn.addEventListener('click', async () => {
-      await apiFetch(`/horas/${h.id}`, { method: 'DELETE' });
-      await loadProject();
-    });
-
-    listEl.appendChild(el('div', { className: 'list-row' }, [
-      el('div', { className: 'list-row__main' }, [
-        el('div', { text: `${formatDateEs(h.fecha)} · ${h.horas} h` }),
-        h.descripcion ? el('div', { className: 'list-row__meta', text: h.descripcion }) : null,
-      ]),
-      deleteBtn,
-    ]));
+    listEl.appendChild(buildHoraRow(h));
   }
+}
+
+function buildHoraRow(h) {
+  const deleteBtn = el('button', { type: 'button', className: 'btn-ghost', text: '🗑' });
+  deleteBtn.addEventListener('click', () => {
+    confirmingItem = { type: 'hora', id: h.id };
+    renderHoras();
+  });
+
+  const mainRow = el('div', { className: 'list-row' }, [
+    el('div', { className: 'list-row__main' }, [
+      el('div', { text: `${formatDateEs(h.fecha)} · ${h.horas} h` }),
+      h.descripcion ? el('div', { className: 'list-row__meta', text: h.descripcion }) : null,
+    ]),
+    deleteBtn,
+  ]);
+
+  const isConfirmingDelete = confirmingItem && confirmingItem.type === 'hora' && confirmingItem.id === h.id;
+  if (!isConfirmingDelete) return mainRow;
+
+  const wrapper = el('div', {});
+  wrapper.appendChild(mainRow);
+  wrapper.appendChild(buildSimpleDeleteConfirm('hora', h.id));
+  return wrapper;
 }
 
 async function onAddHora(e) {
@@ -623,7 +682,8 @@ function buildConfirmInline(message, onYes, onNo) {
   const no = el('button', { type: 'button', className: 'confirm-no', text: 'No' });
   yes.addEventListener('click', onYes);
   no.addEventListener('click', onNo);
-  return el('div', { className: 'confirm-inline' }, [el('span', { text: message }), yes, no]);
+  const actions = el('div', { className: 'confirm-inline-actions' }, [yes, no]);
+  return el('div', { className: 'confirm-inline' }, [el('span', { text: message }), actions]);
 }
 
 function buildDocConfirmRow(type, id, action) {
@@ -1224,20 +1284,32 @@ function renderGastos() {
     listEl.appendChild(el('p', { className: 'text-muted', text: 'Sin gastos registrados.' }));
   }
   for (const g of proyecto.gastos) {
-    const deleteBtn = el('button', { className: 'btn-ghost', text: '🗑' });
-    deleteBtn.addEventListener('click', async () => {
-      await apiFetch(`/gastos/${g.id}`, { method: 'DELETE' });
-      await loadProject();
-    });
-
-    listEl.appendChild(el('div', { className: 'list-row' }, [
-      el('div', { className: 'list-row__main' }, [
-        el('div', { text: `${formatDateEs(g.fecha)} · ${g.concepto}` }),
-        el('div', { className: 'list-row__meta', text: `${formatMoney(g.importe)} · ${g.categoria || '—'}` }),
-      ]),
-      deleteBtn,
-    ]));
+    listEl.appendChild(buildGastoRow(g));
   }
+}
+
+function buildGastoRow(g) {
+  const deleteBtn = el('button', { type: 'button', className: 'btn-ghost', text: '🗑' });
+  deleteBtn.addEventListener('click', () => {
+    confirmingItem = { type: 'gasto', id: g.id };
+    renderGastos();
+  });
+
+  const mainRow = el('div', { className: 'list-row' }, [
+    el('div', { className: 'list-row__main' }, [
+      el('div', { text: `${formatDateEs(g.fecha)} · ${g.concepto}` }),
+      el('div', { className: 'list-row__meta', text: `${formatMoney(g.importe)} · ${g.categoria || '—'}` }),
+    ]),
+    deleteBtn,
+  ]);
+
+  const isConfirmingDelete = confirmingItem && confirmingItem.type === 'gasto' && confirmingItem.id === g.id;
+  if (!isConfirmingDelete) return mainRow;
+
+  const wrapper = el('div', {});
+  wrapper.appendChild(mainRow);
+  wrapper.appendChild(buildSimpleDeleteConfirm('gasto', g.id));
+  return wrapper;
 }
 
 async function onAddGasto(e) {
@@ -1387,10 +1459,12 @@ function onFilesSelected(fileList) {
   for (const file of fileList) {
     queueFiles.push(file);
   }
+  document.getElementById('upload-error').hidden = true;
   renderUploadQueue();
-  // Reset both inputs so picking the same file again later still fires 'change'.
+  // Reset all three inputs so picking the same file again later still fires 'change'.
   document.getElementById('input-galeria').value = '';
-  document.getElementById('input-camara').value = '';
+  document.getElementById('input-camara-foto').value = '';
+  document.getElementById('input-camara-video').value = '';
 }
 
 function renderUploadQueue() {
@@ -1429,6 +1503,8 @@ async function onUploadConfirm() {
   }
 
   const confirmBtn = document.getElementById('btn-upload-confirm');
+  const errorEl = document.getElementById('upload-error');
+  errorEl.hidden = true;
   confirmBtn.disabled = true;
   confirmBtn.textContent = 'Subiendo...';
 
@@ -1444,7 +1520,13 @@ async function onUploadConfirm() {
       queueFiles = [];
       renderUploadQueue();
       await loadArchivos();
+    } else {
+      errorEl.textContent = `No se pudo subir (error ${res.status}). Inténtalo de nuevo.`;
+      errorEl.hidden = false;
     }
+  } catch {
+    errorEl.textContent = 'No se pudo conectar con el servidor. Comprueba tu conexión e inténtalo de nuevo.';
+    errorEl.hidden = false;
   } finally {
     confirmBtn.disabled = false;
     confirmBtn.textContent = 'Subir archivos';
@@ -1453,6 +1535,7 @@ async function onUploadConfirm() {
 
 function onUploadCancel() {
   queueFiles = [];
+  document.getElementById('upload-error').hidden = true;
   renderUploadQueue();
 }
 

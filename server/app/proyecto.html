@@ -164,15 +164,27 @@
           <button type="button" class="btn btn-secondary btn-sm" id="btn-add-fotos">
             <i class="ti ti-photo"></i> Añadir fotos
           </button>
-          <button type="button" class="btn btn-secondary btn-sm" id="btn-add-video">
-            <i class="ti ti-video"></i> Hacer foto / vídeo
-          </button>
-          <input type="file" id="input-galeria" multiple accept="image/*,video/*" style="display:none">
-          <input type="file" id="input-camara" accept="image/*,video/*" capture="environment" style="display:none">
+          <div class="camara-btn-wrap">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-add-video">
+              <i class="ti ti-video"></i> Hacer foto / vídeo
+            </button>
+            <div id="camara-choice-menu" class="camara-choice-menu" hidden>
+              <button type="button" id="choice-foto"><i class="ti ti-camera"></i> Foto</button>
+              <button type="button" id="choice-video"><i class="ti ti-video"></i> Vídeo</button>
+            </div>
+          </div>
+          <input type="file" id="input-galeria" multiple accept="image/*,video/*" class="file-input-hidden">
+          <!-- Camera capture is split into two single-type inputs: combining
+               accept="image/*,video/*" with capture on one input is unreliable
+               on mobile — many browsers fall back to the generic picker
+               instead of launching the camera when accept spans two types. -->
+          <input type="file" id="input-camara-foto" accept="image/*" capture="environment" class="file-input-hidden">
+          <input type="file" id="input-camara-video" accept="video/*" capture="environment" class="file-input-hidden">
         </div>
 
         <div id="upload-queue" style="display:none">
           <div id="queue-previews" class="queue-previews"></div>
+          <p class="error-text" id="upload-error" hidden></p>
           <div style="display:flex; gap:10px; margin-top:8px;">
             <button type="button" class="btn btn-primary btn-sm" id="btn-upload-confirm">Subir archivos</button>
             <button type="button" class="btn btn-secondary btn-sm" id="btn-upload-cancel">Cancelar</button>

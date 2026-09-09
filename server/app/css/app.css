@@ -590,18 +590,39 @@ a.stat-pill:hover {
 .confirm-inline {
   display: flex;
   align-items: center;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 10px;
   font-size: 13px;
   color: var(--text-mid);
 }
 
-.confirm-inline button {
-  font-weight: 600;
-  padding: 2px 6px;
+.confirm-inline span {
+  flex: 1 1 auto;
 }
 
-.confirm-inline .confirm-yes { color: #c0392b; }
-.confirm-inline .confirm-no { color: var(--text-muted); }
+.confirm-inline-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.confirm-inline button {
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  min-height: 36px;
+}
+
+.confirm-inline .confirm-yes {
+  background: #ef4444;
+  color: white;
+}
+
+.confirm-inline .confirm-no {
+  background: var(--bg-alt);
+  color: var(--text);
+}
 
 /* ── Login ────────────────────────────────────────────────────────── */
 
@@ -716,10 +737,80 @@ a.stat-pill:hover {
 
 .archivo-thumb .archivo-confirm {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  inset: 0;
+  z-index: 5;
   display: flex;
-  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(0,0,0,0.72);
+}
+
+.archivo-thumb .archivo-confirm button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  min-height: 36px;
+}
+
+.archivo-thumb .archivo-confirm .confirm-yes {
+  background: #ef4444;
+  color: white;
+}
+
+.archivo-thumb .archivo-confirm .confirm-no {
+  background: rgba(255,255,255,0.95);
+  color: var(--text);
+}
+
+/* Visually hidden but still in the layout — some mobile browsers (notably
+   iOS Safari) won't reliably open the file/camera picker for a programmatic
+   .click() on an input with display:none. */
+.file-input-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.camara-btn-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.camara-choice-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 6px;
+  z-index: 50;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+  overflow: hidden;
+  min-width: 160px;
+}
+
+.camara-choice-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--text-mid);
+  text-align: left;
+}
+
+.camara-choice-menu button:hover {
+  background: var(--bg-alt);
 }
 
 .archivo-descripcion {
