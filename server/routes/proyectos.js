@@ -1,7 +1,30 @@
+import { unlinkSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import db from '../db/database.js';
 import { requireAuth } from '../middleware/auth.js';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const STORAGE_DIR = join(__dirname, '../storage/proyectos');
+
 const ESTADOS = ['creado', 'presupuestado', 'en_curso', 'pendiente_cobro', 'cobrado', 'finalizado'];
+
+// Deletes a project along with the rows in other tables that reference it.
+// Only `archivos` cascades at the DB level (ON DELETE CASCADE); the rest
+// (conceptos, presupuestos, facturas, contratos, horas, ingresos, recibos)
+// use a plain FK with foreign_keys=ON, so leaving them in place makes the
+// DELETE fail with a FOREIGN KEY constraint error instead of removing the project.
+const deleteProyectoCascade = db.transaction((id) => {
+  db.prepare('DELETE FROM recibos WHERE ingreso_id IN (SELECT id FROM ingresos WHERE proyecto_id = ?)').run(id);
+  db.prepare('DELETE FROM ingresos WHERE proyecto_id = ?').run(id);
+  db.prepare('DELETE FROM gastos WHERE proyecto_id = ?').run(id);
+  db.prepare('DELETE FROM horas WHERE proyecto_id = ?').run(id);
+  db.prepare('DELETE FROM conceptos WHERE proyecto_id = ?').run(id);
+  db.prepare('DELETE FROM facturas WHERE proyecto_id = ?').run(id);
+  db.prepare('DELETE FROM contratos WHERE proyecto_id = ?').run(id);
+  db.prepare('DELETE FROM presupuestos WHERE proyecto_id = ?').run(id);
+  db.prepare('DELETE FROM proyectos WHERE id = ?').run(id);
+});
 
 export default async function proyectosRoutes(app) {
   app.addHook('preHandler', requireAuth);
@@ -108,7 +131,18 @@ export default async function proyectosRoutes(app) {
     const existing = db.prepare('SELECT * FROM proyectos WHERE id = ?').get(req.params.id);
     if (!existing) return reply.code(404).send({ error: 'No encontrado' });
 
-    db.prepare('DELETE FROM proyectos WHERE id = ?').run(req.params.id);
+    const archivos = db.prepare('SELECT * FROM archivos WHERE proyecto_id = ?').all(req.params.id);
+
+    deleteProyectoCascade(req.params.id);
+
+    for (const archivo of archivos) {
+      try {
+        unlinkSync(join(STORAGE_DIR, String(archivo.proyecto_id), archivo.filename));
+      } catch {
+        // File already missing on disk — nothing left to clean up.
+      }
+    }
+
     return { ok: true };
   });
 
