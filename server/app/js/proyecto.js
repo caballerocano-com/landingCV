@@ -1,6 +1,6 @@
 import { apiFetch, downloadPDF, getToken } from './api.js';
 import { guard } from './auth.js';
-import { el, badge, mountChrome, formatMoney, formatDateEs, todayIso, ESTADO_LABELS, buildTipoServicioField, registerOutsideClick } from './ui.js';
+import { el, badge, mountChrome, formatMoney, formatDateEs, todayIso, ESTADO_LABELS, buildTipoServicioField } from './ui.js';
 
 const params = new URLSearchParams(window.location.search);
 const proyectoId = params.get('id');
@@ -45,23 +45,7 @@ async function init() {
     document.getElementById('input-galeria').click();
   });
 
-  const camaraMenu = document.getElementById('camara-choice-menu');
-  document.getElementById('btn-add-video').addEventListener('click', () => {
-    camaraMenu.hidden = !camaraMenu.hidden;
-  });
-  document.getElementById('choice-foto').addEventListener('click', () => {
-    camaraMenu.hidden = true;
-    document.getElementById('input-camara-foto').click();
-  });
-  document.getElementById('choice-video').addEventListener('click', () => {
-    camaraMenu.hidden = true;
-    document.getElementById('input-camara-video').click();
-  });
-  registerOutsideClick(document.querySelector('.camara-btn-wrap'), () => { camaraMenu.hidden = true; });
-
   document.getElementById('input-galeria').addEventListener('change', (e) => onFilesSelected(e.target.files));
-  document.getElementById('input-camara-foto').addEventListener('change', (e) => onFilesSelected(e.target.files));
-  document.getElementById('input-camara-video').addEventListener('change', (e) => onFilesSelected(e.target.files));
   document.getElementById('btn-upload-confirm').addEventListener('click', onUploadConfirm);
   document.getElementById('btn-upload-cancel').addEventListener('click', onUploadCancel);
 
@@ -1461,10 +1445,7 @@ function onFilesSelected(fileList) {
   }
   document.getElementById('upload-error').hidden = true;
   renderUploadQueue();
-  // Reset all three inputs so picking the same file again later still fires 'change'.
   document.getElementById('input-galeria').value = '';
-  document.getElementById('input-camara-foto').value = '';
-  document.getElementById('input-camara-video').value = '';
 }
 
 function renderUploadQueue() {

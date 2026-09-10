@@ -164,22 +164,7 @@
           <button type="button" class="btn btn-secondary btn-sm" id="btn-add-fotos">
             <i class="ti ti-photo"></i> Añadir fotos
           </button>
-          <div class="camara-btn-wrap">
-            <button type="button" class="btn btn-secondary btn-sm" id="btn-add-video">
-              <i class="ti ti-video"></i> Hacer foto / vídeo
-            </button>
-            <div id="camara-choice-menu" class="camara-choice-menu" hidden>
-              <button type="button" id="choice-foto"><i class="ti ti-camera"></i> Foto</button>
-              <button type="button" id="choice-video"><i class="ti ti-video"></i> Vídeo</button>
-            </div>
-          </div>
           <input type="file" id="input-galeria" multiple accept="image/*,video/*" class="file-input-hidden">
-          <!-- Camera capture is split into two single-type inputs: combining
-               accept="image/*,video/*" with capture on one input is unreliable
-               on mobile — many browsers fall back to the generic picker
-               instead of launching the camera when accept spans two types. -->
-          <input type="file" id="input-camara-foto" accept="image/*" capture="environment" class="file-input-hidden">
-          <input type="file" id="input-camara-video" accept="video/*" capture="environment" class="file-input-hidden">
         </div>
 
         <div id="upload-queue" style="display:none">
