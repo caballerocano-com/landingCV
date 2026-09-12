@@ -400,9 +400,20 @@ main {
 
 .data-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 13.5px;
 }
+
+.data-table th,
+.data-table td {
+  word-break: break-word;
+}
+
+.data-table th:nth-child(1), .data-table td:nth-child(1) { width: 40%; }
+.data-table th:nth-child(2), .data-table td:nth-child(2) { width: 25%; }
+.data-table th:nth-child(3), .data-table td:nth-child(3) { width: 20%; }
+.data-table th:nth-child(4), .data-table td:nth-child(4) { width: 15%; }
 
 .data-table th {
   text-align: left;
@@ -437,6 +448,19 @@ main {
 .list-row:last-child { border-bottom: none; }
 .list-row__main { flex: 1; min-width: 0; }
 .list-row__meta { color: var(--text-muted); font-size: 12.5px; }
+
+.nota-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13.5px;
+}
+
+.nota-row:last-child { border-bottom: none; }
+.nota-row__main { flex: 1; min-width: 0; white-space: pre-wrap; word-break: break-word; }
+.nota-row__meta { color: var(--text-muted); font-size: 12px; margin-bottom: 4px; }
 
 .totals-row {
   display: flex;
@@ -779,6 +803,34 @@ a.stat-pill:hover {
   border: 0;
 }
 
+.archivo-thumb--documento {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  text-align: center;
+}
+
+.archivo-thumb--documento .documento-icon {
+  font-size: 32px;
+  color: var(--text-muted);
+}
+
+.archivo-thumb--documento .documento-nombre {
+  font-size: 11px;
+  color: var(--text-mid);
+  word-break: break-word;
+  max-height: 42px;
+  overflow: hidden;
+}
+
+.archivo-thumb--documento a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
 .archivo-descripcion {
   font-size: 11px;
   color: var(--text-dim);
@@ -861,17 +913,53 @@ a.stat-pill:hover {
   color: #ef4444;
 }
 
-/* ── Documents: anulados toggle + edit rows ──────────────────────────── */
+/* ── Accordion sections ───────────────────────────────────────────── */
 
-.section-header {
+.accordion-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+  cursor: pointer;
+  margin-bottom: 0;
+  user-select: none;
 }
 
-.section-header h2 { margin-bottom: 0; }
+.accordion-header h2 { margin-bottom: 0; }
+
+.accordion-chevron {
+  flex: 0 0 auto;
+  display: inline-block;
+  width: 14px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.accordion-summary {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.accordion-header .toggle-anulados {
+  margin-left: auto;
+}
+
+.accordion-body {
+  margin-top: 14px;
+}
+
+.accordion-body[hidden] {
+  display: none;
+}
+
+.section-add-toggle {
+  margin-top: 12px;
+}
+
+/* ── Documents: anulados toggle + edit rows ──────────────────────────── */
 
 .toggle-anulados {
   display: flex;

@@ -29,6 +29,15 @@ function parseContentDisposition(value) {
   return result;
 }
 
+// Strips any path segments and anything but safe filename characters, so a
+// user-supplied filename can be embedded in the stored path (for documento
+// download links) without enabling traversal or filesystem-unsafe names.
+function sanitizeFilename(name) {
+  const base = (name || 'archivo').split(/[\\/]/).pop();
+  const cleaned = base.replace(/[^a-zA-Z0-9_.-]/g, '_').replace(/^\.+/, '');
+  return (cleaned || 'archivo').slice(0, 100);
+}
+
 function parseMultipart(buffer, boundary) {
   const boundaryBuf = Buffer.from(`--${boundary}`);
   const parts = [];
@@ -120,11 +129,10 @@ export default async function archivosRoutes(app) {
     const created = [];
     for (const file of fileParts) {
       const mimetype = file.contentType.split(';')[0].trim();
-      if (!mimetype.startsWith('image/') && !mimetype.startsWith('video/')) continue;
-
-      const tipo = mimetype.startsWith('video/') ? 'video' : 'foto';
-      const ext = extname(file.filename).toLowerCase() || (tipo === 'video' ? '.mp4' : '.jpg');
-      const filename = `${Date.now()}-${crypto.randomBytes(3).toString('hex')}${ext}`;
+      const tipo = mimetype.startsWith('image/') ? 'foto' : mimetype.startsWith('video/') ? 'video' : 'documento';
+      const original = sanitizeFilename(file.filename);
+      const safeName = extname(original) ? original : original + (tipo === 'video' ? '.mp4' : tipo === 'foto' ? '.jpg' : '');
+      const filename = `${Date.now()}-${crypto.randomBytes(3).toString('hex')}-${safeName}`;
       const filePath = join(projectDir, filename);
 
       writeFileSync(filePath, file.body);

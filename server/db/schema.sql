@@ -146,6 +146,13 @@ CREATE TABLE IF NOT EXISTS archivos (
   created_at TEXT DEFAULT (datetime('now'))
 );
 
+CREATE TABLE IF NOT EXISTS notas (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  proyecto_id INTEGER NOT NULL REFERENCES proyectos(id) ON DELETE CASCADE,
+  texto TEXT NOT NULL,
+  created_at TEXT DEFAULT (datetime('now'))
+);
+
 CREATE TABLE IF NOT EXISTS config (
   id INTEGER PRIMARY KEY DEFAULT 1,
   ultimo_num_presupuesto INTEGER DEFAULT 0,

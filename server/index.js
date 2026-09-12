@@ -17,6 +17,7 @@ import ingresosRoutes from './routes/ingresos.js';
 import gastosRoutes from './routes/gastos.js';
 import horasRoutes from './routes/horas.js';
 import archivosRoutes from './routes/archivos.js';
+import notasRoutes from './routes/notas.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC = join(__dirname, '../public');
@@ -83,6 +84,7 @@ app.register(ingresosRoutes);
 app.register(gastosRoutes);
 app.register(horasRoutes);
 app.register(archivosRoutes);
+app.register(notasRoutes);
 
 // ── Public website (caballerocano.com) ──────────────────────────────
 

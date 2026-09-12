@@ -20,7 +20,14 @@ let editingDoc = null; // { type: 'presupuesto'|'factura'|'encargo', id }
 let confirmingDoc = null; // { type, id, action: 'delete'|'anular' }
 let showRectificativaForm = false;
 let archivosCache = [];
-let confirmingItem = null; // { type: 'concepto'|'hora'|'gasto', id } — inline delete confirm
+let notasCache = [];
+let confirmingItem = null; // { type: 'concepto'|'hora'|'gasto'|'nota', id } — inline delete confirm
+let conceptosFormVisible = false;
+
+// Keys used both as localStorage suffixes and as the accordion sections'
+// data-section attribute — must match proyecto.html's data-section values.
+const SECTION_KEYS = ['conceptos', 'horas', 'presupuestos', 'facturas', 'encargos', 'ingresos', 'gastos', 'notas', 'archivos'];
+const ACCORDION_STORAGE_PREFIX = 'proyecto-accordion:';
 
 // Reassigned on every renderConceptos() call to point at whichever catalog
 // dropdown is currently mounted; a single listener below delegates to it.
@@ -32,14 +39,94 @@ if (await guard()) {
   init();
 }
 
+// ── Accordion sections ───────────────────────────────────────────────
+
+function initAccordions() {
+  for (const key of SECTION_KEYS) {
+    const section = document.querySelector(`.section[data-section="${key}"]`);
+    if (!section) continue;
+    const header = section.querySelector('.accordion-header');
+    const chevron = header.querySelector('.accordion-chevron');
+    const body = section.querySelector('.accordion-body');
+
+    const stored = localStorage.getItem(ACCORDION_STORAGE_PREFIX + key);
+    setAccordionCollapsed(body, chevron, stored === null ? true : stored === '1');
+
+    header.addEventListener('click', (e) => {
+      if (e.target.closest('button, a, input, select, label')) return;
+      const collapsed = !body.hidden;
+      setAccordionCollapsed(body, chevron, collapsed);
+      localStorage.setItem(ACCORDION_STORAGE_PREFIX + key, collapsed ? '1' : '0');
+    });
+  }
+}
+
+function setAccordionCollapsed(body, chevron, collapsed) {
+  body.hidden = collapsed;
+  chevron.textContent = collapsed ? '▶' : '▼';
+}
+
+// ── Hidden-by-default add forms (horas, ingresos, gastos, notas) ───────
+
+function showAddForm(key) {
+  const form = document.getElementById(`${key}-form`);
+  const btn = document.getElementById(`btn-show-${key}-form`);
+  if (form) form.hidden = false;
+  if (btn) btn.hidden = true;
+}
+
+function hideAddForm(key) {
+  const form = document.getElementById(`${key}-form`);
+  const btn = document.getElementById(`btn-show-${key}-form`);
+  if (form) form.hidden = true;
+  if (btn) btn.hidden = false;
+}
+
+// ── Section summaries ────────────────────────────────────────────────
+
+function setSummary(key, text) {
+  const summaryEl = document.getElementById(`summary-${key}`);
+  if (summaryEl) summaryEl.textContent = text;
+}
+
+function updateSummaries() {
+  if (!proyecto) return;
+
+  const subtotalConceptos = proyecto.conceptos.reduce((sum, c) => sum + (Number(c.cantidad) || 0) * (Number(c.precio_unitario) || 0), 0);
+  setSummary('conceptos', `${proyecto.conceptos.length} conceptos · Subtotal ${formatMoney(subtotalConceptos)}`);
+
+  const totalHoras = proyecto.horas.reduce((sum, h) => sum + (Number(h.horas) || 0), 0);
+  setSummary('horas', `${totalHoras} h registradas`);
+
+  setSummary('presupuestos', proyecto.presupuestos.length > 0 ? `${proyecto.presupuestos.length} presupuestos` : 'Sin presupuestos');
+  setSummary('facturas', proyecto.facturas.length > 0 ? `${proyecto.facturas.length} facturas` : 'Sin facturas');
+  setSummary('encargos', proyecto.contratos.length > 0 ? `${proyecto.contratos.length} encargos` : 'Sin encargos');
+
+  const totalIngresos = proyecto.ingresos.reduce((sum, i) => sum + (Number(i.importe) || 0), 0);
+  setSummary('ingresos', `${proyecto.ingresos.length} ingresos · Total ${formatMoney(totalIngresos)}`);
+
+  const totalGastos = proyecto.gastos.reduce((sum, g) => sum + (Number(g.importe) || 0), 0);
+  setSummary('gastos', `${proyecto.gastos.length} gastos · Total ${formatMoney(totalGastos)}`);
+
+  setSummary('notas', `${notasCache.length} notas`);
+  setSummary('archivos', `${archivosCache.length} archivos`);
+}
+
 async function init() {
   document.getElementById('h-fecha').value = todayIso();
   document.getElementById('i-fecha').value = todayIso();
   document.getElementById('g-fecha').value = todayIso();
 
+  initAccordions();
+
   document.getElementById('horas-form').addEventListener('submit', onAddHora);
   document.getElementById('ingresos-form').addEventListener('submit', onAddIngreso);
   document.getElementById('gastos-form').addEventListener('submit', onAddGasto);
+  document.getElementById('notas-form').addEventListener('submit', onAddNota);
+
+  for (const key of ['horas', 'ingresos', 'gastos', 'notas']) {
+    document.getElementById(`btn-show-${key}-form`).addEventListener('click', () => showAddForm(key));
+  }
 
   document.getElementById('btn-add-fotos').addEventListener('click', () => {
     document.getElementById('input-galeria').click();
@@ -106,7 +193,9 @@ async function loadProject() {
   renderContratos();
   renderIngresos();
   renderGastos();
+  await loadNotas();
   await loadArchivos();
+  updateSummaries();
 }
 
 // ── 1. HEADER ────────────────────────────────────────────────────────
@@ -272,6 +361,42 @@ function renderConceptos() {
   const addContainer = document.getElementById('conceptos-add');
   addContainer.textContent = '';
 
+  if (!conceptosFormVisible) {
+    closeActiveCatalogDropdown = () => {};
+    const showBtn = el('button', {
+      type: 'button',
+      className: 'btn btn-secondary btn-sm section-add-toggle',
+      text: '+ Añadir concepto',
+    });
+    showBtn.addEventListener('click', () => { conceptosFormVisible = true; renderConceptos(); });
+    addContainer.appendChild(showBtn);
+  } else {
+    renderConceptoForm(addContainer);
+  }
+
+  const listEl = document.getElementById('conceptos-list');
+  listEl.textContent = '';
+
+  if (proyecto.conceptos.length === 0) {
+    listEl.appendChild(el('p', { className: 'text-muted mt-16', text: 'Sin conceptos todavía.' }));
+  }
+
+  let subtotal = 0;
+  for (const c of proyecto.conceptos) {
+    subtotal += (Number(c.cantidad) || 0) * (Number(c.precio_unitario) || 0);
+    listEl.appendChild(buildConceptoRow(c));
+  }
+
+  const iva = subtotal * 0.21;
+  const total = subtotal + iva;
+  const totalsEl = document.getElementById('conceptos-totals');
+  totalsEl.textContent = '';
+  totalsEl.appendChild(totalItem('Subtotal', formatMoney(subtotal)));
+  totalsEl.appendChild(totalItem('IVA (21%)', formatMoney(iva)));
+  totalsEl.appendChild(totalItem('TOTAL', formatMoney(total), true));
+}
+
+function renderConceptoForm(addContainer) {
   const form = el('form', { className: 'inline-form concept-form', style: 'flex-direction:column; align-items:stretch;' });
 
   const cantidadInput = el('input', { type: 'number', step: '0.01', value: '1' });
@@ -417,31 +542,11 @@ function renderConceptos() {
         unidad: unidadSelect.value,
       }),
     });
+    conceptosFormVisible = false;
     await loadProject();
   });
 
   addContainer.appendChild(form);
-
-  const listEl = document.getElementById('conceptos-list');
-  listEl.textContent = '';
-
-  if (proyecto.conceptos.length === 0) {
-    listEl.appendChild(el('p', { className: 'text-muted mt-16', text: 'Sin conceptos todavía.' }));
-  }
-
-  let subtotal = 0;
-  for (const c of proyecto.conceptos) {
-    subtotal += (Number(c.cantidad) || 0) * (Number(c.precio_unitario) || 0);
-    listEl.appendChild(buildConceptoRow(c));
-  }
-
-  const iva = subtotal * 0.21;
-  const total = subtotal + iva;
-  const totalsEl = document.getElementById('conceptos-totals');
-  totalsEl.textContent = '';
-  totalsEl.appendChild(totalItem('Subtotal', formatMoney(subtotal)));
-  totalsEl.appendChild(totalItem('IVA (21%)', formatMoney(iva)));
-  totalsEl.appendChild(totalItem('TOTAL', formatMoney(total), true));
 }
 
 function fieldWrap(label, inputEl) {
@@ -642,6 +747,7 @@ async function onAddHora(e) {
   await apiFetch('/horas', { method: 'POST', body: JSON.stringify({ proyecto_id: proyectoId, fecha, horas, descripcion }) });
   document.getElementById('horas-form').reset();
   document.getElementById('h-fecha').value = todayIso();
+  hideAddForm('horas');
   await loadProject();
 }
 
@@ -1255,6 +1361,7 @@ async function onAddIngreso(e) {
   await apiFetch('/ingresos', { method: 'POST', body: JSON.stringify({ proyecto_id: proyectoId, fecha, concepto, importe, metodo }) });
   document.getElementById('ingresos-form').reset();
   document.getElementById('i-fecha').value = todayIso();
+  hideAddForm('ingresos');
   await loadProject();
 }
 
@@ -1307,10 +1414,88 @@ async function onAddGasto(e) {
   await apiFetch('/gastos', { method: 'POST', body: JSON.stringify({ proyecto_id: proyectoId, fecha, concepto, importe, categoria }) });
   document.getElementById('gastos-form').reset();
   document.getElementById('g-fecha').value = todayIso();
+  hideAddForm('gastos');
   await loadProject();
 }
 
-// ── 8. ARCHIVOS MULTIMEDIA ───────────────────────────────────────────
+// ── 8. NOTAS ─────────────────────────────────────────────────────────
+
+async function loadNotas() {
+  let notas;
+  try {
+    notas = await apiFetch(`/notas?proyecto_id=${proyectoId}`);
+  } catch {
+    notas = [];
+  }
+  notasCache = notas || [];
+  renderNotas();
+  updateSummaries();
+}
+
+function renderNotas() {
+  const listEl = document.getElementById('notas-list');
+  listEl.textContent = '';
+
+  if (notasCache.length === 0) {
+    listEl.appendChild(el('p', { className: 'text-muted', text: 'Sin notas todavía.' }));
+    return;
+  }
+
+  for (const n of notasCache) {
+    listEl.appendChild(buildNotaRow(n));
+  }
+}
+
+function buildNotaRow(n) {
+  const deleteBtn = el('button', { type: 'button', className: 'btn-ghost', text: '🗑' });
+  deleteBtn.addEventListener('click', () => {
+    confirmingItem = { type: 'nota', id: n.id };
+    renderNotas();
+  });
+
+  const mainRow = el('div', { className: 'nota-row' }, [
+    el('div', { className: 'nota-row__main' }, [
+      el('div', { className: 'nota-row__meta', text: formatDateTimeEs(n.created_at) }),
+      el('div', { text: n.texto }),
+    ]),
+    deleteBtn,
+  ]);
+
+  const isConfirmingDelete = confirmingItem && confirmingItem.type === 'nota' && confirmingItem.id === n.id;
+  if (!isConfirmingDelete) return mainRow;
+
+  const wrapper = el('div', {});
+  wrapper.appendChild(mainRow);
+  wrapper.appendChild(buildConfirmInline('¿Eliminar? Esta acción no se puede deshacer.', async () => {
+    await apiFetch(`/notas/${n.id}`, { method: 'DELETE' });
+    confirmingItem = null;
+    await loadNotas();
+  }, () => {
+    confirmingItem = null;
+    renderNotas();
+  }));
+  return wrapper;
+}
+
+function formatDateTimeEs(isoOrDate) {
+  if (!isoOrDate) return '';
+  const d = new Date(isoOrDate.replace(' ', 'T') + (isoOrDate.includes('Z') ? '' : 'Z'));
+  if (isNaN(d.getTime())) return '';
+  return `${formatDateEs(d)} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
+async function onAddNota(e) {
+  e.preventDefault();
+  const texto = document.getElementById('n-texto').value.trim();
+  if (!texto) return;
+
+  await apiFetch('/notas', { method: 'POST', body: JSON.stringify({ proyecto_id: proyectoId, texto }) });
+  document.getElementById('notas-form').reset();
+  hideAddForm('notas');
+  await loadNotas();
+}
+
+// ── 9. ARCHIVOS MULTIMEDIA ───────────────────────────────────────────
 
 async function loadArchivos() {
   let archivos;
@@ -1322,6 +1507,7 @@ async function loadArchivos() {
   archivosCache = archivos || [];
   renderArchivosStrip(archivosCache);
   updateAnexoCheckVisibility(archivosCache);
+  updateSummaries();
 }
 
 function updateAnexoCheckVisibility(archivos) {
@@ -1350,10 +1536,36 @@ function renderArchivosStrip(archivos) {
   }
 }
 
-function buildArchivoThumb(a) {
-  const isVideo = a.tipo === 'video';
-  const src = `/storage/proyectos/${proyectoId}/${a.filename}`;
+// Uploaded files are stored as "<timestamp>-<hex>-<original name>"; strip
+// that prefix back off to show the user something recognizable.
+function archivoDisplayName(filename) {
+  return filename.replace(/^\d+-[0-9a-f]{6}-/, '');
+}
 
+function buildArchivoThumb(a) {
+  const src = `/storage/proyectos/${proyectoId}/${a.filename}`;
+  const isDocumento = a.tipo === 'documento';
+
+  const thumb = el('div', { className: 'archivo-thumb' + (isDocumento ? ' archivo-thumb--documento' : '') });
+
+  const delBtn = el('button', { type: 'button', className: 'btn-delete-archivo', text: '×' });
+  delBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    confirmDeleteArchivo(a.id, thumb);
+  });
+
+  if (isDocumento) {
+    thumb.appendChild(el('i', { className: 'ti ti-file-text documento-icon' }));
+    thumb.appendChild(el('div', { className: 'documento-nombre', text: archivoDisplayName(a.filename) }));
+    thumb.appendChild(el('a', { href: src, download: '', target: '_blank', text: 'Descargar' }));
+    thumb.appendChild(delBtn);
+    if (a.descripcion) {
+      thumb.appendChild(el('div', { className: 'archivo-descripcion', text: a.descripcion }));
+    }
+    return thumb;
+  }
+
+  const isVideo = a.tipo === 'video';
   const media = el(isVideo ? 'video' : 'img', { src });
   if (isVideo) {
     media.setAttribute('preload', 'metadata');
@@ -1361,19 +1573,11 @@ function buildArchivoThumb(a) {
   }
   media.addEventListener('click', () => openLightbox(a));
 
-  const thumb = el('div', { className: 'archivo-thumb' });
-
   if (isVideo) {
     const overlay = el('div', { className: 'thumb-overlay' }, el('span', { className: 'play-icon', text: '▶' }));
     overlay.addEventListener('click', () => openLightbox(a));
     thumb.appendChild(overlay);
   }
-
-  const delBtn = el('button', { type: 'button', className: 'btn-delete-archivo', text: '×' });
-  delBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    confirmDeleteArchivo(a.id, thumb);
-  });
 
   thumb.appendChild(media);
   thumb.appendChild(delBtn);
