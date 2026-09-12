@@ -388,6 +388,8 @@ main {
   margin-top: 10px;
 }
 
+.inline-form[hidden] { display: none !important; }
+
 .inline-form .field { margin-bottom: 0; min-width: 120px; flex: 1; }
 
 .error-text {
