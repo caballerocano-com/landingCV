@@ -198,6 +198,20 @@ function buildDetail(f) {
     });
     actions.appendChild(saveBtn);
 
+    const emitirBtn = el('button', { type: 'button', className: 'btn btn-primary btn-sm', text: 'Emitir (asignar número definitivo)' });
+    emitirBtn.addEventListener('click', async () => {
+      if (!confirm('¿Emitir esta factura? Se le asignará un número definitivo e inmutable.')) return;
+      errorText.hidden = true;
+      try {
+        await apiFetch(`/facturas/${f.id}`, { method: 'PUT', body: JSON.stringify({ estado: 'emitida' }) });
+        await load();
+      } catch (err) {
+        errorText.textContent = err.data?.error || err.message;
+        errorText.hidden = false;
+      }
+    });
+    actions.appendChild(emitirBtn);
+
     const deleteBtn = el('button', { type: 'button', className: 'btn btn-danger btn-sm', text: 'Eliminar borrador' });
     deleteBtn.addEventListener('click', async () => {
       if (!confirm('¿Eliminar esta factura en borrador? No se puede deshacer.')) return;
