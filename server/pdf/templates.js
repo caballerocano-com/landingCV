@@ -202,7 +202,7 @@ export async function buildFacturaPDF({ factura, proyecto, cliente, conceptos, f
   const esRectificativa = !!(factura.es_rectificativa || facturaOriginal);
   drawHeader(doc, {
     tipoDocumento: esRectificativa ? 'FACTURA RECTIFICATIVA' : 'FACTURA',
-    numero: factura.numero,
+    numero: factura.numero || 'BORRADOR (sin número asignado)',
     fecha: factura.created_at,
   });
   drawClientBlock(doc, cliente);
