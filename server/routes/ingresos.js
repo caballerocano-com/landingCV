@@ -21,7 +21,10 @@ export default async function ingresosRoutes(app) {
   `;
 
   app.get('/api/ingresos', async (req) => {
-    const { proyecto_id } = req.query || {};
+    const { proyecto_id, factura_id } = req.query || {};
+    if (factura_id) {
+      return db.prepare(`${INGRESOS_SELECT} WHERE i.factura_id = ? ORDER BY i.fecha DESC`).all(factura_id);
+    }
     if (proyecto_id) {
       return db.prepare(`${INGRESOS_SELECT} WHERE i.proyecto_id = ? ORDER BY i.fecha DESC`).all(proyecto_id);
     }

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facturas · Caballero Cano</title>
+  <link rel="stylesheet" href="/app/css/reset.css">
+  <link rel="stylesheet" href="/app/css/vars.css">
+  <link rel="stylesheet" href="/app/css/app.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css">
+</head>
+<body>
+  <div id="topbar-root"></div>
+
+  <main>
+    <div class="page-header">
+      <h1>Facturas</h1>
+    </div>
+
+    <div class="section">
+      <div class="grid grid-2">
+        <div class="field">
+          <label for="f-desde">Desde</label>
+          <input type="date" id="f-desde">
+        </div>
+        <div class="field">
+          <label for="f-hasta">Hasta</label>
+          <input type="date" id="f-hasta">
+        </div>
+        <div class="field">
+          <label for="f-cliente">Cliente</label>
+          <select id="f-cliente"><option value="">Todos</option></select>
+        </div>
+        <div class="field">
+          <label for="f-serie">Serie</label>
+          <select id="f-serie">
+            <option value="">Todas</option>
+            <option value="factura">Factura</option>
+            <option value="rectificativa">Rectificativa</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-anio">Año</label>
+          <input type="number" id="f-anio" placeholder="Ej. 2026">
+        </div>
+        <div class="field">
+          <label for="f-estado">Estado</label>
+          <select id="f-estado">
+            <option value="">Todos</option>
+            <option value="borrador">Borrador</option>
+            <option value="emitida">Emitida</option>
+            <option value="vencida">Vencida</option>
+            <option value="cobrada">Cobrada</option>
+            <option value="anulada">Anulada</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="f-q">Buscar por número</label>
+        <input type="text" id="f-q" placeholder="FACT-2026-...">
+      </div>
+    </div>
+
+    <div class="section">
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <label style="display:flex; gap:6px; align-items:center;">
+          <input type="checkbox" id="select-all"> Seleccionar todo
+        </label>
+        <button class="btn btn-secondary btn-sm" id="download-selected">Descargar seleccionadas</button>
+        <button class="btn btn-secondary btn-sm" id="download-all">Descargar todas (filtro actual)</button>
+        <span class="text-muted" id="facturas-count"></span>
+      </div>
+    </div>
+
+    <div id="facturas-list"></div>
+  </main>
+
+  <script type="module" src="/app/js/facturas.js"></script>
+</body>
+</html>

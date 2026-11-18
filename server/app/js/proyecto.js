@@ -976,6 +976,14 @@ function buildFacturaEditForm(f) {
   }));
   estadoField.appendChild(estadoSelect);
 
+  // numero is only assigned automatically when this moves to emitida; while
+  // borrador it can be set by hand (e.g. to correct a past numbering
+  // mistake), checked for duplicates server-side before saving.
+  const numeroField = el('div', { className: 'field' }, [el('label', { text: 'Número (vacío = automático al emitir)' })]);
+  const numeroInput = el('input', { type: 'text', placeholder: 'Ej. FACT-2026-003' });
+  numeroInput.value = f.numero || '';
+  numeroField.appendChild(numeroInput);
+
   const vencField = el('div', { className: 'field' }, [el('label', { text: 'Fecha de vencimiento' })]);
   const vencInput = el('input', { type: 'date' });
   vencInput.value = f.fecha_vencimiento || '';
@@ -986,8 +994,12 @@ function buildFacturaEditForm(f) {
   notasArea.value = f.notas || '';
   notasField.appendChild(notasArea);
 
-  form.appendChild(el('div', { className: 'grid grid-2' }, [estadoField, vencField]));
+  const errorText = el('p', { className: 'error-text', hidden: '' });
+
+  form.appendChild(el('div', { className: 'grid grid-2' }, [estadoField, numeroField]));
+  form.appendChild(vencField);
   form.appendChild(notasField);
+  form.appendChild(errorText);
 
   const actions = el('div', { style: 'display:flex; gap:10px;' });
   const saveBtn = el('button', { type: 'submit', className: 'btn btn-primary btn-sm', text: 'Guardar' });
@@ -999,14 +1011,21 @@ function buildFacturaEditForm(f) {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    await apiFetch(`/facturas/${f.id}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        estado: estadoSelect.value,
-        fecha_vencimiento: vencInput.value || null,
-        notas: notasArea.value,
-      }),
-    });
+    try {
+      await apiFetch(`/facturas/${f.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          estado: estadoSelect.value,
+          numero: numeroInput.value.trim() || null,
+          fecha_vencimiento: vencInput.value || null,
+          notas: notasArea.value,
+        }),
+      });
+    } catch (err) {
+      errorText.textContent = err.data?.error || err.message;
+      errorText.hidden = false;
+      return;
+    }
     editingDoc = null;
     await loadProject();
   });
@@ -1021,7 +1040,7 @@ function buildFacturaRow(f) {
   const isConfirming = confirmingDoc && confirmingDoc.type === 'factura' && confirmingDoc.id === f.id;
 
   const pdfBtn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm', text: 'PDF' });
-  pdfBtn.addEventListener('click', () => downloadPDF(`/api/facturas/${f.id}/pdf`, `${f.numero}.pdf`));
+  pdfBtn.addEventListener('click', () => downloadPDF(`/api/facturas/${f.id}/pdf`, `${f.numero || 'borrador-' + f.id}.pdf`));
 
   const statusBadge = isRect
     ? el('span', { className: 'badge', 'data-estado': 'rect', text: 'RECT' })
@@ -1029,7 +1048,7 @@ function buildFacturaRow(f) {
 
   const mainRow = el('div', { className: 'doc-row__main' }, [
     el('div', { className: 'list-row__main' }, [
-      el('div', { className: 'doc-numero', text: f.numero }),
+      el('div', { className: 'doc-numero', text: f.numero || 'Sin número (borrador)' }),
       el('div', { className: 'list-row__meta', text: formatDateEs(f.created_at) }),
     ]),
     statusBadge,

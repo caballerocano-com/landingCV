@@ -117,6 +117,36 @@ function migrate() {
     `);
   }
 
+  // facturas.numero used to be NOT NULL: every factura got a real document
+  // number the instant it was created, even throwaway drafts. Numbering now
+  // happens only when a factura is actually emitida, so a draft must be able
+  // to sit with numero = NULL until then. Existing rows all already have a
+  // numero and are untouched by this rebuild.
+  const facturasTableForNumero = db.prepare(`SELECT sql FROM sqlite_master WHERE type='table' AND name='facturas'`).get();
+  if (facturasTableForNumero && facturasTableForNumero.sql.includes('numero TEXT NOT NULL UNIQUE')) {
+    db.exec(`
+      CREATE TABLE facturas_migration_nullable_numero (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        proyecto_id INTEGER REFERENCES proyectos(id),
+        presupuesto_id INTEGER,
+        numero TEXT UNIQUE,
+        iva_porcentaje REAL DEFAULT 21,
+        estado TEXT DEFAULT 'borrador',
+        fecha_vencimiento TEXT,
+        notas TEXT,
+        pdf_path TEXT,
+        created_at TEXT DEFAULT (datetime('now')),
+        factura_original_id INTEGER REFERENCES facturas(id),
+        es_rectificativa INTEGER DEFAULT 0
+      );
+      INSERT INTO facturas_migration_nullable_numero (id, proyecto_id, presupuesto_id, numero, iva_porcentaje, estado, fecha_vencimiento, notas, pdf_path, created_at, factura_original_id, es_rectificativa)
+        SELECT id, proyecto_id, presupuesto_id, numero, iva_porcentaje, estado, fecha_vencimiento, notas, pdf_path, created_at, factura_original_id, es_rectificativa
+        FROM facturas;
+      DROP TABLE facturas;
+      ALTER TABLE facturas_migration_nullable_numero RENAME TO facturas;
+    `);
+  }
+
   // Same rebuild for contratos: default was 'pendiente', and the state
   // machine itself changed (borrador -> enviado -> firmado -> anulado;
   // 'expirado' is now computed from expires_at at read time instead of

@@ -186,6 +186,7 @@ function buildTipoServicioField(initialValue) {
 const NAV_LINKS = [
   { href: '/app/dashboard.html', label: 'Panel', key: 'dashboard' },
   { href: '/app/proyectos.html', label: 'Proyectos', key: 'proyectos' },
+  { href: '/app/facturas.html', label: 'Facturas', key: 'facturas' },
   { href: '/app/clientes.html', label: 'Clientes', key: 'clientes' },
   { href: '/app/elementos.html', label: 'Catálogo', key: 'elementos' },
 ];

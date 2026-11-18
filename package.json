@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@fastify/static": "^6.12.0",
+    "archiver": "^8.0.0",
     "better-sqlite3": "^13.0.3",
     "fastify": "^4.26.2",
     "pdfkit": "^0.20.2"

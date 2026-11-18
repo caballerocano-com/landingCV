@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS facturas (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   proyecto_id INTEGER REFERENCES proyectos(id),
   presupuesto_id INTEGER,
-  numero TEXT NOT NULL UNIQUE,
+  numero TEXT UNIQUE,
   iva_porcentaje REAL DEFAULT 21,
   estado TEXT DEFAULT 'borrador',
   fecha_vencimiento TEXT,
@@ -151,6 +151,16 @@ CREATE TABLE IF NOT EXISTS notas (
   proyecto_id INTEGER NOT NULL REFERENCES proyectos(id) ON DELETE CASCADE,
   texto TEXT NOT NULL,
   created_at TEXT DEFAULT (datetime('now'))
+);
+
+-- Per (tipo, anio) correlative counters for document series that reset
+-- every calendar year (currently 'factura' and 'rectificativa'; other
+-- types keep using the config.ultimo_num_* counters for now).
+CREATE TABLE IF NOT EXISTS series (
+  tipo TEXT NOT NULL,
+  anio INTEGER NOT NULL,
+  ultimo_numero INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (tipo, anio)
 );
 
 CREATE TABLE IF NOT EXISTS config (
