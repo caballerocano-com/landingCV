@@ -1,0 +1,17 @@
+[Unit]
+Description=Caballerocano DB Backup
+After=network.target caballerocano.service
+
+[Service]
+Type=oneshot
+
+WorkingDirectory=/var/www/caballerocano.com
+ExecStart=/usr/bin/node server/db/backup.js
+
+Environment=BACKUP_PATH=/var/backups/caballerocano
+
+StandardOutput=journal
+StandardError=journal
+
+NoNewPrivileges=true
+PrivateTmp=true

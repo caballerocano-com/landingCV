@@ -31,6 +31,7 @@ async function init() {
   });
   document.getElementById('download-selected').addEventListener('click', () => downloadZip({ ids: [...selected] }));
   document.getElementById('download-all').addEventListener('click', () => downloadZip(currentFilters()));
+  document.getElementById('delete-selected').addEventListener('click', onDeleteSelected);
 
   await load();
 }
@@ -85,6 +86,31 @@ async function downloadZip(body) {
   setTimeout(() => URL.revokeObjectURL(url), 10000);
 }
 
+async function onDeleteSelected() {
+  const count = selected.size;
+  if (count === 0) {
+    alert('No has seleccionado ninguna factura.');
+    return;
+  }
+
+  const palabra = prompt(
+    `Atención, vas a eliminar ${count} factura(s). Esto no se puede deshacer. ¿Estás seguro?\n\nEscribe "Borrar" para confirmar.`
+  );
+  if (palabra !== 'Borrar') return;
+
+  const result = await apiFetch('/facturas/bulk-delete', {
+    method: 'POST',
+    body: JSON.stringify({ ids: [...selected] }),
+  });
+
+  selected.clear();
+  await load();
+
+  if (result.omitidas > 0) {
+    alert(`Se eliminaron ${result.eliminadas} factura(s). ${result.omitidas} no se eliminaron porque ya no están en borrador.`);
+  }
+}
+
 function render() {
   const listEl = document.getElementById('facturas-list');
   listEl.textContent = '';
@@ -121,6 +147,10 @@ function buildRow(f) {
   const editBtn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm', text: expandedId === f.id ? 'Cerrar' : 'Abrir' });
   editBtn.addEventListener('click', () => { expandedId = expandedId === f.id ? null : f.id; render(); });
 
+  const proyectoLink = f.proyecto_id
+    ? el('a', { href: `/app/proyecto.html?id=${f.proyecto_id}`, className: 'btn btn-secondary btn-sm', text: 'Ir al proyecto' })
+    : null;
+
   const mainRow = el('div', { className: 'doc-row__main' }, [
     checkbox,
     el('div', { className: 'list-row__main' }, [
@@ -129,6 +159,7 @@ function buildRow(f) {
     ]),
     statusBadge,
     pdfBtn,
+    proyectoLink,
     editBtn,
   ]);
   row.appendChild(mainRow);
@@ -205,14 +236,13 @@ async function loadIngresos(facturaId, container) {
   }
 
   for (const i of ingresos) {
-    const metodoInput = el('input', { type: 'text' });
-    metodoInput.value = i.metodo || '';
+    const { wrapper: metodoWrap, getValue } = buildMetodoControl(i.metodo);
 
     const saveBtn = el('button', { type: 'button', className: 'btn btn-secondary btn-sm', text: 'Guardar' });
     saveBtn.addEventListener('click', async () => {
       await apiFetch(`/ingresos/${i.id}`, {
         method: 'PUT',
-        body: JSON.stringify({ concepto: i.concepto, importe: i.importe, fecha: i.fecha, metodo: metodoInput.value }),
+        body: JSON.stringify({ concepto: i.concepto, importe: i.importe, fecha: i.fecha, metodo: getValue() }),
       });
     });
 
@@ -220,8 +250,41 @@ async function loadIngresos(facturaId, container) {
       el('div', { className: 'list-row__main' }, [
         el('div', { text: `${formatMoney(i.importe)} · ${formatDateEs(i.fecha)}` }),
       ]),
-      metodoInput,
+      metodoWrap,
       saveBtn,
     ]));
   }
+}
+
+const METODOS_PAGO = ['Efectivo', 'Transferencia', 'Bizum'];
+
+// Builds a select limited to the usual payment methods, falling back to a
+// free-text "Otro" option so older/combined values (e.g. "Transferencia +
+// Bizum") already stored on an ingreso are preserved instead of silently
+// overwritten.
+function buildMetodoControl(currentValue) {
+  const wrapper = el('span', { style: 'display:flex; gap:6px;' });
+  const isKnown = METODOS_PAGO.includes(currentValue);
+
+  const select = el('select', {}, [
+    ...METODOS_PAGO.map((m) => el('option', { value: m, text: m })),
+    el('option', { value: '__otro__', text: 'Otro' }),
+  ]);
+  select.value = isKnown ? currentValue : '__otro__';
+
+  const otroInput = el('input', { type: 'text', placeholder: 'Especifica...' });
+  otroInput.value = isKnown ? '' : (currentValue || '');
+  otroInput.hidden = isKnown;
+
+  select.addEventListener('change', () => {
+    otroInput.hidden = select.value !== '__otro__';
+  });
+
+  wrapper.appendChild(select);
+  wrapper.appendChild(otroInput);
+
+  return {
+    wrapper,
+    getValue: () => (select.value === '__otro__' ? otroInput.value.trim() : select.value),
+  };
 }

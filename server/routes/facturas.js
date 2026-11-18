@@ -213,6 +213,34 @@ export default async function facturasRoutes(app) {
     return reply.send(createReadStream(factura.pdf_path));
   });
 
+  // Bulk delete for the global Facturas listing. Silently skips any id that
+  // isn't actually a borrador (same rule as DELETE /api/facturas/:id: an
+  // emitida never gets deleted/renumbered, only rectificada) and reports how
+  // many were skipped so the UI can tell the user.
+  app.post('/api/facturas/bulk-delete', async (req, reply) => {
+    const { ids } = req.body || {};
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return reply.code(400).send({ error: 'ids es obligatorio' });
+    }
+
+    let eliminadas = 0;
+    let omitidas = 0;
+    for (const id of ids) {
+      const existing = db.prepare('SELECT * FROM facturas WHERE id = ?').get(id);
+      if (!existing || existing.estado !== 'borrador') {
+        omitidas++;
+        continue;
+      }
+      if (existing.pdf_path) {
+        try { unlinkSync(existing.pdf_path); } catch { /* already gone */ }
+      }
+      db.prepare('DELETE FROM facturas WHERE id = ?').run(id);
+      eliminadas++;
+    }
+
+    return { eliminadas, omitidas };
+  });
+
   // Bulk download for the global Facturas listing: either an explicit list
   // of ids, or the same filters as GET /api/facturas when ids is omitted.
   app.post('/api/facturas/zip', async (req, reply) => {
