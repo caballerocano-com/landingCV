@@ -98,16 +98,22 @@ async function onDeleteSelected() {
   );
   if (palabra !== 'Borrar') return;
 
-  const result = await apiFetch('/facturas/bulk-delete', {
-    method: 'POST',
-    body: JSON.stringify({ ids: [...selected] }),
-  });
+  let result;
+  try {
+    result = await apiFetch('/facturas/bulk-delete', {
+      method: 'POST',
+      body: JSON.stringify({ ids: [...selected] }),
+    });
+  } catch (err) {
+    alert(err.data?.error || err.message);
+    return;
+  }
 
   selected.clear();
   await load();
 
   if (result.omitidas > 0) {
-    alert(`Se eliminaron ${result.eliminadas} factura(s). ${result.omitidas} no se eliminaron porque ya no están en borrador.`);
+    alert(`Se eliminaron ${result.eliminadas} factura(s). ${result.omitidas} no se eliminaron porque no son borradores ni anuladas.`);
   }
 }
 
@@ -174,17 +180,19 @@ function buildRow(f) {
 function buildDetail(f) {
   const wrap = el('div', { className: 'mt-16' });
   const isBorrador = f.estado === 'borrador';
+  const isAnulada = f.estado === 'anulada';
+  const editable = isBorrador || isAnulada;
   const errorText = el('p', { className: 'error-text', hidden: '' });
 
   const numeroField = el('div', { className: 'field' }, [el('label', { text: 'Número' })]);
   const numeroInput = el('input', { type: 'text' });
   numeroInput.value = f.numero || '';
-  numeroInput.disabled = !isBorrador;
+  numeroInput.disabled = !editable;
   numeroField.appendChild(numeroInput);
 
-  const actions = el('div', { style: 'display:flex; gap:10px; margin: 10px 0;' });
+  const actions = el('div', { style: 'display:flex; gap:10px; margin: 10px 0; flex-wrap:wrap;' });
 
-  if (isBorrador) {
+  if (editable) {
     const saveBtn = el('button', { type: 'button', className: 'btn btn-primary btn-sm', text: 'Guardar número' });
     saveBtn.addEventListener('click', async () => {
       errorText.hidden = true;
@@ -197,7 +205,9 @@ function buildDetail(f) {
       }
     });
     actions.appendChild(saveBtn);
+  }
 
+  if (isBorrador) {
     const emitirBtn = el('button', { type: 'button', className: 'btn btn-primary btn-sm', text: 'Emitir (asignar número definitivo)' });
     emitirBtn.addEventListener('click', async () => {
       if (!confirm('¿Emitir esta factura? Se le asignará un número definitivo e inmutable.')) return;
@@ -211,13 +221,28 @@ function buildDetail(f) {
       }
     });
     actions.appendChild(emitirBtn);
+  }
 
-    const deleteBtn = el('button', { type: 'button', className: 'btn btn-danger btn-sm', text: 'Eliminar borrador' });
+  if (editable) {
+    const deleteBtn = el('button', {
+      type: 'button',
+      className: 'btn btn-danger btn-sm',
+      text: isAnulada ? 'Eliminar y liberar número' : 'Eliminar borrador',
+    });
     deleteBtn.addEventListener('click', async () => {
-      if (!confirm('¿Eliminar esta factura en borrador? No se puede deshacer.')) return;
-      await apiFetch(`/facturas/${f.id}`, { method: 'DELETE' });
-      expandedId = null;
-      await load();
+      const mensaje = isAnulada
+        ? '¿Eliminar esta factura anulada? Su número quedará libre para reutilizarse. Solo hazlo si esta factura NUNCA se presentó a Hacienda. No se puede deshacer.'
+        : '¿Eliminar esta factura en borrador? No se puede deshacer.';
+      if (!confirm(mensaje)) return;
+      errorText.hidden = true;
+      try {
+        await apiFetch(`/facturas/${f.id}`, { method: 'DELETE' });
+        expandedId = null;
+        await load();
+      } catch (err) {
+        errorText.textContent = err.data?.error || err.message;
+        errorText.hidden = false;
+      }
     });
     actions.appendChild(deleteBtn);
   }

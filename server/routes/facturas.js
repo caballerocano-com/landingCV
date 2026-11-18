@@ -108,7 +108,17 @@ export default async function facturasRoutes(app) {
   app.put('/api/facturas/:id', async (req, reply) => {
     const existing = db.prepare('SELECT * FROM facturas WHERE id = ?').get(req.params.id);
     if (!existing) return reply.code(404).send({ error: 'No encontrado' });
-    if (existing.estado !== 'borrador') {
+
+    const isBorrador = existing.estado === 'borrador';
+    const isAnulada = existing.estado === 'anulada';
+
+    // An anulada factura is a dead record: it can never go back to borrador
+    // or emitida. The only thing worth still editing on it is its numero —
+    // typically to free it up (type a different one, or clear it) so that
+    // number can be reused by a future factura, for a document that got
+    // anulada before it was ever actually presented to Hacienda. A real
+    // emitida/vencida/cobrada factura stays fully locked either way.
+    if (!isBorrador && !isAnulada) {
       return reply.code(403).send({ error: 'No se puede editar un documento ya emitido' });
     }
 
@@ -116,9 +126,9 @@ export default async function facturasRoutes(app) {
 
     let nuevoNumero = existing.numero;
 
-    // Manual override of the numero, only while still borrador. Checked for
-    // collisions against the whole facturas table (numero is UNIQUE across
-    // both facturas and rectificativas) before anything is written.
+    // Manual override of the numero. Checked for collisions against the
+    // whole facturas table (numero is UNIQUE across both facturas and
+    // rectificativas) before anything is written.
     if (numero !== undefined && numero !== existing.numero) {
       const limpio = (numero || '').trim() || null;
       if (limpio && numeroEnUso(limpio, existing.id)) {
@@ -128,21 +138,31 @@ export default async function facturasRoutes(app) {
       if (limpio) registrarNumeroManual(existing.es_rectificativa ? 'rectificativa' : 'factura', limpio);
     }
 
-    const nuevoEstado = estado ?? existing.estado;
+    // estado/fecha_vencimiento/notas only move while still borrador; an
+    // anulada factura keeps those frozen no matter what the request sends.
+    let nuevoEstado = existing.estado;
+    let nuevaFechaVencimiento = existing.fecha_vencimiento;
+    let nuevasNotas = existing.notas;
 
-    // Passing from borrador to emitida is what actually consumes a real
-    // fiscal numero: a factura that only lived as a discarded test draft
-    // never reaches this point, so it never costs a slot in the series.
-    if (nuevoEstado === 'emitida' && existing.estado === 'borrador' && !nuevoNumero) {
-      nuevoNumero = generarNumero(existing.es_rectificativa ? 'rectificativa' : 'factura');
+    if (isBorrador) {
+      nuevoEstado = estado ?? existing.estado;
+      nuevaFechaVencimiento = fecha_vencimiento ?? existing.fecha_vencimiento;
+      nuevasNotas = notas ?? existing.notas;
+
+      // Passing from borrador to emitida is what actually consumes a real
+      // fiscal numero: a factura that only lived as a discarded test draft
+      // never reaches this point, so it never costs a slot in the series.
+      if (nuevoEstado === 'emitida' && existing.estado === 'borrador' && !nuevoNumero) {
+        nuevoNumero = generarNumero(existing.es_rectificativa ? 'rectificativa' : 'factura');
+      }
     }
 
     db.prepare(
       `UPDATE facturas SET estado = ?, fecha_vencimiento = ?, notas = ?, numero = ? WHERE id = ?`
     ).run(
       nuevoEstado,
-      fecha_vencimiento ?? existing.fecha_vencimiento,
-      notas ?? existing.notas,
+      nuevaFechaVencimiento,
+      nuevasNotas,
       nuevoNumero,
       req.params.id
     );
@@ -179,8 +199,8 @@ export default async function facturasRoutes(app) {
   app.delete('/api/facturas/:id', async (req, reply) => {
     const existing = db.prepare('SELECT * FROM facturas WHERE id = ?').get(req.params.id);
     if (!existing) return reply.code(404).send({ error: 'No encontrado' });
-    if (existing.estado !== 'borrador') {
-      return reply.code(403).send({ error: 'Solo se pueden eliminar borradores' });
+    if (existing.estado !== 'borrador' && existing.estado !== 'anulada') {
+      return reply.code(403).send({ error: 'Solo se pueden eliminar borradores o facturas anuladas' });
     }
 
     if (existing.pdf_path) {
@@ -188,7 +208,10 @@ export default async function facturasRoutes(app) {
     }
     db.prepare('DELETE FROM facturas WHERE id = ?').run(req.params.id);
     // A borrador never had a real numero assigned (see POST above), so
-    // deleting it frees nothing and leaves no gap in the real series.
+    // deleting it frees nothing. Deleting an anulada DOES free its numero
+    // for reuse (numeroEnUso/registrarNumeroManual just query/update this
+    // same table) — an explicit, user-confirmed action for a document that
+    // was voided before ever being presented to Hacienda.
     return { success: true };
   });
 
@@ -213,10 +236,10 @@ export default async function facturasRoutes(app) {
     return reply.send(createReadStream(factura.pdf_path));
   });
 
-  // Bulk delete for the global Facturas listing. Silently skips any id that
-  // isn't actually a borrador (same rule as DELETE /api/facturas/:id: an
-  // emitida never gets deleted/renumbered, only rectificada) and reports how
-  // many were skipped so the UI can tell the user.
+  // Bulk delete for the global Facturas listing. Same rule as DELETE
+  // /api/facturas/:id (borrador or anulada only; emitida/vencida/cobrada
+  // never gets deleted/renumbered, only rectificada) and reports how many
+  // were skipped so the UI can tell the user.
   app.post('/api/facturas/bulk-delete', async (req, reply) => {
     const { ids } = req.body || {};
     if (!Array.isArray(ids) || ids.length === 0) {
@@ -227,7 +250,7 @@ export default async function facturasRoutes(app) {
     let omitidas = 0;
     for (const id of ids) {
       const existing = db.prepare('SELECT * FROM facturas WHERE id = ?').get(id);
-      if (!existing || existing.estado !== 'borrador') {
+      if (!existing || (existing.estado !== 'borrador' && existing.estado !== 'anulada')) {
         omitidas++;
         continue;
       }

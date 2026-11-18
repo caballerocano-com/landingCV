@@ -783,10 +783,17 @@ function buildDocConfirmRow(type, id, action) {
     : '¿Anular este documento?';
 
   return buildConfirmInline(message, async () => {
-    if (action === 'delete') {
-      await apiFetch(`${apiPath}/${id}`, { method: 'DELETE' });
-    } else {
-      await apiFetch(`${apiPath}/${id}/anular`, { method: 'PATCH' });
+    try {
+      if (action === 'delete') {
+        await apiFetch(`${apiPath}/${id}`, { method: 'DELETE' });
+      } else {
+        await apiFetch(`${apiPath}/${id}/anular`, { method: 'PATCH' });
+      }
+    } catch (err) {
+      alert(err.data?.error || err.message);
+      confirmingDoc = null;
+      rerenderDocSection(type);
+      return;
     }
     confirmingDoc = null;
     await loadProject();
@@ -967,38 +974,52 @@ function renderPresupuestos() {
 
 function buildFacturaEditForm(f) {
   const form = el('form', { className: 'mt-8' });
-
-  const estadoField = el('div', { className: 'field' }, [el('label', { text: 'Estado' })]);
-  const estadoSelect = el('select', {}, ['borrador', 'emitida'].map((v) => {
-    const opt = el('option', { value: v, text: ESTADO_LABELS[v] || v });
-    if (v === f.estado) opt.selected = true;
-    return opt;
-  }));
-  estadoField.appendChild(estadoSelect);
+  const isAnulada = f.estado === 'anulada';
 
   // numero is only assigned automatically when this moves to emitida; while
   // borrador it can be set by hand (e.g. to correct a past numbering
-  // mistake), checked for duplicates server-side before saving.
+  // mistake), checked for duplicates server-side before saving. An anulada
+  // factura can ONLY have its numero touched (to free it up for reuse) —
+  // estado/fecha_vencimiento/notas are frozen once anulada, so those fields
+  // are hidden instead of shown-but-ignored.
   const numeroField = el('div', { className: 'field' }, [el('label', { text: 'Número (vacío = automático al emitir)' })]);
   const numeroInput = el('input', { type: 'text', placeholder: 'Ej. FACT-2026-003' });
   numeroInput.value = f.numero || '';
   numeroField.appendChild(numeroInput);
 
-  const vencField = el('div', { className: 'field' }, [el('label', { text: 'Fecha de vencimiento' })]);
-  const vencInput = el('input', { type: 'date' });
-  vencInput.value = f.fecha_vencimiento || '';
-  vencField.appendChild(vencInput);
-
-  const notasField = el('div', { className: 'field' }, [el('label', { text: 'Notas' })]);
-  const notasArea = el('textarea');
-  notasArea.value = f.notas || '';
-  notasField.appendChild(notasArea);
-
   const errorText = el('p', { className: 'error-text', hidden: '' });
 
-  form.appendChild(el('div', { className: 'grid grid-2' }, [estadoField, numeroField]));
-  form.appendChild(vencField);
-  form.appendChild(notasField);
+  let estadoSelect = null;
+  let vencInput = null;
+  let notasArea = null;
+
+  if (isAnulada) {
+    form.appendChild(el('p', { className: 'text-muted', text: 'Factura anulada: solo puedes editar su número (por ejemplo para liberarlo y reutilizarlo), si nunca se presentó a Hacienda.' }));
+    form.appendChild(numeroField);
+  } else {
+    const estadoField = el('div', { className: 'field' }, [el('label', { text: 'Estado' })]);
+    estadoSelect = el('select', {}, ['borrador', 'emitida'].map((v) => {
+      const opt = el('option', { value: v, text: ESTADO_LABELS[v] || v });
+      if (v === f.estado) opt.selected = true;
+      return opt;
+    }));
+    estadoField.appendChild(estadoSelect);
+
+    const vencField = el('div', { className: 'field' }, [el('label', { text: 'Fecha de vencimiento' })]);
+    vencInput = el('input', { type: 'date' });
+    vencInput.value = f.fecha_vencimiento || '';
+    vencField.appendChild(vencInput);
+
+    const notasField = el('div', { className: 'field' }, [el('label', { text: 'Notas' })]);
+    notasArea = el('textarea');
+    notasArea.value = f.notas || '';
+    notasField.appendChild(notasArea);
+
+    form.appendChild(el('div', { className: 'grid grid-2' }, [estadoField, numeroField]));
+    form.appendChild(vencField);
+    form.appendChild(notasField);
+  }
+
   form.appendChild(errorText);
 
   const actions = el('div', { style: 'display:flex; gap:10px;' });
@@ -1011,16 +1032,16 @@ function buildFacturaEditForm(f) {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    try {
-      await apiFetch(`/facturas/${f.id}`, {
-        method: 'PUT',
-        body: JSON.stringify({
+    const body = isAnulada
+      ? { numero: numeroInput.value.trim() || null }
+      : {
           estado: estadoSelect.value,
           numero: numeroInput.value.trim() || null,
           fecha_vencimiento: vencInput.value || null,
           notas: notasArea.value,
-        }),
-      });
+        };
+    try {
+      await apiFetch(`/facturas/${f.id}`, { method: 'PUT', body: JSON.stringify(body) });
     } catch (err) {
       errorText.textContent = err.data?.error || err.message;
       errorText.hidden = false;
@@ -1064,13 +1085,13 @@ function buildFacturaRow(f) {
 
   if (isConfirming) {
     row.appendChild(buildDocConfirmRow('factura', f.id, confirmingDoc.action));
-  } else if (!isAnulado && f.estado !== 'cobrada') {
+  } else if (f.estado !== 'cobrada') {
     row.appendChild(docActionButtons({
       type: 'factura',
       id: f.id,
-      deletable: isBorrador,
+      deletable: isBorrador || isAnulado,
       anulable: f.estado === 'emitida' || f.estado === 'vencida',
-      onEdit: isBorrador ? () => {
+      onEdit: (isBorrador || isAnulado) ? () => {
         editingDoc = editingDoc && editingDoc.type === 'factura' && editingDoc.id === f.id ? null : { type: 'factura', id: f.id };
         renderFacturas();
       } : null,
