@@ -8,9 +8,12 @@ const FIELD_BY_TYPE = {
   rectificativa: 'ultimo_num_rectificativa',
 };
 
+// factura has no prefix ("2026-001"); every other type keeps one so its
+// series never collides with factura's or rectificativa's in the shared,
+// globally-UNIQUE facturas.numero column.
 const PREFIX_BY_TYPE = {
   presupuesto: 'PRES',
-  factura: 'FACT',
+  factura: '',
   recibo: 'REC',
   encargo: 'ENC',
   rectificativa: 'RECT',
@@ -22,9 +25,14 @@ const PREFIX_BY_TYPE = {
 // get migrated too.
 const SERIES_TIPOS = new Set(['factura', 'rectificativa']);
 
+function formatNumero(prefix, year, secuencia) {
+  const padded = String(secuencia).padStart(3, '0');
+  return prefix ? `${prefix}-${year}-${padded}` : `${year}-${padded}`;
+}
+
 export function generarNumero(tipo, { anio } = {}) {
   const prefix = PREFIX_BY_TYPE[tipo];
-  if (!prefix) throw new Error(`Tipo de documento desconocido: ${tipo}`);
+  if (prefix === undefined) throw new Error(`Tipo de documento desconocido: ${tipo}`);
 
   const year = anio || new Date().getFullYear();
 
@@ -37,7 +45,7 @@ export function generarNumero(tipo, { anio } = {}) {
       return next;
     });
     const next = tx();
-    return `${prefix}-${year}-${String(next).padStart(3, '0')}`;
+    return formatNumero(prefix, year, next);
   }
 
   const tx = db.transaction(() => {
@@ -50,15 +58,17 @@ export function generarNumero(tipo, { anio } = {}) {
   });
 
   const next = tx();
-  return `${prefix}-${year}-${String(next).padStart(3, '0')}`;
+  return formatNumero(prefix, year, next);
 }
 
-// Parses a numero like "FACT-2026-003" (for the given tipo) into its year
-// and sequence, or returns null if it doesn't follow that pattern.
+// Parses a numero like "2026-003" (factura, no prefix) or "RECT-2026-003"
+// (any other type) for the given tipo, into its year and sequence, or
+// returns null if it doesn't follow that pattern.
 function parseNumeroSerie(tipo, numero) {
   const prefix = PREFIX_BY_TYPE[tipo];
-  if (!prefix || !numero) return null;
-  const match = new RegExp(`^${prefix}-(\\d{4})-(\\d+)$`).exec(numero);
+  if (prefix === undefined || !numero) return null;
+  const pattern = prefix ? `^${prefix}-(\\d{4})-(\\d+)$` : `^(\\d{4})-(\\d+)$`;
+  const match = new RegExp(pattern).exec(numero);
   if (!match) return null;
   return { anio: parseInt(match[1], 10), secuencia: parseInt(match[2], 10) };
 }

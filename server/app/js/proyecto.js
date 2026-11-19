@@ -983,7 +983,7 @@ function buildFacturaEditForm(f) {
   // estado/fecha_vencimiento/notas are frozen once anulada, so those fields
   // are hidden instead of shown-but-ignored.
   const numeroField = el('div', { className: 'field' }, [el('label', { text: 'Número (vacío = automático al emitir)' })]);
-  const numeroInput = el('input', { type: 'text', placeholder: 'Ej. FACT-2026-003' });
+  const numeroInput = el('input', { type: 'text', placeholder: 'Ej. 2026-003' });
   numeroInput.value = f.numero || '';
   numeroField.appendChild(numeroInput);
 
@@ -1080,7 +1080,7 @@ function buildFacturaRow(f) {
 
   if (isRect && f.factura_original_id) {
     const original = proyecto.facturas.find((x) => x.id === f.factura_original_id);
-    row.appendChild(el('div', { className: 'doc-row__ref', text: `Rectifica: ${original ? original.numero : 'FACT-' + f.factura_original_id}` }));
+    row.appendChild(el('div', { className: 'doc-row__ref', text: `Rectifica: ${original ? original.numero : '#' + f.factura_original_id}` }));
   }
 
   if (isConfirming) {

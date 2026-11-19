@@ -33,7 +33,10 @@ function buildListadoQuery(query) {
   if (cliente_id) { where.push('c.id = ?'); params.push(cliente_id); }
   if (serie === 'factura') where.push('f.es_rectificativa = 0');
   if (serie === 'rectificativa') where.push('f.es_rectificativa = 1');
-  if (anio) { where.push(`f.numero LIKE ?`); params.push(`%-${anio}-%`); }
+  // factura has no prefix ("2026-001", year at the start) while
+  // rectificativa keeps one ("RECT-2026-001", year in the middle) — match
+  // either shape.
+  if (anio) { where.push(`(f.numero LIKE ? OR f.numero LIKE ?)`); params.push(`${anio}-%`, `%-${anio}-%`); }
   if (estado) { where.push('f.estado = ?'); params.push(estado); }
   if (desde) { where.push('f.created_at >= ?'); params.push(desde); }
   if (hasta) { where.push('f.created_at <= ?'); params.push(`${hasta} 23:59:59`); }

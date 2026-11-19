@@ -150,6 +150,7 @@ function drawPaymentBlock(doc) {
   doc.font(FONTS.regular).fontSize(9).fillColor(COLORS.textMuted);
   doc.text(`Transferencia bancaria: ${OWNER.cuenta_bancaria}`);
   doc.text(`Bizum: ${OWNER.bizum}`);
+  doc.text('Metálico');
   doc.moveDown(1);
 }
 
